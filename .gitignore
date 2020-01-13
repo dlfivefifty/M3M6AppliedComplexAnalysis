@@ -7,3 +7,4 @@ src/.DS_Store
 *.gz
 *.fdb_latexmk
 *.fls
+.ipynb_checkpoints/Untitled-checkpoint.ipynb

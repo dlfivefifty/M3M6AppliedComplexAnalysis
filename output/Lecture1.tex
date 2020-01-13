@@ -168,7 +168,8 @@
 
 \begin{document}
 
-\section{M3M6: Applied Complex Analysis (2020)}
+\textbf{M3M6: Applied Complex Analysis (2020)}
+
 Dr. Sheehan Olver
 
 s.olver@imperial.ac.uk
@@ -177,6 +178,12 @@ Office Hours: 11am Tuesdays, Huxley 6M40
 
 Website: https://github.com/dlfivefifty/M3M6AppliedComplexAnalysis
 
+References: 
+
+\begin{itemize}
+\item[1. ] M.J. Ablowitz \& A.S. Fokas, Complex Variables: Introduction and Applications, Second Edition, Cambridge University Press, 2003
+
+\end{itemize}
 \subsection{Overview of course}
 \begin{itemize}
 \item[1. ] Complex analysis, Cauchy's theorem, residual calculus
@@ -445,6 +452,310 @@ Finally, the Riemann Hypothesis: Here is a plot of the Riemann zeta function nea
 \end{lstlisting}
 
 \includegraphics[width=\linewidth]{figures/Lecture1_17_1.pdf}
+
+\subsection{Holomorphicity, Cauchy's theorem, and Analyticity}
+A beautiful feature of complex analysis is one starts with a very weak assumption of holomorphicity, essentially complex-differentiability in an open set, deduce Cauchy's theorem and Cauchy's integral formula, which then imply analyticity. That is, if we assume a function is one-time complex differentiable, then it has an infinite number of derivatives.
+
+These results are built up as follows:
+
+\begin{itemize}
+\item[1. ] Holomorphic functions
+
+
+\item[2. ] Cauchy's theorem 
+
+
+\item[3. ] Deformation of contours
+
+
+\item[4. ] Cauchy's integral formula
+
+
+\item[5. ] Analyticity and Taylor series
+
+\end{itemize}
+We will review the first three topics this lecture, with the remaining for next lecture.
+
+\subsubsection{Holomorphic functions}
+\textbf{Definition (Complex-differentiable)} Let $D \subset {\mathbb C}$ be an open set.  A function $f : D \rightarrow {\mathbb C}$ is called \emph{complex-differentiable} at a point $z_0 \in D$ if 
+
+\[
+   f'(z_0) =  \lim_{z \rightarrow z_0} {f(z) - f(z_0) \over z - z_0}
+\]
+exists, for any angle of approach to $z_0$.
+
+\textbf{Definition (Holomorphic)} Let $D \subset {\mathbb C}$ be an open set.  A function $f : D \rightarrow {\mathbb C}$ is called \emph{holomorphic} in $D$ if it is complex-differentiable at all $z \in D$.
+
+\textbf{Definition (Entire)} A function is \emph{entire} if it is holomorphic in ${\mathbb C}$
+
+\emph{Examples}
+
+\begin{itemize}
+\item[1. ] \[
+1
+\]
+is entire
+
+
+\item[2. ] \[
+z
+\]
+is entire
+
+
+\item[3. ] \[
+1/z
+\]
+is holomorphic in ${\mathbb C} \backslash \{0\}$
+
+
+\item[4. ] \[
+\sin z
+\]
+is entire
+
+
+\item[5. ] \[
+\csc z
+\]
+is holomorphic in ${\mathbb C} \backslash \{\ldots,-2\pi,-\pi,0,\pi,2\pi,\ldots\}$
+
+
+\item[6. ] \[
+\sqrt z
+\]
+is holomorphic in ${\mathbb C} \backslash (-\infty,0]$
+
+\end{itemize}
+\subsubsection{Cauchy's theorem}
+\textbf{Definition (Contour)} A \emph{contour}  is a continuous \& piecewise-continuously differentiable function $\gamma : [a,b] \rightarrow {\mathbb C}$.
+
+\textbf{Definition (Simple)} A \emph{simple contour} is a contour that is 1-to-1.
+
+\textbf{Definition (Closed)} A \emph{closed contour} is a contour such that $\gamma(a) = \gamma(b)$
+
+\emph{Examples of contours}
+
+\begin{itemize}
+\item[1. ] Line segment $[a,b]$ is a simple contour, with $\gamma(t) =  t$
+
+
+\item[2. ] Arc from $re^{ia}$ to $re^{ib}$ is a simple contour, with $\gamma(t) =  re^{i t}$
+
+
+\item[3. ] Circle of radius $r$ is a closed simple contour, with $\gamma(t) = re^{i t}$ and $a = -\pi$, $b = \pi$
+
+
+\item[4. ] \[
+\gamma(t) = \cos (t+i)^2
+\]
+defines a contour that is not simple or closed
+
+
+\item[5. ] \[
+\gamma(t) = e^{i t} + e^{2i t}
+\]
+for $[a,b] = [-\pi,\pi]$ defines a contour that is closed but not simple
+
+\end{itemize}
+\textbf{Definition (Contour integral)} The \emph{contour integral} over $\gamma$ is defined by
+
+\[
+\int_\gamma f(z) dz := \int_a^b f(\gamma(t)) \gamma'(t) dt
+\]
+An important property of a contour is its \emph{arclength}:
+
+\textbf{Definition (Arclength)} The \emph{arclength} of $\gamma$ is defined as
+
+\[
+    {\cal L}(\gamma) := \int_a^b |\gamma'(t)| dt
+\]
+A very useful result is that we can use the maximum and arclength to bound integrals:
+
+\textbf{Proposition (ML)} Let $f : \gamma \rightarrow {\mathbb C}$ and 
+
+\[
+        M = \sup_{z \in \gamma} |f(z)|
+\]
+Then
+
+\[
+\left|\int_\gamma f(z) dz \right| \leq M {\cal L}(\gamma)
+\]
+\textbf{Proposition} If $f(z)$ is holomorphic on $\gamma$, then $\int_\gamma f'(z) dz = f(\gamma(b)) - f(\gamma(a))$
+
+\textbf{Theorem (Cauchy)} If $f$ is holomorphic inside and on a closed contour $\gamma$, then  $\oint_\gamma f(z) dz = 0$
+
+\subsubsection{Deformation of contours}
+\textbf{Definition (Domain)} A \emph{domain} is a non-empty, open and connected set $D \subset {\mathbb C}$.
+
+\textbf{Definition (Homotopic)} Two closed contours $\gamma_1 : [a,b] \rightarrow D$ and $\gamma_2 \rightarrow D$ in a domain $D$ are \emph{homotopic} if they can be continuously deformed to one-another while remaining in $D$. 
+
+\textbf{Theorem (Deformation of contours)} Let $f(z)$ be holomorphic in a domain $D$. Let $\gamma_1$ and $\gamma_2$ be two homotopic contours. Then
+
+\[
+    \int_{\gamma_1} f(z) dz = \int_{\gamma_2} f(z) dz
+\]
+\textbf{Definition (Simply connected)} A domain is \emph{simply connected} if every closed contour is homotoic to a point.
+
+\textbf{Corollary (Deformation of contours on simply connected domains)} Let $f(z)$ be holomorphic in a simply-connected domain $D$. If $\gamma_1$ and $\gamma_2$ are two contours in $D$ with the same endpoints, then
+
+\[
+    \int_{\gamma_1} f(z) dz = \int_{\gamma_2} f(z) dz
+\]
+\subsubsection{Demonstration}
+We can usually infer the domain where a function is holomorphic from a phase portrait, here we see that ${\rm arcsinh}\, z$ has cuts on $[\I,\I \infty)$ and $[-\I,-\I \infty)$, and a zero  (red\ensuremath{\endash}green\ensuremath{\endash}blue\ensuremath{\endash}red) at zero, hence we can infer that it is holomorphic in $\C \backslash ([\I,\I \infty) \cup [-\I,-\I \infty))$.
+
+
+\begin{lstlisting}
+(*@\HLJLk{using}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SpecialFunctions}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ApproxFun}@*)
+(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{asinh}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture1_18_1.pdf}
+
+The following example $\sqrt{z-1} \sqrt{z+1}$ is analytic in ${\mathbb C}\backslash [-1,1]$ and will be returned to:
+
+
+\begin{lstlisting}
+(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture1_19_1.pdf}
+
+Here's an example of a closed contour that is not simple:
+
+
+\begin{lstlisting}
+(*@\HLJLn{a}@*)(*@\HLJLp{,}@*)(*@\HLJLn{b}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{\ensuremath{\pi}}@*)
+(*@\HLJLn{tt}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{range}@*)(*@\HLJLp{(}@*)(*@\HLJLn{a}@*)(*@\HLJLp{,}@*) (*@\HLJLn{stop}@*)(*@\HLJLoB{=}@*)(*@\HLJLn{b}@*)(*@\HLJLp{,}@*) (*@\HLJLn{length}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1000}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{\ensuremath{\gamma}}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{t}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{real}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{tt}@*)(*@\HLJLp{)),}@*) (*@\HLJLn{imag}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{tt}@*)(*@\HLJLp{));}@*) (*@\HLJLn{ratio}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture1_20_1.pdf}
+
+The notion of integration over a contour in the complex plane  is independent of the notion of holomorphicity. For example, we can happily define the integral for non-holomorphic functions such as $\Re \E^z = \E^x \cos y$:
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.}@*)(*@\HLJLp{,(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic!}@*)
+
+(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{domain}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{);}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ratio}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture1_21_1.pdf}
+
+\begin{lstlisting}
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{this}@*) (*@\HLJLcs{means}@*) (*@\HLJLcs{contour}@*) (*@\HLJLcs{integral}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+-1.2485382363935424 + 1.949326343919058im
+\end{lstlisting}
+
+
+This is defined in terms of a parameterization, and so the following real integral gives the same result:
+
+
+\begin{lstlisting}
+(*@\HLJLn{g}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{t}@*)(*@\HLJLoB{->}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{),}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{..}@*) (*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*) (*@\HLJLn{g}@*) (*@\HLJLp{)}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{this}@*) (*@\HLJLcs{is}@*) (*@\HLJLcs{standard}@*) (*@\HLJLcs{integral}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+-1.2485382363935429 + 1.9493263439190578im
+\end{lstlisting}
+
+
+The following show that the contour of integration does not affect the integral for holomorphic functions:
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.}@*)(*@\HLJLp{,(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*) (*@\HLJLcs{{\#}integrate}@*) (*@\HLJLcs{over}@*) (*@\HLJLcs{an}@*) (*@\HLJLcs{arc}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLp{,}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-2.1779795225909058 + 0.8414709848078968im, -2.177979522590906 + 0.8414709
+848078968im)
+\end{lstlisting}
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{integrate}@*) (*@\HLJLcs{over}@*) (*@\HLJLcs{a}@*) (*@\HLJLcs{line}@*) (*@\HLJLcs{segment}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLp{,}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-2.1779795225909053 + 0.8414709848078966im, -2.177979522590907 + 0.8414709
+848078968im)
+\end{lstlisting}
+
+
+The following demonstrates Cauchy's theorem, integration over a closed contour equals zero:
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*)  (*@\HLJLcs{Holomorphic!}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+2.9644937254112756e-17 - 1.4872544363724962e-16im
+\end{lstlisting}
+
+
+If \texttt{f} is not holomorphic, it doesn't apply:
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic}@*) (*@\HLJLcs{at}@*) (*@\HLJLcs{zero}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+-9.96316757509274e-16 + 6.283185307179588im
+\end{lstlisting}
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic}@*) (*@\HLJLcs{anywhere!}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+-3.3420237696193494e-16 + 3.141592653589793im
+\end{lstlisting}
+
+
+We can test contour deformation experimentally: in the following, the  integral (implemented as \texttt{sum}) over two different contours returns the  same value (up to numerical precision)
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.}@*)(*@\HLJLp{,(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Holomorphic!}@*)
+(*@\HLJLn{fs}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Holomorphic!}@*)
+
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLp{,}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{fs}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-2.1779795225909058 + 0.8414709848078968im, -2.1779795225909053 + 0.841470
+9848078966im)
+\end{lstlisting}
+
+
+Here is a depection of the two contours:
+
+
+\begin{lstlisting}
+(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{domain}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{);}@*) (*@\HLJLn{ratio}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{domain}@*)(*@\HLJLp{(}@*)(*@\HLJLn{fs}@*)(*@\HLJLp{),}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture1_30_1.pdf}
 
 
 \end{document}

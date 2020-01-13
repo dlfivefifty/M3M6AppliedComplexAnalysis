@@ -300,9 +300,9 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays"]
-git-tree-sha1 = "1a9fe4e1323f38de0ba4da49eafd15b25ec62298"
+git-tree-sha1 = "fec413d4fc547992eb62a5c544cedb6d7853c1f5"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "0.8.2"
+version = "0.8.4"
 
 [[FixedPointNumbers]]
 git-tree-sha1 = "d14a6fa5890ea3a7e5dcab6811114f132fec2b4b"
@@ -492,9 +492,9 @@ version = "2.0.1+0"
 
 [[LazyArrays]]
 deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra", "MacroTools", "StaticArrays"]
-git-tree-sha1 = "f787fc888b28b83ae32863f2ae54f47e8ca40eaf"
+git-tree-sha1 = "d10de258d0c999350d433e4eed35201c9d790bcd"
 uuid = "5078a376-72f3-5289-bfd5-ec5146d43c02"
-version = "0.14.10"
+version = "0.14.11"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
@@ -638,7 +638,7 @@ uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "0.3.10"
 
 [[Pkg]]
-deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
+deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Test", "UUIDs"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlotThemes]]
