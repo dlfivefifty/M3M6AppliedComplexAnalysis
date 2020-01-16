@@ -1,0 +1,295 @@
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+
+
+# Lecture 3: Laurent series and residue calculus
+
+This lecture we cover
+
+1. Fourier and Laurent series
+2. Contour integrals and Laurent coefficients
+2. Isolated singularities
+    - Residue at a point
+2. Contour integrals in domains with multiple holes
+    - The residue theorem
+3. Calculated integrals
+    - Application: Trigonometric integrals with rational functions
+
+
+## Fourier and Laurent series
+
+**Definition (Fourier series)** On $[-\pi, \pi)$,  _Fourier series_ is an expansion of the form
+$$
+    g(\theta) = \sum_{k=-\infty}^\infty g_k \E^{i k \theta}
+$$
+where
+$$
+g_k = {1\over 2 \pi} \int_{-\pi}^\pi g(\theta) \E^{-i k \theta} d \theta
+$$
+
+**Definition (Laurent series)** In the complex plane, Laurent series around $z_0$ is an expansion of the form 
+$$
+    f(z) = \sum_{k=-\infty}^\infty f_k (z-z_0)^k 
+$$
+
+**Lemma (Fourier series = Laurent series)** On a circle in the complex plane 
+$$
+    \gamma_r = \{z_0 + re^{i \theta} : -\pi \leq \theta < \pi \},
+$$
+Laurent series of $f(z)$ around $z_0$ converges for $z \in C_r$ if the Fourier series of $g(\theta) = f(z_0 + r e^{i \theta})$ converges, and the coefficients are given by
+
+$$
+f_k = {g_k \over r^k} = {1 \over 2 \pi i} \oint_{\gamma_r} {f(\zeta) \over (\zeta - z_0)^{k+1}} d \zeta.
+$$
+
+**Proof**  This follows immediately from the change of variables $z = r \E^{\I \theta} + z_0$. ■
+
+Interestingly, analytic properties of $f$ can be used to show decaying properties in $g$:
+
+
+## Residue on a circle
+
+
+In this course, we will _always_ think of Laurent series living on a circle $ \gamma_r(z_0) = \{z : |z-z_0| = r \}$. That is,
+$$
+    f(z) \approx \sum_{k=-\infty}^\infty f_k (z-z_0)^k
+$$
+
+for $z \in \gamma_r(z_0)$.  
+
+**Proposition (Residue on a circle)** 
+Suppose the Laurent series is absolutely summable on $\gamma_r$. Then 
+$$
+\oint_{\gamma_r} f(z) dz = 2 \pi \I f_{-1}
+$$
+We refer to $f_{-1}$ as the residue over $\gamma_r$.
+
+*Example* For all $0 < r < \infty$, 
+$$
+\oint_{\gamma_r} {1 \over z} dz = 2 \pi \I
+$$
+
+When $f$ is holomorphic in a neighbourhood of the circle, we can extend it to an annulus (like Taylor series and disks):
+
+**Proposition (Laurent series in an annulus)**
+Suppose $f$ is holomorphic in an open annulus $A_{\rho R}(z_0) = \{z : \rho  < | z - z_0| < R\}$. 
+Then the Laurent series converges uniformly in  any closed annulus inside $A_{\rho R}$
+
+**Proof** _Exercise_.  Hint: use the decay in the Laurent coefficients $f_k$ from last lecture.
+
+
+_Proposition (Residue on a circle)_ holds true regardless of the radius.
+
+## Isolated singularities
+
+**Definition (isolated singularity)** $f$ has an  _isolated singularity at_ $z_0$ if it is holomorphic in an open annulus with inner radius 0: 
+$$
+A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}.
+$$
+
+
+**Definition (Removable singularity)** $f$ has a _removable singularity at_ $z_0$ if it has an isolated singularity at $z_0$ and all negative terms in the Laurent series in $A_{0R}(z_0)$ are zero:
+$$
+f(z) = f_0 + f_1 (z-z_0) + f_2 (z-z_0)^2 + \cdots
+$$
+
+```julia
+using Plots, ComplexPhasePortrait
+f = z -> (exp(z)-1)/z
+f(0.0) 
+```
+No singularity appears when plotting `f`:
+```julia
+phaseplot(-1..1, -1..1, f) 
+```
+
+**Proposition (Removing a removable singularity)** If  $f$ has a removable singularity at $z_0$, then
+$$
+\tilde f(z) = \begin{cases} f_0 & z = z_0 \\
+                                f(z) & 0 < |z-z_0| < R
+                                \end{cases}
+$$
+is analytic in the disk $B_R(z_0) = \{ z : |z-z_0| < R \}$, with a convergent Taylor series. Hence the name.
+
+```julia
+g = z -> z ≈ 0 ? 1 : f(z)
+phaseplot(-1..1, -1..1, g)
+```
+
+**Definition (simple pole)** $f$ has a  _simple pole at_ $z_0$ if it is holomorphic in 
+$$
+  A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}
+$$
+with only one negative term in the Laurent series in $A_{0R}(z_0)$:
+$$
+  f(z) = {f_{-1} \over z - z_0}  + f_0 + f_1 (z - z_0) + \cdots
+$$
+where $f_{-1} \neq 0$.
+
+**Definition (higher order pole)** $f$ has a  _pole of order $N$ at_ ${z_0}$ if it is holomorphic in 
+$$
+ A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}
+$$
+with only $N$ negative coefficients in the Laurent series:
+$$
+ f(z) = {f_{-N} \over (z - z_0)^N}  + {f_{1-N} \over (z - z_0)^{N-1}} +  \cdots + {f_{-1} \over z-z_0} + f_0 + f_1 (z-z_0) + \cdots
+$$
+where $f_{-N} \neq 0$.
+
+```julia
+phaseplot(-1..1, -1..1, z -> exp(z)/z^3)
+```
+
+
+**Definition (essential singularity)** $f$ has an _essential singularity at_ $z_0$ if it is holomorphic in $A_{0R}(z_0)$ and has an infinite number of negative Laurent coefficients.
+
+```julia
+phaseplot(-1..1, -1..1, z -> exp(1/z))
+```
+Even though the singlarity is essential, we can still calculate the integrals using Residue calculus:
+```julia
+using ApproxFun
+sum(Fun(z -> exp(1/z), Circle())), 
+2π*im*Fun(z -> exp(1/z), Laurent(Circle())).coefficients[2]
+```
+
+
+### Residue at a point
+
+**Definition (Residue at a point)** Suppose $f$ has an isolated singularity at $z_0$, and is analytic in the annulus $A_{0R}(z_0)$ for some $R > 0$. Then we define the _residue at_ $z_0$ as
+$$
+{\underset{z = z_0}{\rm Res}}\, f(z) = f_{-1}
+$$
+where $f_{-1}$ is the first negative coefficent of the Laurent series in $A_{0R}(z_0)$. 
+
+**Proposition (Residue of ratio of analytic functions with simple pole)** Suppose
+$$
+f(z) = {A(z) \over B(z)}
+$$
+and $A$, $B$ are analytic/holomorphic in a disk of radius $R$ around $z_0$ and that $B$ has only a single zero at $z_0$:
+$$
+\begin{align*}
+A(z) = A_0 + A_1(z-z_0) + \cdots \cr
+B(z) = B_1(z-z_0) + \cdots
+\end{align*}
+$$
+Then ${\underset{z = z_0}{\rm Res}}\, f(z) = {A_0 \over B_1}$
+
+**Exercise (Residue of ratio of analytic functions with higher order  poles)** What is the residue at $z_0$ if $B$ has a higher order zero: $B(z) = B_N (z-z_0)^N + \cdots$?
+
+## Contour integrals on domains with multiple holes
+
+
+Consider the following example:
+
+$$
+    {\sqrt{z-1}\sqrt{z+1} \over z^2 + 4}
+$$
+
+We still have the contour integral over a circle, and so _Proposition (Residue on a circle)_ still holds true for $r > 2$. But we can also deform the contour into three contours:
+
+```julia
+f = z -> sqrt(z-1)sqrt(z+1)/(z^2+4)
+
+Γ = Circle(1.1) ∪ Circle(2.0im,0.1) ∪ Circle(-2.0im,0.1)
+phaseplot(-2..2, -3..3, f)
+plot!(Γ; color=:black, label=:contour, arrow=true, linewidth=1.5)
+```
+
+```julia
+sum(Fun(f, Circle(2.1))), sum(Fun(f, Γ))
+```
+
+Thus we can sum over three residues.
+
+### Residue theorem
+
+**Theorem (Cauchy's Residue Theorem)** Let $f$ be holomprohic inside and on a simple closed, positively oriented contour $\gamma$ except at isolated points $z_1, \ldots, z_r$ inside $\gamma$. Then
+
+$$
+\oint_\gamma f(z) dz = 2 \pi i \sum_{j=1}^r {\underset{z = z_j}{\rm Res}}\, f(z)
+$$
+
+## Calculating integrals
+
+We can use the Residue theorem to calculate "hard" integrals.
+
+First, two trivial examples:
+
+```julia
+f = z -> 1/(z*(z+2))
+phaseplot(-3..3, -3..3, f)
+```
+```julia
+sum(Fun(f, Circle(3.0)))
+```
+```julia
+f = z -> exp(z)/(z*(z+2))
+phaseplot(-3..3, -3..3, f)
+```
+```julia
+sum(Fun(f, Circle(3.0)))
+```
+```julia
+2π*im*(1/2 - exp(-2)/2)
+```
+```julia
+sum(Fun(z -> exp(z)/(z^2*(z+2)), Circle(3.0)))
+```
+```julia
+2*pi*im * (1/4 + exp(-2)/4)
+```
+
+## Application: Integrals on the real line of rational functions
+
+We can calculate integrals of the form 
+$$
+\int_0^{2 \pi} R(\cos \theta, \sin \theta) d \theta
+$$
+where $R(x,y)$ is rational by doing the change of variables $z = e^{i \theta}$ to reduce it to
+$$
+\oint_{\gamma_1} R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 i} \right) {d z \over i z}
+$$
+
+
+*Example* Consider
+
+$$
+\int_0^{2\pi} {d \theta \over 1 - 2\rho \cos \theta + \rho^2}
+$$
+
+for $0 < \rho < 1$.
+```julia
+ρ = 0.5
+plot(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π))
+
+phaseplot(-2..2, -2..2, z ->  1/(1-ρ*(z+(z^(-1))) + ρ^2) * 1/(im*z))
+
+sum(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π)), 2π /(1-ρ^2)
+```
+
+## Demonstration
+
+
+
+_Example_ This works for functions not analytic:
+$$
+    \oint_{\gamma_1} (\sqrt{z-1}\sqrt{z+1})^3 dz 
+$$
+
+```julia
+f = z -> (sqrt(z-1)*sqrt(z+1))^3
+
+phaseplot(-2..2, -2..2, f)
+plot!(Circle(1.1); color=:black, label="contour", linewidth=1.5, arrow=true)
+```
+
+```julia
+@show sum(Fun(f, Laurent(Circle(1.1))))  # integral over circle
+f₋₁ = Fun(f, Laurent(Circle(1.1))).coefficients[2] # numerical Laurent coefficient
+@show 2π*im*f₋₁;
+```

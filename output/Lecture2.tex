@@ -133,7 +133,7 @@
 \def\qqqquad{\qquad\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
-\def\Res_#1{\underset{#1}{\rm Res}}\,
+\def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
 
 
@@ -165,249 +165,220 @@
 \def\sopmatrix#1{ \begin{pmatrix}#1\end{pmatrix} }
 
 \def\endash{–}
+\def\mdblksquare{\blacksquare}
 
 \begin{document}
 
-** M3M6: Methods of Mathematical Physics **
+\textbf{M3M6: Methods of Mathematical Physics}
 
-Dr. Sheehan Olver <br> s.olver@imperial.ac.uk
+Dr. Sheehan Olver
 
-\section{Lecture 2: Cauchy's theorem}
-\subsection{Complex-differentiable functions}
-\textbf{Definition (Complex-differentiable)} Let $D \subset {\mathbb C}$ be an open set.  A function $f : D \rightarrow {\mathbb C}$ is called \emph{complex-differentiable} at a point $z_0 \in D$ if 
+s.olver@imperial.ac.uk
+
+\section{Lecture 2: Cauchy's integral formula and Taylor series}
+The starting point of our review was the following construction:
+
+\begin{itemize}
+\item[1. ] Holomorphic functions
+
+
+\item[2. ] Cauchy's theorem 
+
+
+\item[3. ] Deformation of contours
+
+
+\item[4. ] Cauchy's integral formula
+
+
+\item[5. ] Analyticity and Taylor series
+
+\end{itemize}
+Last lecture we discussed 1\ensuremath{\endash}3, that (1) integrating a holomorphic functions over a simple closed contour returns zero and (2) therefore integrals over complex contours depend only on the start and end point provided the integrand is holomorphic inbetween. Here we use these to review 4\ensuremath{\endash}5.
+
+\subsection{Cauchy's integral formula}
+Contours are \emph{oriented}: there is a notion of "left" and "right" inherited from $[a,b]$. For closed contours, there is as notion of positive/negative orientation:
+
+\textbf{Definition (Positive/negative orientation)} Let $\gamma$ be a simple closed contour and $z$ in the interior of $\gamma$.  We say that $\gamma$ is \emph{positively oriented} if  ${1 \over 2 \pi i} \oint_\gamma {d\zeta \over \zeta - z} = 1$ It is \emph{negatively oriented} if the reversed contour $\gamma_{\rm reversed}(t) = \gamma(b+a-t)$ for $t \in [a,b]$ is positively oriented, or equivalentally ${1 \over 2 \pi i} \oint_\gamma {d\zeta \over \zeta - z} = -1$
+
+Cauchy's integral formula allows us to recover a function from knowlerdge of its values on a surrounding contour:
+
+\textbf{Theorem (Cauchy integral formula)} Suppose $f$ is holomorphic inside and on a positively oriented, simple, closed contour $\gamma$. Then
 
 \[
-   f'(z_0) =  \lim_{z \rightarrow z_0} {f(z) - f(z_0) \over z - z_0}
+f(z) = \begin{cases} 
+{1 \over 2 \pi \I} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta & z \hbox{ inside $\gamma$} \\
+0 & otherwise 
+\end{cases}
 \]
-exists, for any angle of approach to $z_0$.
+\textbf{Sketch of Proof}
 
-\subsection{Holomorphic functions}
-\textbf{Definition (Holomorphic)} Let $D \subset {\mathbb C}$ be an open set.  A function $f : D \rightarrow {\mathbb C}$ is called \emph{holomorphic} in $D$ if it is complex-differentiable at all $z \in D$.
+Let $C_r := \{ z + r \E^{\I \theta} : 0 \leq \theta < 2\pi \}$ be a small circle around $z$ inside the domain of holomorphicity of $f$.  Contour deformation informs us that 
 
-\textbf{Definition (Entire)} A function is \emph{entire} if it is holomorphic in ${\mathbb C}$
+\[
+\oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta  = 
+\oint_{C_r} {f(\zeta) \over \zeta - z} \D \zeta =
+\I \int_0^{2 \pi} f(z + r \E^{\I \theta})\D \theta = 
+2 \pi \I f(z) + \int_0^{2 \pi} {f(z + r \E^{\I \theta}) - f(z)} \D \theta.
+\]
+By continuity, the second integral tends to zero.
 
-\emph{Examples}
+\ensuremath{\mdblksquare}
+
+Not only do we know $f$, a consequence of this formula is  that $f$ is infinitely-differentiable by differentiating the integrand with respect to $z$, and we know all its values:
+
+\textbf{Corollary (Cauchy integral formula for derivatives)} Suppose $f$ is holomorphic inside and on a positively oriented, simple, closed contour $\gamma$. Then $f$ is infinitely-differentiable at $z$ and 
+
+\[
+f^{(k)}(z) = {k! \over 2 \pi i} \oint_\gamma {f(\zeta) \over (\zeta - z)^{k+1}} d \zeta
+\]
+\subsection{Taylor series}
+\textbf{Theorem (Taylor)} Suppose $f$ is holomorphic in a ball $B(z_0,r)$. Then inside this ball we have
+
+\[
+    f(z) = \sum_{k=0}^\infty {f^{(k)}(z_0) \over k!} (z-z_0)^k
+\]
+\textbf{Sketch of proof}
+
+For simplicity, take $z_0 = 0$.  This result follows from approximating the Cauchy kernel $1/(z - \zeta)$ by its geometric series. Recall by telescoping sum
+
+\[
+(1-z) (1 + z + \cdots + z^n) = 1 - z^{n+1}.
+\]
+Therefore
+
+\[
+{1 \over z - \zeta} = {1 \over -\zeta} {1 \over 1 - z/\zeta} = {1 \over - \zeta} (1 + (z/\zeta) + \cdot + (z/\zeta)^n + {(z/\zeta)^{n+1} \over 1 - z/\zeta})
+\]
+Thus for $C_r$, a circle of radius $r$, we have
+
+
+\begin{align*}
+f(z) &= {1 \over 2 \pi \I} \oint_{C_r} {f(\zeta) \over \zeta - z} \D \zeta \\
+&= 
+\sum_{k=0}^n z^n {1 \over 2 \pi \I}  \oint_{C_r} f(\zeta) \zeta^{-n-1} \D \zeta + {1 \over 2 \pi \I} \oint_{C_r} f(\zeta)  {(z/\zeta)^{n+1} \over 1 - z/\zeta} \D \zeta \\
+&=
+\sum_{k=0}^n {f^{(k)}(0) \over k!} z^n + R_n(z)
+\end{align*}
+Because $|z| < r$ we have $|z/\zeta| < 1$ which implies the integrand in $R_n(z)$ uniformly tends to zero, i.e., $R_n(z) \rightarrow 0$. 
+
+\ensuremath{\mdblksquare}
+
+\subsection{Demonstration}
+Here we see numerically that $1/z$ is positively oriented:
+
+
+\begin{lstlisting}
+(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SpecialFunctions}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{()))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+1.0 + 1.2545118101832475e-16im
+\end{lstlisting}
+
+
+This shows numerically that we can calculate $\E^{0.1}$ by integrating over a circle that surrounds $z = 0.1$:
+
+
+\begin{lstlisting}
+(*@\HLJLn{\ensuremath{\gamma}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{()}@*)
+(*@\HLJLn{\ensuremath{\zeta}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)  (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+-4.440892098500626e-16 - 0.0im
+\end{lstlisting}
+
+
+Here we show that we can recover $\E^z$ using any of the derivatives:
+
+
+\begin{lstlisting}
+(*@\HLJLn{k}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{10}@*)
+(*@\HLJLnf{factorial}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLn{k}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLp{(}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)  (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+2.2849588887652317e-10 - 0.0im
+\end{lstlisting}
+
+
+\begin{lstlisting}
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
+(*@\HLJLn{k}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{5}@*)
+(*@\HLJLnf{factorial}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLn{k}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\zeta}}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLp{(}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+2.0650148258027912e-14 - 0.0im
+\end{lstlisting}
+
+
+For Taylor series, we consider the following examples:
 
 \begin{itemize}
 \item[1. ] \[
-1
+\E^z
 \]
-is entire
-
 
 \item[2. ] \[
-z
+1/(1-z)
 \]
-is entire
-
 
 \item[3. ] \[
-1/z
+\sec z
 \]
-is holomorphic in ${\mathbb C} \backslash \{0\}$
-
 
 \item[4. ] \[
-\sin z
-\]
-is entire
-
-
-\item[5. ] \[
-\csc z
-\]
-is holomorphic in ${\mathbb C} \backslash \{\ldots,-2\pi,-\pi,0,\pi,2\pi,\ldots\}$
-
-
-\item[6. ] \[
 \sqrt z
 \]
-is holomorphic in ${\mathbb C} \backslash (-\infty,0]$
-
 \end{itemize}
-We can usually infer the domain where a function is holomorphic from a phase portrait, here we see that ${\rm arcsinh}\, z$ has cuts on $[\I,\I \infty)$ and $[-\I,-\I \infty)$, and a zero  (red\ensuremath{\endash}green\ensuremath{\endash}blue\ensuremath{\endash}red) at zero, hence we can infer that it is holomorphic in $\C \backslash ([\I,\I \infty) \cup [-\I,-\I \infty))$.
+Here we plot the $n$-term Taylor approximation of $\E^z$:
 
 
 \begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SpecialFunctions}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ApproxFun}@*)
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{asinh}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{exp{\_}n}@*) (*@\HLJLoB{=}@*) (*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{factorial}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLn{k}@*)(*@\HLJLp{)}@*) (*@\HLJLk{for}@*) (*@\HLJLn{k}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{0}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{20..20}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{20..20}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{exp{\_}n}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLni{10}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture2_1_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture2_5_1.pdf}
 
-The following example $\sqrt{z-1} \sqrt{z+1}$ is analytic in ${\mathbb C}\backslash [-1,1]$ and will be returned to:
+This shows that we accurately approximate the function $\E^z$ inside a disk, and this disk grows with \texttt{n}. 
+
+And now the $n$-term Taylor approximation to $1/(1-z)$:
 
 
 \begin{lstlisting}
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{4..4}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{geometric{\_}n}@*) (*@\HLJLoB{=}@*) (*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLn{k}@*) (*@\HLJLk{for}@*) (*@\HLJLn{k}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{0}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{geometric{\_}n}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLni{20}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture2_2_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture2_6_1.pdf}
 
-\subsection{Contours}
-\textbf{Definition (Contour)} A \emph{contour}  is a continuous \& piecewise-continuously differentiable function $\gamma : [a,b] \rightarrow {\mathbb C}$.
-
-\textbf{Definition (Simple)} A \emph{simple contour} is a contour that is 1-to-1.
-
-\textbf{Definition (Closed)} A \emph{closed contour} is a contour such that $\gamma(a) = \gamma(b)$
-
-\emph{Examples of contours}
-
-\begin{itemize}
-\item[1. ] Line segment $[a,b]$ is a simple contour, with $\gamma(t) =  t$
-
-
-\item[2. ] Arc from $re^{ia}$ to $re^{ib}$ is a simple contour, with $\gamma(t) =  re^{i t}$
-
-
-\item[3. ] Circle of radius $r$ is a closed simple contour, with $\gamma(t) = re^{i t}$ and $a = -\pi$, $b = \pi$
-
-
-\item[4. ] \[
-\gamma(t) = \cos (t+i)^2
-\]
-defines a contour that is not simple or closed
-
-
-\item[5. ] \[
-\gamma(t) = e^{i t} + e^{2i t}
-\]
-for $[a,b] = [-\pi,\pi]$ defines a contour that is closed but not simple
-
-\end{itemize}
-Here's an example of a closed contour that is not simple:
+And here the $n$-term Taylor approximation of $\sqrt z$ near $z_0$:
 
 
 \begin{lstlisting}
-(*@\HLJLn{a}@*)(*@\HLJLp{,}@*)(*@\HLJLn{b}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{\ensuremath{\pi}}@*)
-(*@\HLJLn{tt}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{range}@*)(*@\HLJLp{(}@*)(*@\HLJLn{a}@*)(*@\HLJLp{,}@*) (*@\HLJLn{stop}@*)(*@\HLJLoB{=}@*)(*@\HLJLn{b}@*)(*@\HLJLp{,}@*) (*@\HLJLn{length}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1000}@*)(*@\HLJLp{)}@*)
+(*@\HLJLk{function}@*) (*@\HLJLnf{sqrt{\_}n}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)}@*) 
+    (*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)}@*)
+    (*@\HLJLn{c}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.5}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{ret}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)}@*)
+    (*@\HLJLk{for}@*) (*@\HLJLn{k}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)
+        (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{c}@*)
+        (*@\HLJLn{c}@*) (*@\HLJLoB{*=}@*) (*@\HLJLoB{-}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)}@*)
+    (*@\HLJLk{end}@*)
+    (*@\HLJLn{ret}@*)
+(*@\HLJLk{end}@*)
 
-(*@\HLJLn{\ensuremath{\gamma}}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{t}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)
-
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{real}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{tt}@*)(*@\HLJLp{)),}@*) (*@\HLJLn{imag}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{tt}@*)(*@\HLJLp{));}@*) (*@\HLJLn{ratio}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{z\ensuremath{\_0}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.3}@*)
+(*@\HLJLn{n}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{40}@*)
+(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{sqrt{\_}n}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{))}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture2_3_1.pdf}
-
-\subsection{Contour integrals}
-\textbf{Definition (Contour integral)} The \emph{contour integral} over $\gamma$ is defined by
-
-\[
-\int_\gamma f(z) dz := \int_a^b f(\gamma(t)) \gamma'(t) dt
-\]
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.}@*)(*@\HLJLp{,(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic!}@*)
-
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{domain}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{);}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ratio}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture2_4_1.pdf}
-
-\begin{lstlisting}
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{this}@*) (*@\HLJLcs{means}@*) (*@\HLJLcs{contour}@*) (*@\HLJLcs{integral}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
--1.2485382363935424 + 1.949326343919058im
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLn{g}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{t}@*)(*@\HLJLoB{->}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{),}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{..}@*) (*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*) (*@\HLJLn{g}@*) (*@\HLJLp{)}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{this}@*) (*@\HLJLcs{is}@*) (*@\HLJLcs{standard}@*) (*@\HLJLcs{integral}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
--1.2485382363935429 + 1.9493263439190578im
-\end{lstlisting}
-
-
-An important property of a contour is its \emph{arclength}:
-
-\textbf{Definition (Arclength)} The \emph{arclength} of $\gamma$ is defined as
-
-\[
-    {\cal L}(\gamma) := \int_a^b |\gamma'(t)| dt
-\]
-A very useful result is that we can use the maximum and arclength to bound integrals:
-
-\textbf{Proposition (ML)} Let $f : \gamma \rightarrow {\mathbb C}$ and 
-
-\[
-        M = \sup_{z \in \gamma} |f(z)|
-\]
-Then
-
-\[
-\left|\int_\gamma f(z) dz \right| \leq M {\cal L}(\gamma)
-\]
-\subsection{Cauchy's theorem}
-\textbf{Proposition} If $f(z)$ is holomorphic on $\gamma$, then $\int_\gamma f'(z) dz = f(\gamma(b)) - f(\gamma(a))$
-
-\textbf{Theorem (Cauchy)} If $f$ is holomorphic inside and on a closed contour $\gamma$, then  $\oint_\gamma f(z) dz = 0$
-
-\subsubsection{Demonstration}
-The following show that the contour of integration does not affect the integral for holomorphic functions:
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.}@*)(*@\HLJLp{,(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*) (*@\HLJLcs{{\#}integrate}@*) (*@\HLJLcs{over}@*) (*@\HLJLcs{an}@*) (*@\HLJLcs{arc}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLp{,}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(-2.1779795225909058 + 0.8414709848078968im, -2.177979522590906 + 0.8414709
-848078968im)
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{integrate}@*) (*@\HLJLcs{over}@*) (*@\HLJLcs{a}@*) (*@\HLJLcs{line}@*) (*@\HLJLcs{segment}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)  (*@\HLJLp{,}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(-2.1779795225909053 + 0.8414709848078966im, -2.177979522590907 + 0.8414709
-848078968im)
-\end{lstlisting}
-
-
-The following demonstrates Cauchy's theorem, integration over a closed contour equals zero:
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*)  (*@\HLJLcs{Holomorphic!}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-2.9644937254112756e-17 - 1.4872544363724962e-16im
-\end{lstlisting}
-
-
-If \texttt{f} is not holomorphic, it doesn't apply:
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic}@*) (*@\HLJLcs{at}@*) (*@\HLJLcs{zero}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
--9.96316757509274e-16 + 6.283185307179588im
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Not}@*) (*@\HLJLcs{holomorphic}@*) (*@\HLJLcs{anywhere!}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
--3.3420237696193494e-16 + 3.141592653589793im
-\end{lstlisting}
-
+\includegraphics[width=\linewidth]{figures/Lecture2_7_1.pdf}
 
 
 \end{document}

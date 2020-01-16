@@ -49,7 +49,7 @@
 \def\qqqquad{\qquad\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
-\def\Res_#1{\underset{#1}{\rm Res}}\,
+\def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
 
 
@@ -81,6 +81,7 @@
 \def\sopmatrix#1{ \begin{pmatrix}#1\end{pmatrix} }
 
 \def\endash{–}
+\def\mdblksquare{\blacksquare}
 
 \begin{document}
 

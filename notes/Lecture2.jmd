@@ -1,7 +1,7 @@
 __M3M6: Methods of Mathematical Physics__
 
 Dr. Sheehan Olver
-<br>
+
 s.olver@imperial.ac.uk
 
 
@@ -37,7 +37,11 @@ Cauchy's integral formula allows us to recover a function from knowlerdge of its
 
 **Theorem (Cauchy integral formula)** Suppose $f$ is holomorphic inside and on a positively oriented, simple, closed contour $\gamma$. Then
 $$
-f(z) = {1 \over 2 \pi i} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta$$
+f(z) = \begin{cases} 
+{1 \over 2 \pi \I} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta & z \hbox{ inside $\gamma$} \\
+0 & otherwise 
+\end{cases}
+$$
 
 **Sketch of Proof**
 
@@ -54,13 +58,12 @@ By continuity, the second integral tends to zero.
 
 ◼
 
-
-
 Not only do we know $f$, a consequence of this formula is  that $f$ is infinitely-differentiable by differentiating the integrand with respect to $z$, and we know all its values:
 
 **Corollary (Cauchy integral formula for derivatives)** Suppose $f$ is holomorphic inside and on a positively oriented, simple, closed contour $\gamma$. Then $f$ is infinitely-differentiable at $z$ and 
 $$
-f^{(k)}(z) = {k! \over 2 \pi i} \oint_\gamma {f(\zeta) \over (\zeta - z)^{k+1}} d \zeta$$
+f^{(k)}(z) = {k! \over 2 \pi i} \oint_\gamma {f(\zeta) \over (\zeta - z)^{k+1}} d \zeta
+$$
 
 ## Taylor series
 
@@ -68,9 +71,9 @@ f^{(k)}(z) = {k! \over 2 \pi i} \oint_\gamma {f(\zeta) \over (\zeta - z)^{k+1}} 
 **Theorem (Taylor)** Suppose $f$ is holomorphic in a ball $B(z_0,r)$. Then inside this ball we have
 $$
     f(z) = \sum_{k=0}^\infty {f^{(k)}(z_0) \over k!} (z-z_0)^k
-$$    
+$$
 
-** Sketch of proof **
+**Sketch of proof**
 
 For simplicity, take $z_0 = 0$. 
 This result follows from approximating the Cauchy kernel $1/(z - \zeta)$ by its geometric series.
@@ -80,13 +83,17 @@ $$
 $$
 Therefore
 $$
-{1 \over z - \zeta} = {1 \over -\zeta} {1 \over 1 - z/\zeta} = {1 \over - \zeta} (1 + (z/\zeta) + \cdot + (z/\zeta)^n + {(z/\zeta)^{n+1} \over 1 - z/zeta}})
+{1 \over z - \zeta} = {1 \over -\zeta} {1 \over 1 - z/\zeta} = {1 \over - \zeta} (1 + (z/\zeta) + \cdot + (z/\zeta)^n + {(z/\zeta)^{n+1} \over 1 - z/\zeta})
 $$
 Thus for $C_r$, a circle of radius $r$, we have
 $$
-f(z) = {1 \over 2 \pi \I} \oint_{C_r} {f(\zeta) \over \zeta - z} \D \zeta = 
-\sum_{k=0}^n z^n {1 \over 2 \pi \I}  \oint_{C_r} f(\zeta) \zeta^{-n-1} \D \zeta + {1 \over 2 \pi \I} \oint_{C_r} f(\zeta)  {(z/\zeta)^{n+1} \over 1 - z/zeta}} \D \zeta =
+\begin{align*}
+f(z) &= {1 \over 2 \pi \I} \oint_{C_r} {f(\zeta) \over \zeta - z} \D \zeta \\
+&= 
+\sum_{k=0}^n z^n {1 \over 2 \pi \I}  \oint_{C_r} f(\zeta) \zeta^{-n-1} \D \zeta + {1 \over 2 \pi \I} \oint_{C_r} f(\zeta)  {(z/\zeta)^{n+1} \over 1 - z/\zeta} \D \zeta \\
+&=
 \sum_{k=0}^n {f^{(k)}(0) \over k!} z^n + R_n(z)
+\end{align*}
 $$
 Because $|z| < r$ we have $|z/\zeta| < 1$ which implies the integrand in $R_n(z)$ uniformly tends to zero, i.e., $R_n(z) \rightarrow 0$. 
 
@@ -98,6 +105,7 @@ Because $|z| < r$ we have $|z/\zeta| < 1$ which implies the integrand in $R_n(z)
 
 Here we see numerically that $1/z$ is positively oriented:
 ```julia 
+using ApproxFun, Plots, ComplexPhasePortrait, SpecialFunctions
 sum(Fun(z -> 1/z, Circle()))/(2π*im)
 ```
 This shows numerically that we can calculate $\E^{0.1}$ by integrating over a circle that surrounds $z = 0.1$:
@@ -130,22 +138,22 @@ For Taylor series, we consider the following examples:
 
 Here we plot the $n$-term Taylor approximation of $\E^z$:
 ```julia
-expⁿ = (n,z) -> sum(z^k/factorial(1.0k) for k=0:n)
-phaseplot(-20..20, -20..20, z -> expⁿ.(10,z))
+exp_n = (n,z) -> sum(z^k/factorial(1.0k) for k=0:n)
+phaseplot(-20..20, -20..20, z -> exp_n.(10,z))
 ```
 This shows that we accurately approximate the function $\E^z$ inside
 a disk, and this disk grows with `n`. 
 
 And now the $n$-term Taylor approximation to $1/(1-z)$:
 ```julia
-geometricⁿ = (n,z) -> sum(z^k for k=0:n)
+geometric_n = (n,z) -> sum(z^k for k=0:n)
 
-phaseplot(-2..2, -2..2, z -> geometricⁿ.(20,z))
+phaseplot(-2..2, -2..2, z -> geometric_n.(20,z))
 ```
 
 And here the $n$-term Taylor approximation of $\sqrt z$ near $z_0$:
 ```julia
-function sqrtⁿ(n,z,z₀) 
+function sqrt_n(n,z,z₀) 
     ret = sqrt(z₀)
     c = 0.5/ret*(z-z₀)
     for k=1:n
@@ -155,8 +163,7 @@ function sqrtⁿ(n,z,z₀)
     ret
 end
 
-
 z₀ = 0.3
 n = 40
-phaseplot(-2..2, -2..2, z -> sqrtⁿ.(n,z,z₀))
+phaseplot(-2..2, -2..2, z -> sqrt_n.(n,z,z₀))
 ```
