@@ -1,0 +1,270 @@
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+
+
+# Lecture 3: Laurent series and residue calculus
+
+This lecture we cover
+
+1. Fourier and Laurent series
+2. Contour integrals and Laurent coefficients
+2. Isolated singularities
+    - Residue at a point
+2. Contour integrals in domains with multiple holes
+    - The residue theorem
+3. Calculating integrals
+    - Application: Trigonometric integrals with rational functions
+
+
+## Fourier and Laurent series
+
+**Definition (Fourier series)** On $[-\pi, \pi)$,  _Fourier series_ is an expansion of the form
+$$
+    g(\theta) = \sum_{k=-\infty}^\infty g_k \E^{i k \theta}
+$$
+where
+$$
+g_k = {1\over 2 \pi} \int_{-\pi}^\pi g(\theta) \E^{-i k \theta} d \theta
+$$
+
+**Definition (Laurent series)** In the complex plane, Laurent series around $z_0$ is an expansion of the form 
+$$
+    f(z) = \sum_{k=-\infty}^\infty f_k (z-z_0)^k 
+$$
+
+**Lemma (Fourier series = Laurent series)** On a circle in the complex plane 
+$$
+    C_r = \{z_0 + re^{i \theta} : -\pi \leq \theta < \pi \},
+$$
+Laurent series of $f(z)$ around $z_0$ converges for $z \in C_r$ if the Fourier series of $g(\theta) = f(z_0 + r e^{i \theta})$ converges, and the coefficients are given by
+
+$$
+f_k = {g_k \over r^k} = {1 \over 2 \pi i} \oint_{C_r} {f(\zeta) \over (\zeta - z_0)^{k+1}} d \zeta.
+$$
+
+**Proof**  This follows immediately from the change of variables $z = r \E^{\I \theta} + z_0$. ■
+
+Interestingly, analytic properties of $f$ can be used to show decaying properties in $g$:
+
+
+## Residue on a circle
+
+
+In this course, we will _always_ think of Laurent series living on a circle 
+$C_r(z_0) = \{z : |z-z_0| = r \}$. 
+That is,
+$$
+    f(z) \approx \sum_{k=-\infty}^\infty f_k (z-z_0)^k
+$$
+
+for $z \in C_r(z_0)$.  
+
+**Proposition (Residue on a circle)** 
+Suppose the Laurent series is absolutely summable on $C_r(z_0)$. Then 
+$$
+\oint_{C_r(z_0)} f(z) dz = 2 \pi \I f_{-1}
+$$
+We refer to $f_{-1}$ as the residue over $C_r(z_0)$:
+$$
+\Res_{C_r(z_0)} f(z) := f_{-1} = {1 \over 2 \pi \I} \int_{C_r} f(z) \D z. 
+$$
+
+*Example* For all $0 < r < \infty$, 
+$$
+\oint_{C_r} {1 \over z} dz = 2 \pi \I
+$$
+
+When $f$ is holomorphic in a neighbourhood of the circle, we can extend it to an annulus 
+(like Taylor series and disks):
+
+**Proposition (Laurent series in an annulus)**
+Suppose $f$ is holomorphic in an open annulus $A_{\rho R}(z_0) = \{z : \rho  < | z - z_0| < R\}$. 
+Then the Laurent series converges uniformly in  any closed annulus inside $A_{\rho R}$
+
+
+_Proposition (Residue on a circle)_ holds true regardless of the radius, that is, the 
+definition of $f_{-1}$ only depends on the annulus of analyticity:
+$$
+\Res_{A_{\rho R}(z_0)} f(z) := f_{-1} = {1 \over 2 \pi \I} \int_{C_r} f(z) \D z. 
+$$
+for any $\rho < r < R$. 
+
+## Isolated singularities
+
+**Definition (isolated singularity)** $f$ has an  _isolated singularity at_ $z_0$ if it is holomorphic in an open annulus with inner radius 0: 
+$$
+A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}.
+$$
+
+
+**Definition (Removable singularity)** $f$ has a _removable singularity at_ $z_0$ if it has an isolated singularity at $z_0$ and all negative terms in the Laurent series in $A_{0R}(z_0)$ are zero:
+$$
+f(z) = f_0 + f_1 (z-z_0) + f_2 (z-z_0)^2 + \cdots
+$$
+Equivalently, $f$ has a removable singularity at $z_0$ if it is bounded as $z \rightarrow z_0$. 
+
+An example would be a function like $f(z) = (\E^z - 1) / z$, which is analytic for $z \neq 0$ but is 
+not defined for $z = 0$. However, this singularity is artificial: we have from its Taylor series
+that 
+$$
+f(z) = (\E^{z} - 1)/z = (z + z^2 / 2! + \cdots)/z = 1 + z/2! + \cdots
+$$
+hence $f(z) \rightarrow 1$. We can therefore remove the singularity by taking $f_0$, the zeroth
+Laurent coefficent:
+$$
+\tilde f(z) = \begin{cases}
+    (\E^z - 1)/ z & z \neq 0 \\
+    1 & z = 0
+    \end{cases}
+$$
+This construction is general:
+
+**Proposition (Removing a removable singularity)** If  $f$ has a removable singularity at $z_0$ and $f_0$
+is the zeroth Laurent coefficient
+$$
+    f_0 := {1 \over 2 \pi \I} \oint_{C_r(z_0)} {f(z) \over z} \D z
+$$
+for $r$ sufficiently small,
+then
+$$
+\tilde f(z) = \begin{cases} f_0 & z = z_0 \\
+                                f(z) & 0 < |z-z_0| < R
+                                \end{cases}
+$$
+is analytic in the disk $B_R(z_0) = \{ z : |z-z_0| < R \}$, with a convergent Taylor series. Hence the name.
+
+
+
+
+**Definition (simple pole)** $f$ has a  _simple pole at_ $z_0$ if it is holomorphic in 
+$$
+  A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}
+$$
+with only one negative term in the Laurent series in $A_{0R}(z_0)$:
+$$
+  f(z) = {f_{-1} \over z - z_0}  + f_0 + f_1 (z - z_0) + \cdots
+$$
+where $f_{-1} \neq 0$.
+
+**Definition (higher order pole)** $f$ has a  _pole of order $N$ at_ ${z_0}$ if it is holomorphic in 
+$$
+ A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}
+$$
+with only $N$ negative coefficients in the Laurent series:
+$$
+ f(z) = {f_{-N} \over (z - z_0)^N}  + {f_{1-N} \over (z - z_0)^{N-1}} +  \cdots + {f_{-1} \over z-z_0} + f_0 + f_1 (z-z_0) + \cdots
+$$
+where $f_{-N} \neq 0$.
+
+
+
+**Definition (essential singularity)** $f$ has an _essential singularity at_ $z_0$ if it is holomorphic in $A_{0R}(z_0)$ and has an infinite number of negative Laurent coefficients.
+
+An essential singularity is complicated but isolated, hence
+we can still calculate the integrals using Residue calculus.
+
+
+### Residue at a point
+
+**Definition (Residue at a point)** Suppose $f$ has an isolated singularity at $z_0$, and is analytic in the annulus $A_{0R}(z_0)$ for some $R > 0$. Then we define the _residue at_ $z_0$ as
+$$
+{\underset{z = z_0}{\rm Res}}\, f(z) = {\underset{A_{0R}}{\rm Res}}\, f(z) = f_{-1}
+$$
+where $f_{-1}$ is the first negative coefficent of the Laurent series in $A_{0R}(z_0)$, that is, integrating over $C_r$ for any $0 < r < R$. 
+
+**Proposition (Residue of ratio of analytic functions with simple pole)** Suppose
+$$
+f(z) = {A(z) \over B(z)}
+$$
+and $A$, $B$ are analytic/holomorphic in a disk of radius $R$ around $z_0$ and that $B$ has only a single zero at $z_0$:
+$$
+\begin{align*}
+A(z) = A_0 + A_1(z-z_0) + \cdots \cr
+B(z) = B_1(z-z_0) + \cdots
+\end{align*}
+$$
+Then ${\underset{z = z_0}{\rm Res}}\, f(z) = {A_0 \over B_1}$
+
+**Exercise (Residue of ratio of analytic functions with higher order  poles)** What is the residue at $z_0$ if $B$ has a higher order zero: $B(z) = B_N (z-z_0)^N + \cdots$?
+
+## Contour integrals on domains with multiple holes
+
+
+Consider the following example:
+
+$$
+    {\sqrt{z-1}\sqrt{z+1} \over z^2 + 4}
+$$
+
+We still have the contour integral over a circle, and so _Proposition (Residue on a circle)_ still holds true for $r > 2$. But we can also deform the contour into three contours:
+
+```julia
+using ApproxFun, Plots, ComplexPhasePortrait
+f = z -> sqrt(z-1)sqrt(z+1)/(z^2+4)
+
+Γ = Circle(1.1) ∪ Circle(2.0im,0.1) ∪ Circle(-2.0im,0.1)
+phaseplot(-2..2, -3..3, f)
+plot!(Γ; color=:black, label=:contour, arrow=true, linewidth=1.5)
+```
+
+```julia
+sum(Fun(f, Circle(2.1))), sum(Fun(f, Γ))
+```
+
+Thus we can sum over three residues.
+
+### Residue theorem
+
+**Theorem (Cauchy's Residue Theorem)** Let $f$ be holomprohic inside and on a simple closed, positively oriented contour $\gamma$ except at isolated points $z_1, \ldots, z_r$ inside $\gamma$. Then
+
+$$
+\oint_\gamma f(z) dz = 2 \pi i \sum_{j=1}^r {\underset{z = z_j}{\rm Res}}\, f(z)
+$$
+
+## Calculating integrals
+
+We can use the Residue theorem to calculate "hard" integrals.
+First, two trivial examples: consider
+$$
+f(z) = {\E^z \over z (z+2)}
+$$
+This has two simple poles, one at $z=0$ and one at $z = -2$, as seen clearly from the 
+phase portrait:
+```julia
+f = z -> exp(z)/(z*(z+2))
+phaseplot(-3..3, -3..3, f)
+```
+Consider integrating over $C_3$, a circle of radius 3 centred at the origin. 
+The residues are
+$$
+\begin{align*}
+\Res_{z=0} f(z) = \Res_{z=0}  {1 \over z} {\E^z \over z+2} = {1 \over 2} \\
+\Res_{z=-2} f(z) = \Res_{z=-2}  {1 \over z+2} {\E^z \over z} = -{\E^{-2} \over 2}
+\end{align*}
+$$
+Thus the integral must be equal to $2 \pi \I (1/2 - \E^{-2} /2)$. 
+This matches a numerical approximation of the integral 
+```julia
+sum(Fun(f, Circle(3.0))), 2π*im*(1/2 - exp(-2)/2)
+```
+A more complicated example is 
+$$
+f(z) = {\E^z \over z^2 (z+2)}
+$$
+which has a double pole at $z = 0$. We find the residue by expanding in Taylor series:
+$$
+ {1 \over z^2} {\E^z \over z +2} = {1 \over  2 z^2} (1 + z + O(z^2)) (1 - z/2 + O(z^2)) =
+        {1 \over 2 z^2} + {1 \over 4 z} + O(1)
+$$
+That is,
+$$
+\Res_{z=0} f(z) = {1 \over 4} \qqand \Res_{z=-2} f(z) = {\E^{-2} \over 4}
+$$
+Again, residue calculus matches the numerical computation:
+```julia
+sum(Fun(z -> exp(z)/(z^2*(z+2)), Circle(3.0))), 2*pi*im * (1/4 + exp(-2)/4)
+```

@@ -199,7 +199,7 @@ This lecture we cover
 
 \end{itemize}
 
-\item[5. ] Calculated integrals
+\item[5. ] Calculating integrals
 
 \begin{itemize}
 \item Application: Trigonometric integrals with rational functions
@@ -225,44 +225,50 @@ g_k = {1\over 2 \pi} \int_{-\pi}^\pi g(\theta) \E^{-i k \theta} d \theta
 \textbf{Lemma (Fourier series = Laurent series)} On a circle in the complex plane 
 
 \[
-    \gamma_r = \{z_0 + re^{i \theta} : -\pi \leq \theta < \pi \},
+    C_r = \{z_0 + re^{i \theta} : -\pi \leq \theta < \pi \},
 \]
 Laurent series of $f(z)$ around $z_0$ converges for $z \in C_r$ if the Fourier series of $g(\theta) = f(z_0 + r e^{i \theta})$ converges, and the coefficients are given by
 
 \[
-f_k = {g_k \over r^k} = {1 \over 2 \pi i} \oint_{\gamma_r} {f(\zeta) \over (\zeta - z_0)^{k+1}} d \zeta.
+f_k = {g_k \over r^k} = {1 \over 2 \pi i} \oint_{C_r} {f(\zeta) \over (\zeta - z_0)^{k+1}} d \zeta.
 \]
 \textbf{Proof}  This follows immediately from the change of variables $z = r \E^{\I \theta} + z_0$. \ensuremath{\blacksquare}
 
 Interestingly, analytic properties of $f$ can be used to show decaying properties in $g$:
 
 \subsection{Residue on a circle}
-In this course, we will \emph{always} think of Laurent series living on a circle \$ {\textbackslash}gamma\emph{r(z}0) = \{z : |z-z\_0| = r \}\$. That is,
+In this course, we will \emph{always} think of Laurent series living on a circle  $C_r(z_0) = \{z : |z-z_0| = r \}$.  That is,
 
 \[
     f(z) \approx \sum_{k=-\infty}^\infty f_k (z-z_0)^k
 \]
-for $z \in \gamma_r(z_0)$.  
+for $z \in C_r(z_0)$.  
 
-\textbf{Proposition (Residue on a circle)}  Suppose the Laurent series is absolutely summable on $\gamma_r$. Then 
+\textbf{Proposition (Residue on a circle)}  Suppose the Laurent series is absolutely summable on $C_r(z_0)$. Then 
 
 \[
-\oint_{\gamma_r} f(z) dz = 2 \pi \I f_{-1}
+\oint_{C_r(z_0)} f(z) dz = 2 \pi \I f_{-1}
 \]
-We refer to $f_{-1}$ as the residue over $\gamma_r$.
+We refer to $f_{-1}$ as the residue over $C_r(z_0)$:
 
+\[
+\Res_{C_r(z_0)} f(z) := f_{-1} = {1 \over 2 \pi \I} \int_{C_r} f(z) \D z. 
+\]
 \emph{Example} For all $0 < r < \infty$, 
 
 \[
-\oint_{\gamma_r} {1 \over z} dz = 2 \pi \I
+\oint_{C_r} {1 \over z} dz = 2 \pi \I
 \]
-When $f$ is holomorphic in a neighbourhood of the circle, we can extend it to an annulus (like Taylor series and disks):
+When $f$ is holomorphic in a neighbourhood of the circle, we can extend it to an annulus  (like Taylor series and disks):
 
 \textbf{Proposition (Laurent series in an annulus)} Suppose $f$ is holomorphic in an open annulus $A_{\rho R}(z_0) = \{z : \rho  < | z - z_0| < R\}$.  Then the Laurent series converges uniformly in  any closed annulus inside $A_{\rho R}$
 
-\textbf{Proof} \emph{Exercise}.  Hint: use the decay in the Laurent coefficients $f_k$ from last lecture.
+\emph{Proposition (Residue on a circle)} holds true regardless of the radius, that is, the  definition of $f_{-1}$ only depends on the annulus of analyticity:
 
-\emph{Proposition (Residue on a circle)} holds true regardless of the radius.
+\[
+\Res_{A_{\rho R}(z_0)} f(z) := f_{-1} = {1 \over 2 \pi \I} \int_{C_r} f(z) \D z. 
+\]
+for any $\rho < r < R$. 
 
 \subsection{Isolated singularities}
 \textbf{Definition (isolated singularity)} $f$ has an  \emph{isolated singularity at} $z_0$ if it is holomorphic in an open annulus with inner radius 0: 
@@ -275,28 +281,29 @@ A_{0R}(z_0) = \{z : 0 < |z - z_0| < R \}.
 \[
 f(z) = f_0 + f_1 (z-z_0) + f_2 (z-z_0)^2 + \cdots
 \]
+Equivalently, $f$ has a removable singularity at $z_0$ if it is bounded as $z \rightarrow z_0$. 
 
-\begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLp{(}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)
-(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
+An example would be a function like $f(z) = (\E^z - 1) / z$, which is analytic for $z \neq 0$ but is  not defined for $z = 0$. However, this singularity is artificial: we have from its Taylor series that 
 
-\begin{lstlisting}
-NaN
-\end{lstlisting}
+\[
+f(z) = (\E^{z} - 1)/z = (z + z^2 / 2! + \cdots)/z = 1 + z/2! + \cdots
+\]
+hence $f(z) \rightarrow 1$. We can therefore remove the singularity by taking $f_0$, the zeroth Laurent coefficent:
 
+\[
+\tilde f(z) = \begin{cases}
+    (\E^z - 1)/ z & z \neq 0 \\
+    1 & z = 0
+    \end{cases}
+\]
+This construction is general:
 
-No singularity appears when plotting \texttt{f}:
+\textbf{Proposition (Removing a removable singularity)} If  $f$ has a removable singularity at $z_0$ and $f_0$ is the zeroth Laurent coefficient
 
-
-\begin{lstlisting}
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_2_1.pdf}
-
-\textbf{Proposition (Removing a removable singularity)} If  $f$ has a removable singularity at $z_0$, then
+\[
+    f_0 := {1 \over 2 \pi \I} \oint_{C_r(z_0)} {f(z) \over z} \D z
+\]
+for $r$ sufficiently small, then
 
 \[
 \tilde f(z) = \begin{cases} f_0 & z = z_0 \\
@@ -304,14 +311,6 @@ No singularity appears when plotting \texttt{f}:
                                 \end{cases}
 \]
 is analytic in the disk $B_R(z_0) = \{ z : |z-z_0| < R \}$, with a convergent Taylor series. Hence the name.
-
-
-\begin{lstlisting}
-(*@\HLJLn{g}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{\ensuremath{\approx}}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{?}@*) (*@\HLJLni{1}@*) (*@\HLJLoB{:}@*) (*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLn{g}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_3_1.pdf}
 
 \textbf{Definition (simple pole)} $f$ has a  \emph{simple pole at} $z_0$ if it is holomorphic in 
 
@@ -337,44 +336,17 @@ with only $N$ negative coefficients in the Laurent series:
 \]
 where $f_{-N} \neq 0$.
 
-
-\begin{lstlisting}
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{3}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_4_1.pdf}
-
 \textbf{Definition (essential singularity)} $f$ has an \emph{essential singularity at} $z_0$ if it is holomorphic in $A_{0R}(z_0)$ and has an infinite number of negative Laurent coefficients.
 
-
-\begin{lstlisting}
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_5_1.pdf}
-
-Even though the singlarity is essential, we can still calculate the integrals using Residue calculus:
-
-
-\begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{())),}@*) 
-(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{Laurent}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{()))}@*)(*@\HLJLoB{.}@*)(*@\HLJLn{coefficients}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLp{]}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(-8.078182973046723e-16 + 6.283185307179586im, -8.078182973046723e-16 + 6.2
-83185307179586im)
-\end{lstlisting}
-
+An essential singularity is complicated but isolated, hence we can still calculate the integrals using Residue calculus.
 
 \subsubsection{Residue at a point}
 \textbf{Definition (Residue at a point)} Suppose $f$ has an isolated singularity at $z_0$, and is analytic in the annulus $A_{0R}(z_0)$ for some $R > 0$. Then we define the \emph{residue at} $z_0$ as
 
 \[
-{\underset{z = z_0}{\rm Res}}\, f(z) = f_{-1}
+{\underset{z = z_0}{\rm Res}}\, f(z) = {\underset{A_{0R}}{\rm Res}}\, f(z) = f_{-1}
 \]
-where $f_{-1}$ is the first negative coefficent of the Laurent series in $A_{0R}(z_0)$. 
+where $f_{-1}$ is the first negative coefficent of the Laurent series in $A_{0R}(z_0)$, that is, integrating over $C_r$ for any $0 < r < R$. 
 
 \textbf{Proposition (Residue of ratio of analytic functions with simple pole)} Suppose
 
@@ -402,6 +374,7 @@ We still have the contour integral over a circle, and so \emph{Proposition (Resi
 
 
 \begin{lstlisting}
+(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)
 (*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{4}@*)(*@\HLJLp{)}@*)
 
 (*@\HLJLn{\ensuremath{\Gamma}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{2.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{2.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)
@@ -409,7 +382,7 @@ We still have the contour integral over a circle, and so \emph{Proposition (Resi
 (*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Gamma}}@*)(*@\HLJLp{;}@*) (*@\HLJLn{color}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{black}@*)(*@\HLJLp{,}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{contour}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{,}@*) (*@\HLJLn{linewidth}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture3_7_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture3_1_1.pdf}
 
 \begin{lstlisting}
 (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{2.1}@*)(*@\HLJLp{))),}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLn{\ensuremath{\Gamma}}@*)(*@\HLJLp{))}@*)
@@ -430,25 +403,12 @@ Thus we can sum over three residues.
 \oint_\gamma f(z) dz = 2 \pi i \sum_{j=1}^r {\underset{z = z_j}{\rm Res}}\, f(z)
 \]
 \subsection{Calculating integrals}
-We can use the Residue theorem to calculate "hard" integrals.
+We can use the Residue theorem to calculate "hard" integrals. First, two trivial examples: consider
 
-First, two trivial examples:
-
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{))}@*)
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_9_1.pdf}
-
-\begin{lstlisting}
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{3.0}@*)(*@\HLJLp{)))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-7.874234295592502e-19 - 9.742139082662117e-17im
-\end{lstlisting}
+\[
+f(z) = {\E^z \over z (z+2)}
+\]
+This has two simple poles, one at $z=0$ and one at $z = -2$, as seen clearly from the  phase portrait:
 
 
 \begin{lstlisting}
@@ -456,110 +416,52 @@ First, two trivial examples:
 (*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture3_11_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture3_3_1.pdf}
 
-\begin{lstlisting}
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{3.0}@*)(*@\HLJLp{)))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
--5.073166565789438e-16 + 2.716424322002157im
-\end{lstlisting}
+Consider integrating over $C_3$, a circle of radius 3 centred at the origin.  The residues are
 
 
-\begin{lstlisting}
-(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-0.0 + 2.716424322002157im
-\end{lstlisting}
+\begin{align*}
+\Res_{z=0} f(z) = \Res_{z=0}  {1 \over z} {\E^z \over z+2} = {1 \over 2} \\
+\Res_{z=-2} f(z) = \Res_{z=-2}  {1 \over z+2} {\E^z \over z} = -{\E^{-2} \over 2}
+\end{align*}
+Thus the integral must be equal to $2 \pi \I (1/2 - \E^{-2} /2)$.  This matches a numerical approximation of the integral 
 
 
 \begin{lstlisting}
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{3.0}@*)(*@\HLJLp{)))}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{3.0}@*)(*@\HLJLp{))),}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
--2.313334476762615e-16 + 1.7833804925887144im
+(-5.073166565789438e-16 + 2.716424322002157im, 0.0 + 2.716424322002157im)
 \end{lstlisting}
 
 
-\begin{lstlisting}
-(*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{pi}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{4}@*) (*@\HLJLoB{+}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{4}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-0.0 + 1.783380492588715im
-\end{lstlisting}
-
-
-\subsection{Application: Integrals on the real line of rational functions}
-We can calculate integrals of the form 
+A more complicated example is 
 
 \[
-\int_0^{2 \pi} R(\cos \theta, \sin \theta) d \theta
+f(z) = {\E^z \over z^2 (z+2)}
 \]
-where $R(x,y)$ is rational by doing the change of variables $z = e^{i \theta}$ to reduce it to
+which has a double pole at $z = 0$. We find the residue by expanding in Taylor series:
 
 \[
-\oint_{\gamma_1} R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 i} \right) {d z \over i z}
+ {1 \over z^2} {\E^z \over z +2} = {1 \over  2 z^2} (1 + z + O(z^2)) (1 - z/2 + O(z^2)) =
+        {1 \over 2 z^2} + {1 \over 4 z} + O(1)
 \]
-\emph{Example} Consider
+That is,
 
 \[
-\int_0^{2\pi} {d \theta \over 1 - 2\rho \cos \theta + \rho^2}
+\Res_{z=0} f(z) = {1 \over 4} \qqand \Res_{z=-2} f(z) = {\E^{-2} \over 4}
 \]
-for $0 < \rho < 1$.
+Again, residue calculus matches the numerical computation:
 
 
 \begin{lstlisting}
-(*@\HLJLn{\ensuremath{\rho}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.5}@*)
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\theta}}@*) (*@\HLJLoB{->}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{cos}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\theta}}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{),}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{..}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{))}@*)
-
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*)  (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)))}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)
-
-(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\theta}}@*) (*@\HLJLoB{->}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{cos}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\theta}}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{),}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{..}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{)),}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\rho}}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)),}@*) (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{3.0}@*)(*@\HLJLp{))),}@*) (*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{pi}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{4}@*) (*@\HLJLoB{+}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{4}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
-(8.377580409572783, 8.377580409572781)
-\end{lstlisting}
-
-
-\subsection{Demonstration}
-\emph{Example} This works for functions not analytic:
-
-\[
-    \oint_{\gamma_1} (\sqrt{z-1}\sqrt{z+1})^3 dz 
-\]
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{3}@*)
-
-(*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{2..2}@*)(*@\HLJLp{,}@*) (*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
-(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.1}@*)(*@\HLJLp{);}@*) (*@\HLJLn{color}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{black}@*)(*@\HLJLp{,}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}contour"{}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{linewidth}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{,}@*) (*@\HLJLn{arrow}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{true}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture3_17_1.pdf}
-
-\begin{lstlisting}
-(*@\HLJLnd{@show}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Laurent}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.1}@*)(*@\HLJLp{))))}@*)  (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{integral}@*) (*@\HLJLcs{over}@*) (*@\HLJLcs{circle}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-sum(Fun(f, Laurent(Circle(1.1)))) = -1.2751605303035503e-16 + 2.35619449019
-23444im
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLn{f\ensuremath{\_-}\ensuremath{\_1}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{Laurent}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.1}@*)(*@\HLJLp{)))}@*)(*@\HLJLoB{.}@*)(*@\HLJLn{coefficients}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLp{]}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{numerical}@*) (*@\HLJLcs{Laurent}@*) (*@\HLJLcs{coefficient}@*)
-(*@\HLJLnd{@show}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{f\ensuremath{\_-}\ensuremath{\_1}}@*)(*@\HLJLp{;}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(2(*@\ensuremath{\pi}@*)) * im * f(*@\ensuremath{\_-}@*)(*@\ensuremath{\_1}@*) = -1.1592368457305e-16 + 2.141994991083949im
+(-2.313334476762615e-16 + 1.7833804925887144im, 0.0 + 1.783380492588715im)
 \end{lstlisting}
 
 

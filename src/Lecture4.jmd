@@ -1,0 +1,34 @@
+
+
+
+## Application: Integrals on the real line of rational functions
+
+We can calculate integrals of the form 
+$$
+\int_0^{2 \pi} R(\cos \theta, \sin \theta) d \theta
+$$
+where $R(x,y)$ is rational by doing the change of variables $z = e^{\I \theta}$ to reduce it to
+$$
+\oint_{C_1} R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {\D z \over \I z}
+$$
+
+
+*Example* Consider
+
+$$
+\int_0^{2\pi} {d \theta \over 1 - 2\rho \cos \theta + \rho^2}
+$$
+
+for $0 < \rho < 1$. We need to first locate the poles of 
+$$
+R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {1 \over \I z} = 
+
+$$
+```julia
+ρ = 0.5
+plot(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π))
+
+phaseplot(-2..2, -2..2, z ->  1/(1-ρ*(z+(z^(-1))) + ρ^2) * 1/(im*z))
+
+sum(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π)), 2π /(1-ρ^2)
+```
