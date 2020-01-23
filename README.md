@@ -29,3 +29,4 @@ See also previous lecture notes for previous course [M3M6 Methods of Mathematica
 2. [Cauchy's integral formula and Taylor series](notes/Lecture2.pdf)
 3. [Laurent series and residue calculus](notes/Lecture3.pdf)
 4. [Analyticity at infinity](notes/Lecture4.pdf)
+5. [Applications to real integrals](notes/Lecture5.pdf)

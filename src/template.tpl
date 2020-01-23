@@ -64,6 +64,10 @@
      \vcenter{\hbox{$#2#3$}}\kern-.5\wd0} }
 \def\ddashint{\Xint=}
 \def\dashint{\Xint-}
+% \def\dashint{{\int\!\!\!\!\!\!-\,}}
+\def\infdashint{\dashint_{-\infty}^\infty}
+
+
 
 
 \def\addtab#1={#1\;&=}

@@ -9,7 +9,7 @@ s.olver@imperial.ac.uk
 # Lecture 4: Applications to real integrals
 
 
-This lecture we cover
+This lecture we discuss applications of residue calculus. 
 
 1. Trigonometric integrals
 2. Integrals over real lines
@@ -21,16 +21,18 @@ This lecture we cover
 
 
 
-## Integrals on the real line of rational functions
+## Trigonomteric
 
 We can calculate integrals of the form 
 $$
-\int_0^{2 \pi} R(\cos \theta, \sin \theta) d \theta
+\int_0^{2 \pi} R(\cos \theta, \sin \theta) \D \theta
 $$
 where $R(x,y)$ is rational by doing the change of variables $z = e^{\I \theta}$ to reduce it to
 $$
 \oint_{C_1} R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {\D z \over \I z}
 $$
+This is rational in $z$ hence guaranteed to be amenable to residue calculus, provided we can find the
+poles of the denominator. 
 
 
 *Example* Consider
@@ -41,7 +43,7 @@ $$
 
 for $0 < \rho < 1$. We need to first locate the poles of 
 $$
-R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {1 \over \I z} = 
+f(z)= R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {1 \over \I z} = 
 { \I \over \rho z^2 - (1+\rho^2) z + \rho}
 $$
 This has poles at 
@@ -50,29 +52,71 @@ z = {1 + \rho^2 \pm \sqrt{(1+\rho^2)^2 - 4 \rho^2 } \over 2} = \rho, \rho^{-1}
 $$
 We can confirm this with a phase plot:
 ```julia
+using Plots, ComplexPhasePortrait
 ρ = 0.5
 phaseplot(-2..2, -2..2, z ->  1/(1-ρ*(z+(z^(-1))) + ρ^2) * 1/(im*z))
 ```
-Thus we can use either the interior or exterior residue calculus. 
+Thus we can use either the interior or exterior residue calculus.  Since we know then
+roots of the denominator of $f$ we determine that
+$$
+f(z) = {\I \over (z - \rho) (\rho z - 1)}
+$$
+Thus we find
+$$
+\int_0^{2\pi} {\D \theta \over 1 - 2\rho \cos \theta + \rho^2} = 2 \pi \I \Res_{z = \rho} f(z) = 
+-2 \pi \I \Res_{z = 1/\rho} f(z) = {2 \pi \over 1 - \rho^2}.
+$$
 
 
 
 ## Integrals over the real line
 
-Integrals on the real line are always to viewed as improper integrals:
+Integrals on the real line are typically viewed as improper integrals:
 
-$$ \int_{-\infty}^\infty f(x) \dx = \int_0^\infty f(x) \dx +\int_{-\infty}^0 f(x)\dx = \lim_{b \rightarrow \infty} \int_0^b f(x) \dx + \lim_{a \rightarrow -\infty} \int_a^0 f(x) \dx.$$
+$$
+\int_{-\infty}^\infty f(x) \dx = \int_0^\infty f(x) \dx +\int_{-\infty}^0 f(x)\dx = 
+\lim_{b \rightarrow \infty} \int_0^b f(x) \dx + \lim_{a \rightarrow -\infty} \int_a^0 f(x) \dx.
+$$
+
+It is convenient to work with a slightly different notion where we take the limit simealtaneously:
 
 **Definition (Principal value integral on the real line)** The _(Cauchy) principal value integral on the real line_ is defined as
 $$
 \infdashint f(x) \dx := \lim_{M\rightarrow \infty} \int_{-M}^M f(x) \dx
 $$
 
-**Proposition (Integability $\Rightarrow$ Prinipal value integrability)** If 
-$ \int_{-\infty}^\infty f(x) \dx < \infty$
-then 
-$$ \infdashint f(x) \dx = \int_{-\infty}^\infty f(x) \dx.$$
+This is a weaker concept:
 
+**Proposition (Integability $\Rightarrow$ Prinipal value integrability)** If 
+$\int_{-\infty}^\infty f(x) \dx < \infty$
+then 
+$$
+\infdashint f(x) \dx = \int_{-\infty}^\infty f(x) \dx.
+$$
+
+
+**Example**
+Consider integrating $1/(x-\I)$ with indefinite integral $\log(x-\I)$. We use the Definition
+$$
+\log z = \log |z| + \I \arg z
+$$
+where $- \pi \leq \arg z < \pi$. Thus we have
+$$
+\begin{align*}
+\lim_{b \rightarrow \infty} \log(b - \I) = \lim_{b \rightarrow \infty} \log|b - \I| = \infty \\
+\lim_{a \rightarrow -\infty} \log(a - \I) = \lim_{a \rightarrow -\infty} (\log|a - \I| + \I \arg(a-\I)) = \infty - \pi \I 
+\end{align*}
+$$
+Thus
+$$
+\int_{-\infty}^\infty {\dx \over x - \I} = \lim_{a \rightarrow -\infty} \br[\log(-\I) - \log(a-\I)] + 
+\lim_{b \rightarrow \infty} \br[\log(b-\I) - \log(-\I)] =  -\infty + \I \pi + \infty
+$$
+is undefined. On the other hand, the Cauchy principal value integral gives
+$$
+\infdashint {\dx \over x - \I} = \lim_{M \rightarrow \infty} \br[\log(M-\I) - \log(-M - \I)] =
+ \lim_{M \rightarrow \infty} \br[\log|M-\I| - \log|-M - \I|]  + \I \pi = \I \pi.
+$$
 
 ### Residue theorem on the real line
 
@@ -80,156 +124,190 @@ The real line doesn't have an _inside_ and _outside_, rather an _above_ and _bel
 
 **Definition (Upper/lower half plane)** Denote the upper/lower half plane by
 $$
+\begin{align*}
 {\mathbb H}^+ = \{z : \Re z > 0 \}  \\
 {\mathbb H}^- = \{z : \Re z < 0 \} 
+\end{align*}
 $$
 The closure is denoted
 $$
+\begin{align*}
 \bar{\mathbb H}^+ = {\mathbb H}^+ \cup {\mathbb R} \cup \{\infty\}  \\
 \bar{\mathbb H}^- = {\mathbb H}^- \cup {\mathbb R} \cup \{\infty\}
+\end{align*}
 $$
 
 **Theorem (Residue theorem on the real line)** Suppose $f : \bar {\mathbb H}^+ \backslash \{z_1,\ldots,z_r \} \rightarrow {\mathbb C}$ is holomorphic in ${\mathbb H}^+ \backslash \{z_1,\ldots,z_r \}$, where $\Re z_k > 0$, and  $\lim_{\epsilon \rightarrow 0} f(x + i \epsilon) = f(x)$ converges uniformly.  If 
-$$ \lim_{z \rightarrow \infty} z f(z) = 0
-$$ uniformly for $z \in \bar {\mathbb H}^+$, then
 $$
-\infdashint f(x) \dx = 2 \pi i \sum_{k=1}^r {\underset{z = z_k}{\rm Res}} \, f(z)
+\lim_{z \rightarrow \infty} z f(z) = 0
+$$
+uniformly for $z \in \bar {\mathbb H}^+$, then
+$$
+\infdashint f(x) \dx = 2 \pi \I \sum_{k=1}^r {\underset{z = z_k}{\rm Res}} \, f(z)
 $$
 Similarly, if the equivalent conditions hold in the lower half plane for $f : \bar{\mathbb H}^- \backslash \{z_1,\ldots,z_r \} \rightarrow {\mathbb C}$ then
 $$
-\infdashint f(x) \dx = -2 \pi i \sum_{k=1}^r {\underset{z = z_k}{\rm Res}} \, f(z)
+\infdashint f(x) \dx = -2 \pi \I \sum_{k=1}^r {\underset{z = z_k}{\rm Res}} \, f(z)
 $$
 
+**Proof** 
+This follows by considering  the contour $\gamma_R = [-R,R] \cup H_R$ where 
+$$
+H_R := \{ R \E^{\I \theta} : 0 \leq \theta \leq \pi \},
+$$
+that is, the upper-half circle. Classical residue calculus gives
+$$
+\oint_{\gamma_R} f(z) \dz =  2\pi \I \sum_{k=1}^r {\underset{z = z_k}{\rm Res}} \, f(z).
+$$
+provided $R$ is large enough to contain all singularities.
+But the decay in $f$ suffices to show that $\int_{H_R} f(z) \D z \rightarrow 0$ as $R \rightarrow \infty$. 
+The result therefore follows.
 
-Examples:
+■
 
+_Demonstration_
+```julia
 f = x -> x^2/(x^4+1)
 phaseplot(-3..3, -2..2, f)
-
+```
 This function has poles in the upper plane, but has sufficient decay that we can apply Residue theorem:
-
+```julia
+using ApproxFun
 z₁,z₂,z₃,z₄ = exp(im*π/4), exp(3im*π/4), exp(5im*π/4), exp(7im*π/4)
 
 res₁ = z₁^2 / ((z₁ - z₂)*(z₁ - z₃)*(z₁ - z₄) )
 res₂ = z₂^2 / ((z₂ - z₁)*(z₂ - z₃)*(z₂ - z₄) )
 
 2π*im*(res₁ + res₂), sum(Fun(f, Line()))
-
+```
 We can also apply Resiude theorem in the lower-half plane, and we get the same result:
-
+```julia
 res₃ = z₃^2 / ((z₃ - z₁)*(z₃ - z₂)*(z₃ - z₄) )
 res₄ = z₄^2 / ((z₄ - z₁)*(z₄ - z₃)*(z₄ - z₂) )
 
 -2π*im*(res₃ + res₄), sum(Fun(f, Line()))
+```
 
 ### Cauchy's integral formula on the real line
 
 An immediate consequence of the Residue theorem is Cauchy's integral formula on the real line:
 
 **Theorem (Cauchy's integral formula on the real line)** Suppose $f : \bar {\mathbb H}^+  \rightarrow {\mathbb C}$ is holomorphic in ${\mathbb H}^+ $, and  $\lim_{\epsilon \rightarrow 0} f(x + i \epsilon) = f(x)$ converges uniformly.  If 
-$$ 
+$$
 \lim_{z \rightarrow \infty} f(z) = 0
-$$ 
+$$
 uniformly for $z \in \bar {\mathbb H}^+$, then
 $$
-f(z) = {1 \over 2 \pi i} \infdashint {f(x) \over x - z} dx
+f(z) = {1 \over 2 \pi \I} \infdashint {f(x) \over x - z} dx
 $$
 for all  $z \in {\mathbb H}^+$.
 
 
 _Examples_ Here is a simple example of $f(x) = {x^2 \over (x+ i)^3}$, which is analytic in the upper half plane:
-
+```julia
 f = x -> x^2/(x+im)^3
 z = 2.0+2.0im
 sum(Fun(x-> f(x)/(x - z), Line()))/(2π*im) - f(z)
-
-Evaluating in lower half plane doesn't work b ecause it has a pole there:
-
+```
+Evaluating in lower half plane doesn't work because it has a pole there:
+```julia
 f = x -> x^2/(x+im)^3
 z = 2.0-2.0im
 sum(Fun(x-> f(x)/(x - z), Line()))/(2π*im) , f(z)
-
+```
 But does for a function analytic in the lower half plane (with a minus sign):
-
+```julia
 f = x -> x^2/(x-im)^3
 z = 2.0-2.0im
 -sum(Fun(x-> f(x)/(x - z), Line()))/(2π*im) , f(z)
-
+```
 It also works for functions with exponential decay in the upper-half plane:
-
+```julia
 f = x -> exp(im*x)/(x+im)
 z = 2 + 2im
 sum(Fun(x-> f(x)/(x - z), -500 .. 500))/(2π*im) - f(z)
-
+```
 This is difficult as a real integral as the integrand is very oscillatory:
-
+```julia
 xx = -200:0.1:200
 plot(xx,real.(f.(xx)))
-
+```
 An equivalent result holds in the negative real axis, but be careful:
-
+```julia
 z = -2-im
 f = x -> exp(im*x)/(x+im)
 sum(Fun(x-> f(x)/(x - z), -500 .. 500))/(2π*im)
-
+```
+```julia
 z = -2-im
 f = x -> exp(im*x)/(x-im)
 sum(Fun(x-> f(x)/(x - z), -500 .. 500))/(2π*im), f(z)
-
+```
+```julia
 z = -2-im
 f = x -> exp(-im*x)/(x-im)
 -sum(Fun(x-> f(x)/(x - z), -500 .. 500))/(2π*im), f(z)
-
-### Jordan's lemma
+```
+### Fourier transforms and Jordan's lemma
 
 The case of calculating
 $$
-    \int_{-\infty}^\infty e^{i \omega x} g(x) dx
-$$ 
-is important because it is the Fourier transform of $g(x)$. Provided $g$ is defined in the upper half plane and $\omega > 0$, $f(z) = e^{i \omega z} g(z)$  has exponential decay.
+    \int_{-\infty}^\infty e^{\I \omega x} g(x) dx
+$$
+is important because it is the Fourier transform of $g(x)$. Provided $g$ is defined in the upper half plane and $\omega > 0$, 
+$f(z) = e^{\I \omega z} g(z)$  has exponential decay. If $g$ decays fast enough we can use residue calculus as before. 
 
-We can use this to get sharper results than ML inequality:
+**Example** Consider the Fourier transform of $g(x) = 1/(x^2+1)$. This decays fast enough to use residue calculus so we have for $\omega > 0$
+$$
+\int_{-\infty}^\infty {\E^{\I \omega x } \over x^2 + 1} \D x = 2 \pi \I \Res_{z = \I} {\E^{\I \omega z } \over z^2 + 1} = \pi \E^{-\omega}.
+$$
+On the other hand if $\omega < 0$ we have exponential decay in lower half plane and use corresponding residues to determine
+$$
+\int_{-\infty}^\infty {\E^{\I \omega x } \over x^2 + 1} \D x = -2 \pi \I \Res_{z = -\I} {\E^{\I \omega z } \over z^2 + 1} = \pi \E^{\omega}.
+$$
+That is, the Fourier transform of $g(x) = 1/(x^2+1)$ is $\pi \E^{-|\omega|}$. 
 
-**Lemma (Jordan)** Assume $\omega > 0$. If $g(z)$ is continuous in on the half circle $C_R = \{ R e^{i \theta} : 0 \leq \theta \leq \pi \}$  then
-$$\left| \int_{C_R} g(z) e^{i \omega z} dz \right| \leq {\pi \over \omega} M$$
-where $M = \sup_{z \in C_R} |g(z)|$. 
+
+Exponential decay actually gives us  sharper results:
+
+**Lemma (Jordan)** Assume $\omega > 0$. If $g(z)$ is continuous in on the half circle $H_R = \{ R e^{i \theta} : 0 \leq \theta \leq \pi \}$  then
+$$
+\left| \int_{H_R} g(z) e^{\I \omega z} dz \right| \leq {\pi \over \omega} M
+$$
+where $M = \sup_{z \in H_R} |g(z)|$. 
 
 **Sketch of proof** We have
-$$\left| \int_{C_R} g(z) e^{i \omega z} dz \right|  \leq   R \int_0^\pi \left|g(R e^{i \theta}) e^{i \omega R e^{i \theta}}e^{i \theta}\right| d\theta 
+$$
+\left| \int_{H_R} g(z) e^{\I \omega z} dz \right|  \leq   R \int_0^\pi \left|g(R e^{i \theta}) e^{\I \omega R e^{i \theta}}e^{i \theta}\right| d\theta 
 \leq MR \int_0^\pi e^{- \omega R\sin \theta } d\theta 
 = 2MR \int_0^{\pi\over 2} e^{- \omega R\sin \theta } d\theta 
 $$
 But we have $\sin \theta \geq {2 \theta \over \pi}$:
-
+```julia
 θ = range(0; stop=π/2, length=100)
 plot(θ, sin.(θ); label="sin t")
 plot!(θ, 2θ/π; label = "2t / pi")
-
+```
 Hence 
-$$\left| \int_{C_R} g(z) e^{i \omega z} dz \right|  \leq  2MR \int_0^{\pi\over 2} e^{- {2\omega R\theta \over \pi} } d\theta = {\pi \over \omega} (1 - e^{-\omega R}) M \leq {\pi M \over \omega}.
+$$
+\left| \int_{H_R} g(z) e^{\I \omega z} dz \right|  \leq  2MR \int_0^{\pi\over 2} e^{- {2\omega R\theta \over \pi} } d\theta = {\pi \over \omega} (1 - e^{-\omega R}) M \leq {\pi M \over \omega}.
 $$
 
 ## Application: Calculating Fourier integrals of weakly decaying functions
 
-Why is this useful? We can use it to apply Residue theorem to We already know $O(z^{-2})$ decay gives us the integral via Residue theorem. And if we only have $z^{-1}$ decay our integral does not converge absolutely:
-
-f = x -> exp(im*x)*x/(x^2+1)
-sum(abs.(Fun(f, 0 .. 2000)))
-
-However, it does converge conditionally: 
-$$
-\dashint_{\infty}^\infty  f(x) \dx := \lim_{M\rightarrow \infty} \int_{-M}^M f(x) \dx
-$$
-converges:
-
+Why is this useful? We can use it to apply Residue theorem to 
+functions that only have $z^{-1}$ decay. Such functions do not decay absolutely but do 
+converge in a principal value sense: 
+```julia
 f = x -> exp(im*x)*x/(x^2+1)
 
 sum(Fun(f, -30000 .. 30000))
-
+```
 Thus we can construct a Residue theorem for calculating 
 $$
-\infdashint g(x) e^{i \omega x} \dx
+\infdashint g(x) e^{\I \omega x} \dx
 $$
 provided that $g(z) \rightarrow 0$ and is analytic in the upper-half plane.
-
+```julia
 2π*im*exp(-1)*im/(im+im)  # 2π*im* residue of g(z)exp(im*z) at z = im
+```
