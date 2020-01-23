@@ -30,3 +30,4 @@ See also previous lecture notes for previous course [M3M6 Methods of Mathematica
 3. [Laurent series and residue calculus](notes/Lecture3.pdf)
 4. [Analyticity at infinity](notes/Lecture4.pdf)
 5. [Applications to real integrals](notes/Lecture5.pdf)
+6. [Convergence rate of the trapezium rule](notes/Lecture6.pdf)

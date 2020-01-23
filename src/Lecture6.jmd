@@ -1,32 +1,23 @@
-$$
-\def\I{{\rm i}}
-\def\E{{\rm e}}
-\def\D{{\rm d}}
-$$
-
-# M3M6: Methods of Mathematical Physics
+__M3M6: Methods of Mathematical Physics__
 
 Dr. Sheehan Olver
-<br>
+
 s.olver@imperial.ac.uk
 
-
-# Lecture 4: Trapezium rule, Fourier series and Laurent series
+# Lecture 6: Trapezium rule, Fourier series and Laurent series
 
 
 This lecture we cover
 
 1. Periodic and complex Trapezium rule    
-    - Application: Calculating matrix exponentials
-    - Gershorwin's theorem
-1. Laurent series and Fourier series
-    - Application: Decay of Fourier coefficients
+2. Convergence via Laurent series
+3. Numerical differentiation via numerical computation of Cauchy integrals
 
-### Periodic and complex Trapezium rule
+## Periodic Trapezium rule
 
-Quadrature rules are pairs of _nodes_ $x_0,\ldots,x_{n-1}$ and weights $w_0,\ldots,w_{n-1}$ to approximate integrals
+Quadrature rules are pairs of _nodes_ $x_0,\ldots,x_{N-1}$ and weights $w_0,\ldots,w_{N-1}$ to approximate integrals
 $$
-\int_a^b f(x) dx \approx \sum_{j=0}^{n-1} w_j f(x_j)
+\int_a^b f(x) dx \approx \sum_{j=0}^{N-1} w_j f(x_j)
 $$
 In this lecture we construct quadrature rules on complex contours $\gamma$ to approximate contour integrals.
 
@@ -35,219 +26,101 @@ The trapezium rule gives an easy approximation to integrals. On $[0,2\pi)$ for p
 
 **Definition (Periodic trapezium rule)** The _periodic trapezium rule_ is the approximation
 
-$$\int_0^{2 \pi} f(\theta) d \theta \approx {2\pi \over n} \sum_{j=0}^{n-1} f(\theta_k)$$
+$$\int_0^{2 \pi} f(\theta) d \theta \approx Q_N f := {2\pi \over N} \sum_{j=0}^{N-1} f(\theta_k)$$
 
-for $\theta_j = {2 \pi j \over n}$.
+for $\theta_j = {2 \pi j \over N}$.
 
-The periodic trapezium rule is amazingly accurate for smooth, periodic functions:
-
+The periodic trapezium rule is amazingly accurate for smooth, periodic functions, as we demonstrate by comparison
+with another numerical integration scheme:
+```julia
+using Plots, ApproxFun
 f = θ ->  1/(2 + cos(θ))
-
-errs = [((x, w) = periodic_rule(n); abs(sum(w.*f.(x)) - sum(Fun(f, 0 .. 2π)))) for n = 1:45];
-plot(errs.+eps(); yscale=:log10, title="exponential convergence of n-point trapezium rule", legend=false, xlabel="n")
-
-The accuracy in integration is remarkable as the trapezoidal interpolant does not accurately approximate $f$: we can see clear differences between the functions here:
-
-n=20
-(x, w) = periodic_rule(n)
+periodic_rule(N) = 2π/N*(0:(N-1)), 2π/N*ones(N)
+errs = [((x, w) = periodic_rule(N); abs(sum(w.*f.(x)) - sum(Fun(f, 0 .. 2π)))) for N = 1:45];
+plot(errs.+eps(); yscale=:log10, title="exponential convergence of N-point trapezium rule", legend=false, xlabel="n")
+```
+The accuracy in integration is remarkable as the trapezoidal interpolant does not accurately approximate $f$: we can see 
+clear differences between the functions here:
+```julia
+N=20
+(x, w) = periodic_rule(N)
 plot(Fun(f, 0 .. 2π); label = "integrand")
 plot!(x, f.(x); label = "trapezium approximation")
-
-### Complex Trapezium rule
-
-We can use the map that defines a contour to construct an approximation to integrals over closed contour $\gamma$:
-
-**Definition (Complex trapezium rule)** The _complex trapezium rule_ on a contour $\gamma$ (mapped from $[0,2\pi)$) is the approximation
-
-$$\oint_\gamma f(z) dz \approx  \sum_{j=0}^{n-1} w_j f(z_j)$$
-
-for
-
-$$z_j = \gamma(\theta_j) \qquad\hbox{and}\qquad w_j = {2\pi \over n} \gamma'(\theta_j)$$
-
-
-*Example (Circle trapezium rule)* On a circle $\{r e^{i \theta} : 0 \leq \theta < 2 \pi\}$, we have 
-
-$$\oint_\gamma f(z) dz \approx  \sum_{j=0}^{n-1} w_j f(z_j)$$
-
-for $z_j = r e^{i \theta_j}$ and $w_j = {2 \pi i r \over n}  e^{i \theta_j}$.
-
-Here we plot the quadrature points:
-
-ζ, w = circle_rule(20, 1.0)
-scatter(ζ; title="quadrature points", legend=false, ratio=1.0)
-
-The Circle trapezium rule is surprisingly accurate for analytic functions:
-
-ζ, w = circle_rule(20, 1.0)
-
-f = z -> cos(z)
-
-z = 0.1+0.2im
-
-sum(f.(ζ)./(ζ .- z).*w)/(2π*im) - f(z)
-
-### Application: Numerical differentiation
-
-Calculating high-order derivatives using limits is numerically unstable. Here is a demonstration using finite-difference: making $h$ small does not increase the accuracy after a certain point:
-
-f = z -> gamma(z)
-fp = z -> gamma(z)polygamma(0,z) # exact derivative 
-x = 1.2
-fp_fd = [(h=2.0^(-n);  (f(x+h)-f(x))/h) for n = 1:50]
-plot(abs.(fp_fd .- fp(x)); yscale=:log10, legend=false, title = "error of finite-difference with h=2^(-n)", xlabel="n")
-
-But the previous formula tells us that we can reduce a derivative to a contour integral.  The example above shows that it's still numerically unstable, but we can deform the integration contour, to make it stable! 
-
-trap_fp = [((ζ, w) = circle_rule(n, 0.5); 
-        ζ .+= x; # circle around x
-       sum(f.(ζ)./(ζ .- x).^2 .*w)/(2π*im)) for n=1:50]
-
-plot(abs.(trap_fp .- fp.(x)); yscale=:log10, 
-       title="Error of trapezium rule applied to Cauchy integral formula", xlabel="n", legend=false)
-
-We can take things further and use this to calculate the higher order derivatives, with some care taken for choosing the radius:
-
-k=100
-r = 1.0k
-g = Fun( ζ -> exp(ζ)/(ζ - 0.1)^(k+1), Circle(0.1,r))
-factorial(1.0k)/(2π*im) * sum(g) - exp(0.1)
-
-[Bournemann 2011](https://www-m3.ma.tum.de/foswiki/pub/M3/Allgemeines/FolkmarBornemannPublications/FoCM_Stability_Cauchy_Integrals.pdf) investigates this further and optimizes the radius.
-
-The exponential convergence of the complex trapezium rule is a consequence of $f(\gamma(t))$ being 2π-periodic, as we will see later in a few lectures:
-
-θ = periodic_rule(100)[1]
-plot(θ, real(f.(0.6exp.(im*θ) .+ x)./(0.5exp.(im*θ))))
-
-*Example (Ellipse trapezium rule)* On an ellipse $\{a \cos \theta + b i \sin \theta : 0 \leq \theta < 2 \pi\}$ we have 
-$$\oint_\gamma f(z) dz \approx  \sum_{j=0}^{n-1} w_j f(z_j)$$
-for $z_j = a \cos \theta_j + b i \sin \theta_j$ and $w_j = {2 \pi \over n} (-a \sin \theta_j + i b \cos \theta_j)$.
-
-We can use the ellipse trapezium rule in place of the circle trapzium rule and still achieve accurate results. This gives us flexibility in avoiding singularities. Consider
-$$
-f(z) = 1/(25z^2 + 1)
-$$
-which has poles at $\pm  \I/5$. Using an ellipse allows us to design a contour that avoids these singularities:
-
-scatter([1/5im,-1/5im]; label="singularities")
-θ = range(0; stop=2π, length=2000)
-a = 2; b= 0.1
-plot!(a * cos.(θ) + im*b * sin.(θ); label="ellipse")
-
-Thus we can still use Cauchy's integral formula:
-
-x = 0.1
-f = z -> 1/(25z^2 + 1)
-
-f_ellipse = [((z, w) = ellipse_rule(n, a, b); sum(f.(z)./(z.-x).*w)/(2π*im)) for n=1:1000]
-plot(abs.(f_ellipse .- f(x)); yscale=:log10, title="convergence of n-point ellipse approximation", legend=false, xlabel="n")
-
-### Taylor series versus Cauchy integral formula
-
-
-The Taylor series gives a polynomial approximation to $f$. The Cauchy's integral formula discretisation gives a rational approximation, which is more adaptiple and does not require knowning the derivatives of $f$:
-
-f = z -> sqrt(z)
-
-function sqrtⁿ(n,z,z₀) 
-    ret = sqrt(z₀)
-    c = 0.5/ret*(z-z₀)
-    for k=1:n
-        ret += c
-        c *= -(2k-1)/(2*(k+1)*z₀)*(z-z₀)
-    end
-    ret
-end
-
-
-z₀ = 0.3
-n = 40
-phaseplot(-2..2, -2..2, z -> sqrtⁿ.(n,z,z₀))
-
-Here we see that the approximation is vallid on the expected ellipse:
-
-(ζ, w) = ellipse_rule(20, 4.0, 1.0);
-ζ  .= ζ .+ 4.5;
-f_c = z ->  sum(f.(ζ)./(ζ.-z).*w)/(2π*im)
-phaseplot(-2..10, -2 .. 2, f_c)
-
-(ζ, w) = ellipse_rule(100, 4.0, 1.0);
-ζ  .= ζ .+ 4.5;
-f_c = z ->  sum(f.(ζ)./(ζ.-z).*w)/(2π*im)
-f_c(5.3) - sqrt(5.3)
-
-
-```julia
-using Plots, ComplexPhasePortrait, Interact, ApproxFun, Statistics, SpecialFunctions, LinearAlgebra
-gr();
-
-periodic_rule(n) = 2π/n*(0:(n-1)), 2π/n*ones(n)
-
-function circle_rule(n, r) 
-    θ = periodic_rule(n)[1]
-    r*exp.(im*θ), 2π*im*r/n*exp.(im*θ)
-end
-
-function ellipse_rule(n, a, b) 
-    θ = periodic_rule(n)[1]
-    a*cos.(θ) + b*im*sin.(θ), 2π/n*(-a*sin.(θ) + im*b*cos.(θ))
-end
 ```
 
+## Trapezium rule and Fourier coefficients
 
-## Fourier series and Laurent series 
-
-**Definition (Fourier series)** On $[-\pi, \pi)$,  _Fourier series_ is an expansion of the form
+Write
 $$
-    g(\theta) = \sum_{k=-\infty}^\infty g_k e^{i k \theta}
+f(\theta) = \sum_{k=-\infty}^\infty \hat f_k \E^{\I k \theta}
 $$
-where
+and assume that the Fourier coefficients are absolutely summable (true if $f$ is smooth enough): 
 $$
-g_k = {1\over 2 \pi} \int_{-\pi}^\pi g(\theta) e^{-i k \theta} d \theta
+\sum_{k=-\infty}^\infty |\hat f_k| < \infty.
 $$
-
-**Definition (Laurent series)** In the complex plane, _Laurent series around $z_0$_ is an expansion of the form 
-$$ 
-    f(z) = \sum_{k=-\infty}^\infty f_k (z-z_0)^k 
-$$    
-
-**Lemma (Fourier series = Laurent series)** On a circle in the complex plane 
+Note that geometric series tells us that 
 $$
-    \gamma_r = \{z_0 + re^{i \theta} : -\pi \leq \theta < \pi \},$$ 
-Laurent series of $f(z)$ around $z_0$ converges for $z \in C_r$ if the Fourier series of $g(\theta) = f(z_0 + r e^{i \theta})$ converges, and the coefficients are given by
-
-$$ 
-f_k = {g_k \over r^k} = {1 \over 2 \pi i} \oint_{\gamma_r} {f(\zeta) \over (\zeta - z_0)^{k+1}} d \zeta.
+\begin{align*}
+{1 \over 2 \pi} Q_N \E^{\I k \theta} &= {1 \over N} \sum_{j=0}^{N-1} (\E^{2 \pi \I k /N})^j \\
+    &= \begin{cases}
+        1 & \hbox{if $k = m N$ for some integer $m$} \\
+        0 & \hbox{otherwise}
+    \end{cases}
+\end{align*}
 $$
+It follows that we can express the Trapezium rule exactly in terms of a sum of Fourier coefficients:
+$$
+\begin{align*}
+{1 \over 2 \pi} Q_N f &= \sum_{k=-\infty}^\infty \hat f_k {1 \over 2 \pi} Q_N \E^{\I k \theta} = \sum_{k=-\infty}^\infty \hat f_k \begin{cases}
+        1 & \hbox{if $k = m N$ for some integer $m$} \\
+        0 & \hbox{otherwise}
+    \end{cases} \\
+    &= \cdots + f_{-2N} + f_{-N} + f_0 + f_N + f_{2N} + \cdots
+\end{align*}
+$$
+In other words, the error in the Trapezium rule is bounded by
+$$
+|\int_0^{2\pi} f(\theta) \D \theta - Q_N f| \leq 2 \pi \sum_{m=1}^\infty \br[|f_{m N}| + |f_{-m N}|]
+$$
+if we can show fast decay in the coefficients we can prove the observation that trapezium rule converges fast. 
 
-**Proof**  This follows immediately from the change of variables $z = r \E^{\I \theta} + z_0$. ■
+## Decay in Fourier/Laurent coefficients
 
-Interestingly, analytic properties of $f$ can be used to show decaying properties in $g$:
+Now we consider $g(z)$ such that $g(\E^{\I \theta}) = f(\theta)$, that is, $g$ has the Laurent series
+$$
+g(z) = \sum_{k=-\infty}^\infty g_k z^k
+$$
+where $g_k = \hat f_k$. 
+Interestingly, analytic properties of $g$ can be used to show decaying properties in Fourier coefficients of $f$:
 
-**Theorem (Decay in Fourier/Laurent coefficients)** Suppose $f(z)$ is analytic in a closed annulus $A_{r,R}$ around $0$:
+**Theorem (Decay in Fourier/Laurent coefficients)** Suppose $g(z)$ is analytic in a closed annulus $A_{r,R}$ around $0$:
 $$A_r(z_0) = \{z : r ≤ | z| ≤ R\}$$
 Then for all $k$
-$$|f_k | \leq M\min\left\{{1 \over R^k} , {1 \over r^k}\right\}$$
-where $M = \sup_{z \in  A} |f(z)|$.
+$$|g_k | \leq M\min\left\{{1 \over R^k} , {1 \over r^k}\right\}$$
+where $M = \sup_{z \in  A} |g(z)|$.
 
 **Proof**
 This is a simple application of the ML lemma: 
 $$
-|f_k| = {1 \over 2 \pi } \left|\oint_{\gamma_1} {f(\zeta) \over \zeta^{k+1}} \D \zeta\right| = {1 \over 2 \pi}\left|\oint_{\gamma_r} {f(\zeta) \over \zeta^{k+1}} \D \zeta\right| \leq \sup_{\zeta \in \gamma_r} |f(\zeta)| R^{-k} \leq M R^{-k}
+|g_k| = {1 \over 2 \pi } \left|\oint_{C_1} {g(\zeta) \over \zeta^{k+1}} \D \zeta\right| = {1 \over 2 \pi}\left|\oint_{C_r} {f(\zeta) \over \zeta^{k+1}} \D \zeta\right| \leq \sup_{\zeta \in C_r} |f(\zeta)| R^{-k} \leq M R^{-k}
 $$
-which similar applies deforming to $\gamma_r$.
+which similar applies deforming to $C_r$.
 ■
 
+We thus can show fast convergence of Trapezium rule again using geometric series:
+$$
+\sum_{m=1}^\infty \br[|f_{m N}| + |f_{-m N}|] \leq M \sum_{m=1}^\infty \br[R^{-m N}  + r^{m N}] \leq
+M \br[{R^{-N} \over 1 - R^{-N}} + {r^N \over 1 - r^N}].
+$$
 
 
-_Demonstration_ The Fourier coefficients of
+_Demonstration_ The Laurent coefficients of
 $$g(\theta) = {1 \over 2 - \cos \theta}$$
 satisfies for $k \geq 0$
 $$
    |g_k| \leq {2 \over 4 - R -R^{-1}} R^{-k}
 $$
-for all $R \leq 2 + \sqrt{3}$:
+for all $R \leq 2 + \sqrt{3}$. The following shows this bound is quite accurate:
 
 ```julia
 g =Fun(θ -> 1/(2-cos(θ)), Laurent(-π .. π))
@@ -259,4 +132,144 @@ R = 3.5
 scatter!(2/(4-R-inv(R))*R.^(-(0:length(g₊))), label = "R = $R")
 R = 2+sqrt(3)-0.1
 scatter!(2/(4-R-inv(R))*R.^(-(0:length(g₊))), label = "R = $R")
-```s
+```
+This fast decay in coefficients explains the fast convergence of the trapezium rule.
+
+
+## Complex Trapezium rule
+
+We can use the map that defines a contour to construct an approximation to integrals over closed contour $\gamma$:
+
+**Definition (Complex trapezium rule)** The _complex trapezium rule_ on a contour $\gamma$ (mapped from $[0,2\pi)$) is the approximation
+$$
+\oint_\gamma f(z) dz \approx  \sum_{j=0}^{N-1} w_j f(z_j)
+$$
+for
+$$
+z_j = \gamma(\theta_j) \qquad\hbox{and}\qquad w_j = {2\pi \over n} \gamma'(\theta_j)
+$$
+
+
+*Example (Circle trapezium rule)* On a circle $C_r = \{r \E^{\I \theta} : 0 \leq \theta < 2 \pi\}$, we have 
+$$
+\oint_{C_r} f(z) dz \approx  \sum_{j=0}^{N-1} w_j f(z_j)
+$$
+for $z_j = r \E^{\I \theta_j}$ and $w_j = {2 \pi \I r \over n}  \E^{\I \theta_j}$.
+
+Here we plot the quadrature points:
+```julia
+function circle_rule(n, r) 
+    θ = periodic_rule(n)[1]
+    r*exp.(im*θ), 2π*im*r/n*exp.(im*θ)
+end
+ζ, w = circle_rule(20, 1.0)
+scatter(ζ; title="quadrature points", legend=false, ratio=1.0)
+```
+The Circle trapezium rule is surprisingly accurate for analytic functions, following from these
+explanation above:
+```julia
+ζ, w = circle_rule(20, 1.0)
+f = z -> cos(z)
+z = 0.1+0.2im
+sum(f.(ζ)./(ζ .- z).*w)/(2π*im) - f(z)
+```
+
+## Application: Numerical differentiation
+
+Calculating high-order derivatives using limits is numerically unstable. Here is a demonstration using finite-difference: 
+making $h$ small does not increase the accuracy after a certain point:
+```julia
+using SpecialFunctions
+f = z -> gamma(z)
+fp = z -> gamma(z)polygamma(0,z) # exact derivative 
+x = 1.2
+fp_fd = [(h=2.0^(-n);  (f(x+h)-f(x))/h) for n = 1:50]
+plot(abs.(fp_fd .- fp(x)); yscale=:log10, legend=false, title = "error of finite-difference with h=2^(-n)", xlabel="n")
+```
+But the previous formula tells us that we can reduce a derivative to a contour integral.  
+The example above shows that it's still numerically unstable, but we can deform the integration contour, to make it stable! 
+```julia
+trap_fp = [((ζ, w) = circle_rule(n, 0.5); 
+        ζ .+= x; # circle around x
+       sum(f.(ζ)./(ζ .- x).^2 .*w)/(2π*im)) for n=1:50]
+
+plot(abs.(trap_fp .- fp.(x)); yscale=:log10, 
+       title="Error of trapezium rule applied to Cauchy integral formula", xlabel="n", legend=false)
+```
+We can take things further and use this to calculate the higher order derivatives, with some care taken for choosing the radius:
+```julia
+k=100
+r = 1.0k
+g = Fun( ζ -> exp(ζ)/(ζ - 0.1)^(k+1), Circle(0.1,r))
+factorial(1.0k)/(2π*im) * sum(g) - exp(0.1)
+```
+[Bornemann 2011](https://www-m3.ma.tum.de/foswiki/pub/M3/Allgemeines/FolkmarBornemannPublications/FoCM_Stability_Cauchy_Integrals.pdf) 
+investigates this further and optimizes the radius.
+
+The exponential convergence of the complex trapezium rule is a consequence of $f(\gamma(t))$ being 2π-periodic:
+```julia
+θ = periodic_rule(100)[1]
+plot(θ, real(f.(0.6exp.(im*θ) .+ x)./(0.5exp.(im*θ))))
+```
+*Example (Ellipse trapezium rule)* On an ellipse $\{a \cos \theta + b \I \sin \theta : 0 \leq \theta < 2 \pi\}$ we have 
+$$
+\oint_\gamma f(z) dz \approx  \sum_{j=0}^{N-1} w_j f(z_j)
+$$
+for $z_j = a \cos \theta_j + b \I \sin \theta_j$ and $w_j = {2 \pi \over n} (-a \sin \theta_j + \I b \cos \theta_j)$.
+
+We can use the ellipse trapezium rule in place of the circle trapezium rule and still achieve accurate results. This gives us flexibility in avoiding singularities. Consider
+$$
+f(z) = 1/(25z^2 + 1)
+$$
+which has poles at $\pm  \I/5$. Using an ellipse allows us to design a contour that avoids these singularities:
+```julia
+scatter([1/5im,-1/5im]; label="singularities")
+θ = range(0; stop=2π, length=2000)
+a = 2; b= 0.1
+plot!(a * cos.(θ) + im*b * sin.(θ); label="ellipse")
+```
+Thus we can still use Cauchy's integral formula:
+```julia
+x = 0.1
+f = z -> 1/(25z^2 + 1)
+function ellipse_rule(n, a, b) 
+    θ = periodic_rule(n)[1]
+    a*cos.(θ) + b*im*sin.(θ), 2π/n*(-a*sin.(θ) + im*b*cos.(θ))
+end
+f_ellipse = [((z, w) = ellipse_rule(n, a, b); sum(f.(z)./(z.-x).*w)/(2π*im)) for n=1:1000]
+plot(abs.(f_ellipse .- f(x)); yscale=:log10, title="convergence of n-point ellipse approximation", legend=false, xlabel="n")
+```
+
+## Taylor series versus Cauchy integral formula
+
+
+The Taylor series gives a polynomial approximation to $f$. The Cauchy's integral formula discretisation gives a rational approximation, 
+which is more adaptiple and does not require knowning the derivatives of $f$:
+```julia
+using ComplexPhasePortrait
+f = z -> sqrt(z)
+function sqrt_n(n,z,z₀) 
+    ret = sqrt(z₀)
+    c = 0.5/ret*(z-z₀)
+    for k=1:n
+        ret += c
+        c *= -(2k-1)/(2*(k+1)*z₀)*(z-z₀)
+    end
+    ret
+end
+z₀ = 0.3
+n = 40
+phaseplot(-2..2, -2..2, z -> sqrt_n.(n,z,z₀))
+```
+Here we see that the approximation is vallid on the expected ellipse:
+```julia
+(ζ, w) = ellipse_rule(20, 4.0, 1.0);
+ζ  .= ζ .+ 4.5;
+f_c = z ->  sum(f.(ζ)./(ζ.-z).*w)/(2π*im)
+phaseplot(-2..10, -2 .. 2, f_c)
+
+(ζ, w) = ellipse_rule(100, 4.0, 1.0);
+ζ  .= ζ .+ 4.5;
+f_c = z ->  sum(f.(ζ)./(ζ.-z).*w)/(2π*im)
+f_c(5.3) - sqrt(5.3)
+```
