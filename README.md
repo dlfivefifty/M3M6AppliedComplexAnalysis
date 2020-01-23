@@ -24,3 +24,4 @@ TBA
 1. [Review of complex analysis](notes/Lecture1.pdf)
 2. [Cauchy's integral formula and Taylor series](notes/Lecture2.pdf)
 3. [Laurent series and residue calculus](notes/Lecture3.pdf)
+4. [Analyticity at infinity](notes/Lecture4.pdf)

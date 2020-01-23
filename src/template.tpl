@@ -75,6 +75,9 @@
 
 \def\norm#1{\left\| #1 \right\|}
 
+\def\pr(#1){\left({#1}\right)}
+\def\br[#1]{\left[{#1}\right]}
+
 \def\abs#1{\left|{#1}\right|}
 \def\fpr(#1){\!\pr({#1})}
 

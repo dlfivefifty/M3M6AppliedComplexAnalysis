@@ -1,34 +1,178 @@
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
 
 
 
-## Application: Integrals on the real line of rational functions
+# Lecture 4: Analyticity at infinity
 
-We can calculate integrals of the form 
+This lecture we cover
+
+1. Riemann sphere and analyticity at infinity
+2. Cauchy's theorem and Cauchy's integral formula, exterior to a contour
+3. Exterior Residue theorem 
+
+
+
+## Riemann sphere and analyticity at infinity
+
+**Definition (Riemann sphere)** The _Riemann sphere_ is the compactification of ${\mathbb C}$:
 $$
-\int_0^{2 \pi} R(\cos \theta, \sin \theta) d \theta
+    \bar {\mathbb C} = {\mathbb C} \cup \{\infty\}
 $$
-where $R(x,y)$ is rational by doing the change of variables $z = e^{\I \theta}$ to reduce it to
+
+Without delving on the details, we can define an open set $D \subset \bar{\mathbb C}$ on the Riemann sphere, where $\infty \in D$ implies that there exists an $R$ such that $\{ z : |z| > R\} \subset D$.
+
+
+**Definition (Analytic at infinity)** A function $f(z)$ defined on an open set $D \subset \bar {\mathbb C}$ such that $\infty \in D$ is _analytic at ∞_ if $f(z^{-1})$ is analytic at zero.
+
+**Proposition (Taylor series at infinity)** If $f$ is analytic at infinity, then there exists an $R$ such that for all $|z| > R$ we have
 $$
-\oint_{C_1} R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {\D z \over \I z}
+f(z) = \sum_{k=-\infty}^0 f_k z^k 
+$$
+The coefficients $f_k$ are defined by
+$$
+f_k = {1 \over 2 \pi \I} \oint_\gamma {f(z) \over z^{k+1}} \dz
+$$
+where $\gamma$ is any simple closed positively oriented contour such that $f$ is analytic outside of.
+
+**Theorem (Cauchy's theorem, exterior)** Suppose $f$ is analytic outside and on a positively oriented, simple, closed contour $\gamma$, and 
+$$
+f(z) = o(z^{-1})
+$$
+as $z \rightarrow \infty$. 
+Then we have
+$$
+f(z) = -{1 \over 2 \pi \I} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta
+$$
+**Proof** Follows by deforming $\gamma$ to a large circle and using $ML$ theorem. ■
+
+
+
+**Theorem (Cauchy's integral theorem, exterior)** Suppose $f$ is analytic outside and on a positively oriented, simple, closed contour $\gamma$, and 
+$$
+f(\infty) = 0,
+$$
+that is, $f(z)$ decays as $z \rightarrow \infty$. Then we have
+$$
+f(z) = -{1 \over 2 \pi \I} \oint {f(\zeta) \over \zeta - z} \D \zeta
 $$
 
 
-*Example* Consider
-
+_Demonstration_ $f(z) = \E^{1/z}$ is not analytic at zero, but is analytic at infinity because $f(1/z) = \E^z$ is analytic at zero.
+We therefore have a convergence "Taylor" series in inverse powers of $z$:
 $$
-\int_0^{2\pi} {d \theta \over 1 - 2\rho \cos \theta + \rho^2}
+\E^{1/z} = 1 + {1 \over z} + {1 \over 2 z^2} + {1 \over 3! z^3} + \cdots
 $$
-
-for $0 < \rho < 1$. We need to first locate the poles of 
-$$
-R\left({z + z^{-1} \over 2}, {z - z^{-1} \over 2 \I} \right) {1 \over \I z} = 
-
-$$
+Or seen numerically:
 ```julia
-ρ = 0.5
-plot(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π))
-
-phaseplot(-2..2, -2..2, z ->  1/(1-ρ*(z+(z^(-1))) + ρ^2) * 1/(im*z))
-
-sum(Fun(θ -> 1/(1-2ρ*cos(θ) + ρ^2), 0 .. 2π)), 2π /(1-ρ^2)
+z = 2.0+2im
+sum([z^k/factorial(-1.0k) for k=-100:0]) - exp(1/z)
 ```
+
+The function $f(z) = \E^{1/z} - 1$ vanishes at $\infty$ and so can thence be recovered as a Cauchy integral:
+```julia
+using ApproxFun
+f = z -> exp(1/z) - 1
+
+ζ = Fun(Circle())
+-sum(f.(ζ)/(ζ-z))/(2π*im) - f(z) # compare numerical integral with `f`
+```
+
+The decay at infinity is required: for a function that does not decay,
+Cauchy's integral formula in the exterior fails:
+```julia
+f = z -> exp(1/z) 
+
+ζ = Fun(Circle())
+-sum(f.(ζ)/(ζ-z))/(2π*im) - f(z)
+```
+An alternative way of stating Cauchy's integral formula in the exterior is to add in the constant 
+term: for any $f$ analytic at $\infty$ we have 
+$$
+\begin{align*}
+f(z) &= -{1 \over 2 \pi \I} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta  + f(\infty)  \\
+    &= -{1 \over 2 \pi \I} \oint_\gamma {f(\zeta) \over \zeta - z} \D \zeta  + {1 \over 2 \pi \I} \oint_\gamma {f(z) \over z} \D z.
+\end{align*}
+$$
+
+
+
+### Exterior Residue theorem
+
+An analogue of residue calculus holds true counting over residues outside a contour, but we need to also include 
+the residue at $\infty$.
+
+**Definition (Residue at infinity)** Suppose $f$ is analytic in the annulus $A_{R\infty} = \{z : R < |z| < \infty \}$. Then the residue at infinity is
+$$
+{\underset{z = \infty}{\rm Res}} \, f(z) = -f_{-1}
+$$
+where $f_{-1}$ is (again) the Laurent coefficient integrating over any circle $C_r$ in $A_{R\infty}$, that is $R < r < \infty$.
+
+**Theorem (Exterier Residue Theorem)** Let $f$ be holomprohic outside and on a simple closed, positively oriented contour 
+$\gamma$ except at isolated points $z_1, \ldots, z_r$ outside $\gamma$. Then
+
+$$
+\oint_\gamma f(z) \dz = -2 \pi \I \sum_{j=1}^r {\underset{z = z_j}{\rm Res}}\, f(z) - 2 \pi \I \Res_{z = \infty} f(z) 
+$$
+
+
+### Examples
+
+Let's return to our simple examples from before:
+```julia
+using ApproxFun, Plots, ComplexPhasePortrait
+f = z -> 1/(z*(z+2))
+phaseplot(-3..3, -3..3, f)
+```
+Because it is analytic outside a circle of radius 3 and decays like $O(z^{-2})$, its residue at infinity is zero. 
+Or in other words using the exterior version of Cauchy's integral formula.
+We can verify numerically:
+```julia
+sum(Fun(f, Circle(3.0)))
+```
+Here's another example with singularities at $0$ and $-2$:
+```julia
+f = z -> 1/z + 1/(z+2)
+phaseplot(-3..3, -3..3, f)
+```
+This has a residue at infinity:
+$$
+f(z) = {2 \over z} + O(z^{-2})
+$$
+implies
+$$
+\Res_{z = \infty} f(z) = -2
+$$
+Thus an integral over a circle of radius 3 equals 
+$$
+\oint_{C_3} f \D z = -2 \pi \I \Res_{z = \infty} f = 4\pi \I 
+$$
+which matches the interior residue calculus
+$$
+\oint_{C_3} f \D z =  2 \pi \I \pr(\Res_{z = 0} + \Res_{z = -2}) f = 4 \pi \I
+$$
+If we had a circle of radius 1 then the exterior computation has two contributions:
+$$
+\oint_{C_1} f \D z =  -2 \pi \I \pr(\Res_{z = -2} + \Res_{z = \infty}) f = 2\pi \I 
+$$
+which matches the interior residue calculation.
+
+
+Here's a more complicated example:
+```julia
+f = z -> (z+1)*exp(1/z)/(z*(z+2))
+portrait(-3..3, -3..3, f)
+```
+This example has an essential singularity at zero so the classical Residue theorem is not much use, 
+but we can use the residue theorem at infinity with the Laurent series (valid for large $z$)
+$$
+f(z) = 1/z + O(z^{-3})
+$$
+ to determine
+$$
+\oint_{C_1} f \D z = - 2\pi \I \pr(\Res_{z=-2} + \Res_{z = \infty}) f(z) = -2 \pi \I ({1 \over 2 \E^{1/2}} + 1).
+$$
+
