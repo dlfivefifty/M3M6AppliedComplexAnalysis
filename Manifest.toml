@@ -8,9 +8,9 @@ version = "0.5.0"
 
 [[AbstractNumbers]]
 deps = ["SpecialFunctions"]
-git-tree-sha1 = "166dd550832720b4c851f30e5938e675e42c16d4"
+git-tree-sha1 = "924732f1a32f0e4b1e748b469d4604125bdf1d00"
 uuid = "85c772de-338a-5e7f-b815-41e76c26ac1f"
-version = "0.2.0"
+version = "0.2.1"
 
 [[AbstractPlotting]]
 deps = ["AbstractNumbers", "ColorBrewer", "ColorSchemes", "ColorTypes", "Colors", "Contour", "DocStringExtensions", "FFMPEG", "FileIO", "FixedPointNumbers", "FreeType", "FreeTypeAbstraction", "GeometryTypes", "ImageMagick", "IntervalSets", "LinearAlgebra", "Markdown", "Observables", "Packing", "PlotUtils", "Printf", "Random", "Serialization", "Showoff", "SignedDistanceFields", "SparseArrays", "StaticArrays", "Statistics", "StructArrays", "UnicodeFun"]
@@ -189,10 +189,10 @@ uuid = "dc8bdbbb-1ca9-579f-8c36-e416f6a65cce"
 version = "1.0.0"
 
 [[DSP]]
-deps = ["FFTW", "LinearAlgebra", "Polynomials", "Random", "Reexport", "SpecialFunctions", "Statistics"]
-git-tree-sha1 = "fa9564dc41fb91716c2e3353fe447f268a08f14d"
+deps = ["FFTW", "IterTools", "LinearAlgebra", "Polynomials", "Random", "Reexport", "SpecialFunctions", "Statistics"]
+git-tree-sha1 = "e10f3c579404419c172a8aa8d83a12fde99e9964"
 uuid = "717857b8-e6f2-59f4-9121-6e50c889abd2"
-version = "0.6.2"
+version = "0.6.3"
 
 [[DataAPI]]
 git-tree-sha1 = "674b67f344687a88310213ddfa8a2b3c76cc4252"
