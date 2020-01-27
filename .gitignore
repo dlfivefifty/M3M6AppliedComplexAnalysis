@@ -8,3 +8,4 @@ src/.DS_Store
 *.fdb_latexmk
 *.fls
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
+demos/.ipynb_checkpoints/Lecture7-checkpoint.ipynb
