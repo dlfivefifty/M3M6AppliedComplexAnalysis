@@ -23,6 +23,11 @@ See also previous lecture notes for previous course [M3M6 Methods of Mathematica
 1. Project proposal due 19 Feb 2020
 2. Project due 19 March 2020
 
+Examples of previous projects:
+
+1. [Wasim Rehman, Quantum Mechanics and Matrix Functions via Trapezium Rule](projects/Rehman.pdf)
+2. [Tianyi Pu, 2D Ideal Fluid Flow Around an Obstacle](projects/Pu.pdf)
+
 ## Lecture notes
 
 1. [Review of complex analysis](notes/Lecture1.pdf)
