@@ -1,103 +1,214 @@
-## Representing analytic functions by their behaviour near singularities
+__M3M6: Methods of Mathematical Physics__
 
-A _key_ theme in complex analysis is representing functions by their behaviour near singularities.  A rather simple example of this is a side-effect of Cauchy's integral representation:
+Dr. Sheehan Olver
 
-**Corollary (Cauchy's integral representation around holes)** Let $D \subset {\mathbb C}$ be a domain with $g$ holes (i.e., genus $g$). Suppose $f$ is holmorphic in and on the boundary of $D$.  Given $g$ simple closed negatively oriented contours  surrounding the holes $\gamma_1, \ldots, \gamma_g$ and a simple closed positively oriented contour $\gamma_{0}$ surrounding the outer boundary of $D$, we have
+s.olver@imperial.ac.uk
+
+# Lecture 8: Matrix  functions via Cauchy's integral formula
+
+
+
+### Application: calculating matrix exponentials
+
+Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
+
 $$
-f(z) = {1 \over 2 \pi i} \sum_{k=0}^{g} \oint_{\gamma_k} {f(\zeta) \over \zeta - z} d \zeta
+    {\mathbf u}'(t) = A {\mathbf u}(t)\qquad\hbox{and}\qquad {\mathbf u}(0) = {\mathbf u}_0(0)
+$$
+    
+The solution to this is given by the _matrix exponential_
+$$
+    {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
+$$
+    where the matrix exponential is defined by it's Taylor series:
+$$
+    \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
+$$
+This has stability problems, so a more convenient form is as follows:
+
+**Theorem (Cauchy integral representation for matrix exponential)**
+Let $A \in {\mathbb C}^{n \times n}$ be a diagonalizable matrix:
+$$
+    A = V \Lambda V^{-1} \qquad\hbox{for}\qquad\Lambda =
+    \begin{pmatrix}\lambda_1 \cr &\ddots \cr && \lambda_d\end{pmatrix}
+$$
+Let $\gamma$ be a contour that surrounds the spectrum of $A$. Then we have
+$$
+    \exp(A) = {1 \over 2 \pi i} \oint_\gamma e^z (z I - A)^{-1} dz
+$$
+    
+**Proof** Note by definition
+$$
+\begin{align*}
+\exp(A) &= \sum_{k=0}^\infty {A^k \over k!} = V \sum_{k=0}^\infty {\Lambda^k \over k!}V^{-1} = V \begin{pmatrix} \E^{\lambda_1}\\ & \ddots \\ && \E^{\lambda_d} \end{pmatrix} V^{-1}  \\
+&= {1 \over 2\pi \I} V \begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} 
+\end{align*}
+$$
+It was important here that $\gamma$ surrounded all $\zeta_j$.
+
+We now take out the integration from the matrix, the easiest way to see this is to apply the Trapezium rule approximation:
+$$
+\begin{align*}
+V\begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} &= V\lim_{n \rightarrow \infty} \begin{pmatrix} \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_1 }  \\ & \ddots \\ && \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
+&= \lim_{n \rightarrow \infty}  V\sum_{j=1}^n w_j \E^\zeta_j \begin{pmatrix}  {1 \over \zeta_j - \lambda_1 }  \\ & \ddots \\ &&  {1 \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
+&= \lim_{n \rightarrow \infty}  \sum_{j=1}^n w_j \E^\zeta_j V(I \zeta_j - \Lambda)^{-1}V^{-1} \\
+&= \oint_\gamma \E^\zeta V(I \zeta - \Lambda)^{-1} V^{-1} \D \zeta 
+= \oint_\gamma \E^\zeta (I \zeta - V\Lambda V^{-1})^{-1}  \D \zeta \\
+& = \oint_\gamma \E^\zeta (I \zeta - A)^{-1}  \D \zeta \\
+\end{align*}
 $$
 
-Here are two examples:
 
-f = z -> (exp(1/z) + exp(z))/(z*(z+2))
-Γ = Circle(0.0, 4.0) ∪ Circle(0.0,0.5,false) ∪ Circle(-2.0,0.1,false)
-phaseplot(-5..5, -5..5, f)
-plot!(Γ; color=:black, label=:contour, arrow=true, linewidth=1.5)
+■
 
-ζ = Fun(Γ)
-z = 2.0+1.0im
-sum(f.(ζ)/(ζ - z))/(2π*im)
+_Demonstration_ we use this formula alongside the complex trapezium rule to calculate matrix exponentials. 
+Begin by creating a random symmetric matrix (which only has real eigenvalues):
+```julia
+using LinearAlgebra
 
-f(z)
-
-### Application: Partial fraction expansion
-
-Suppose we have a rational function 
-$$
-r(z) = {p(z) \over q(z)}
-$$
-where $p,q$ are both polynomials. This is analytic everywhere apart for the roots of $q$, which we enumerate $\lambda_1,\ldots,\lambda_g$.   If we draw negatively oriented circles around each root, the previous result applies:
-
-n = 7
-m = 5
-p = Fun(Taylor(), randn(n))
-q = Fun(Taylor(), randn(m))
-λ = complexroots(q)
-
-Γ = Circle(0.0, 5.0)
-for λ in λ
-    Γ = Γ ∪ Circle(λ, 0.1, false)
+A = randn(5,5)
+A = A + A'
+λ = eigvals(A)
+```
+We can now by hand create a circle that surrounds all the eigenvalues:
+```julia
+function circle_rule(n, r) 
+    θ = periodic_rule(n)[1]
+    r*exp.(im*θ), 2π*im*r/n*exp.(im*θ)
 end
-r = z -> extrapolate(p,z)/extrapolate(q,z)
+z,w = circle_rule(100,maximum(abs.(λ))+1)
 
-phaseplot(-5..5, -5..5, r)
-plot!(Γ; color=:black, label=:contour)
+plot(z)
+scatter!(λ,zeros(5); label = "eigenvalues of A")
+```
+Here we wrap this up into a function `circle_exp` that calculates the matrix exponential:
+```julia
+function circle_exp(A, n, z₀, r)
+    z,w = circle_rule(n,r)
+    z .+= z₀
 
-ζ = Fun(Γ)
-z = 2.0+2.0im
-sum(r.(ζ)/(ζ - z))/(2π*im) - r(z)
+    ret = zero(A)
+    for j=1:n
+        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
+    end
 
-But now we can use the residue theorem to simplify the integrals! Note the following:
+    ret/(2π*im)
+end
+   
+circle_exp(A, 100, 0, 8.0) -exp(A) |>norm
+```
+In this case, it is beneficial to use an ellipse:
+```julia
+function ellipse_exp(A, n, z₀, a, b)
+    z,w = ellipse_rule(n,a,b)
+    z .+= z₀
+
+    ret = zero(A)
+    for j=1:n
+        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
+    end
+    ret/(2π*im)
+end
 
 
+ellipse_exp(A, 50, 0, 8.0, 5.0) -exp(A) |>norm
+```
+For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
+```julia
+function taylor_exp(A,n)
+    ret = Matrix(I, size(A))
+    for k=1:n
+        ret += A^k/factorial(1.0k)
+    end
+    ret
+end
 
+B = A - 20I
 
-For example,  near the $j$th root we have the Laurent series
+taylor_exp(B, 200) -exp(B) |>norm
+```
+We can use an ellpise to surround the spectrum:
+```julia
+scatter(complex.(eigvals(B)))
+plot!(ellipse_rule(50,8,5)[1] .- 20)
+
+norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
+```
+### Gershgorin circle theorem
+
+If we only know $A$, how do we know how big to make the contour? Gershgorin's circle theorem gives the answer:
+
+**Theorem (Gershgorin)** Let $A \in {\mathbb C}^{d \times d}$ and define 
 $$
-r(z) = r_{-N_j}^j (z-\lambda_j)^{-N_j}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1} + r_0 + r_1 (z-\lambda_j) + \cdots
+R_k = \sum_{j=1 \atop j \neq k}^d |a_{kj}| 
 $$
-where $N_j$ is the order of the zero of $q(z)$ at $\lambda_j$.
-
-Then it follows that
-$${1 \over 2 \pi i} \oint_{\gamma_j} {r(\zeta) \over z - \zeta} d\zeta = r_{-N_j}^j (z-\lambda_j)^{-N}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1}$$
-for $z$ outside the contour $\gamma_j$.
-
-Similarly, for the contour around infinity $\gamma_0$, if we have the Laurent series
+Then 
 $$
-r(z) = \cdots + r_{-1}^0 z^{-1} + r_0^0  + r_1^0 z + \dots + r_{N_0}^0 z^{N_0}
+\rho(A) \subset \bigcup_{k=1}^d \bar B(a_{kk}, R_k)
 $$
-where $N_0$ is the degree of $p(z)$ divided by the degree of $q(z)$. 
-Then we have
-$${1 \over 2 \pi i} \oint_{\gamma_{g+1}} {r(\zeta) \over z - \zeta} d\zeta = r_0^0 + r_1^0 z + \cdots +  r_{N_0}^0 z^{N_0}.$$
+where $\bar B(z_0, r)$ is the closed disk of radius $r$ and $\rho(A)$ is the set of eigenvalues.
 
-Thus we have the expansion summing over the behaviour near each singularity that holds for all $z$:
+**Proof **
 
-$$
-r(z) = \sum_{k=0}^{N_0} r_k^0 z^k  +  \sum_{j=1}^d \sum_{k = -N_j}^{-1} r_k^j (z - \lambda_j)^k
-$$
 
-*Example* When we only have simple poles and no polynomial growth at $\infty$, this has a simple form in terms of residues:
+■
 
-$$
-r(z) = r(\infty)  +  \sum_{j=1}^d    (z - \lambda_j)^{-1} \underset{z = \lambda_j}{\rm Res}\, r(z)
-$$
+_Demonstration_ Here we apply this to a particular matrix:
+```julia
+A = [1 2 3; 1 5 2; -4 1 6]
+```
+The following calculates the row sums:
+```julia
+R = sum(abs.(A - Diagonal(diag(A))),dims=2)
+```
+Gershgorin's theorem tells us that the spectrum lies in the union of the circles surrounding the diagonals:
+```julia
+drawcircle!(z0, R) = plot!(θ-> real(z0) + R[1]*cos(θ), θ-> imag(z0) + R[1]*sin(θ), 0, 2π, fill=(0,:red), α = 0.2, legend=false)
 
-n = 5
-m = 5
-p = Fun(Taylor(), randn(n))
-q = Fun(Taylor(), randn(m))
-λ = complexroots(q)
+λ = eigvals(A)
+p = plot()
+for k = 1:size(A,1)
+    drawcircle!(A[k,k], R[k])
+end
+scatter!(complex.(λ); label="eigenvalues")
+scatter!(complex.(diag(A)); label="diagonals")
+p
+```
+We can therefore use this to choose a contour big enough to surround all the circles. Here's a fairly simplistic construction for our case where everything is real:
+```julia
+z₀ = (maximum(diag(A) .+ R) + minimum(diag(A) .- R)) /2 # average edges of circle
+r = max(abs.(diag(A) .- R .- z₀)..., abs.(diag(A) .+ R .- z₀)...)
 
-r = z -> extrapolate(p,z)/extrapolate(q,z)
+plot!(Circle(z₀, r))
+```
 
-phaseplot(-7..7, -7..7, r)
+Here we consider two cases
+```julia
+N = 1000
+h = 1/N
+Δ = SymTridiagonal(fill(-2,N), fill(1,N-1))/h^2
+eigvals(Δ)
 
-res = extrapolate.(p,λ)./extrapolate.(q',λ)
-r∞ = p.coefficients[n]/q.coefficients[m]
 
-r̃ = z -> r∞ + sum(res.*(z .- λ).^(-1))
+u0 = x -> x * (1-x) * exp(x)
 
-z = 0.1+0.2im
-r(z) - r̃(z)
+t = 0.1
+xx = range(0,1; length=N+2)
+A = Matrix(Δ) # Need to convert to dense matrix to diagonalise
+plot(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0])
+plot!(xx, [0; exp(-sqrt(-A)*t)*u0.(xx[2:end-1]); 0])
+```
+Slow!
+```julia
+t=10
+using BenchmarkTools
+@btime exp(A*t)
+```
 
-phaseplot(-7..7, -7..7, r̃)
+Inverse is fast!
+```julia
+v0 = u0.(xx[2:end-1])
+@time (Δ-0.1im*I) \ v0
+```
+
+
