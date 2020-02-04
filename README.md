@@ -36,3 +36,4 @@ Examples of previous projects:
 4. [Analyticity at infinity](notes/Lecture4.pdf)
 5. [Applications to real integrals](notes/Lecture5.pdf)
 6. [Convergence rate of the trapezium rule](notes/Lecture6.pdf)
+7. [Matrix functions](notes/Lecture7.pdf)

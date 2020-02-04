@@ -29,9 +29,10 @@ $$
 \|A \|_\infty = \max_k \|A^\top \vc e_k\|_1
 $$
 that is the maximum row sum and the $2$-norm
-$
+$$
 \|A \|_2
-$ which equals the largest singular value, that is the square-root of the largest eigenvalue of $A^\top A$.
+$$
+which equals the largest singular value, that is the square-root of the largest eigenvalue of $A^\top A$.
 
 Matrix norms have the usual norm properties, here  $\alpha$ is constant and $B$ has same dimensions as $A$:
 
@@ -56,7 +57,7 @@ One way to construct matrix exponentials is by Taylor series.
 $$
 f(z) = \sum_{k=0}^\infty f_k z^k
 $$
-converges in a radius of radius $R$. If $\|A \| < R$ holds true for any matrix norm, then define
+converges in radius $R$. If $\|A \| < R$ holds true for any matrix norm, then define
 $$
 f(A) := \sum_{k=0}^\infty f_k A^k.
 $$
@@ -86,7 +87,8 @@ phaseplot(-2..2, -1..1, z -> sqrt(z))
 scatter!(real(λ),imag(λ); color=:black)
 ```
 Then, using a slightly modified `sqrt_n` from Lecture 6 to compute the Taylor series and 
-comparing with `sqrt(A)` which is Julia's implementation of matrix square root,
+comparing with `sqrt(A)` which is Julia's implementation of matrix square root, we see convergence,
+as the spectrum of `A` lies inside the radius of convergence around 1:
 ```julia
 function sqrt_n(n,z,z₀) 
     ret = sqrt(z₀) * one(A)
@@ -99,7 +101,7 @@ function sqrt_n(n,z,z₀)
 end
 norm(sqrt(A) - sqrt_n(100,A,1))
 ```
-But of course if the eigenvalues become much larger this won't work.
+But  if the eigenvalues become much larger this won't work.
 Here we see an example of a matrix whose eigenvalues are not in the 
 radius of convergence:
 ```julia
@@ -110,7 +112,7 @@ phaseplot(-2..2, -5..5, z -> sqrt(z))
 scatter!(real(λ),imag(λ); color=:black, legend=false)
 ```
 Using the partial sum of the Taylor series completely
-fails:
+fails, and catastrophically so:
 ```julia
 norm(sqrt(A) - sqrt_n(100,A,1))
 ```
@@ -127,15 +129,50 @@ $$
 f(A) := V f(\Lambda) V^{-1} = V \begin{pmatrix} f(\lambda_1) \\ & \ddots \\ && f(\lambda_d) \end{pmatrix} V^{-1}
 $$
 This works very well as a definition but is slow for large matrices and does not take advantage of sparsity. 
-```julia
-J = zeros(10_000,10_000);
-```
+
+We can extend it to Jordan canonical form:
+
+**Def (Jordan canonical form)** Suppose 
+$$
+A = V \begin{pmatrix} J_1 \\ & \ddots & \\&&& J_{\tilde d} \end{pmatrix} V^{-1}
+$$
+where $J_k$ are Jordan blocks, that is, 
+$$
+J_k = \begin{pmatrix} \lambda_k & 1 \\ & \ddots & \ddots \\ && \lambda_k & 1 \\ &&& \lambda_k \end{pmatrix}
+$$
+Then
+define 
+$$
+f(A) := V \begin{pmatrix} f(J_1) \\ & \ddots \\ && f(J_{\tilde d}) \end{pmatrix} V^{-1}
+$$
+using 
+$$
+f\fpr(
+\begin{pmatrix} \lambda & 1 \\ & \ddots & \ddots \\ && \lambda & 1 \\ &&& \lambda \end{pmatrix}) = 
+\begin{pmatrix} f(\lambda) & f'(\lambda) & \cdots & f^{(m-1)}(\lambda)/(m-1)! \\
+        & \ddots & \ddots & \vdots \\
+            & & f(\lambda) & f'(\lambda)\\
+            &&& f(\lambda)
+            \end{pmatrix}.
+$$
+This definition can be verified to be consistent with Taylor series when both are valid by direct inspection. For example, 
+we have
+$$
+\sopmatrix{
+\lambda & 1
+& \lambda
+}^k = \sopmatrix{
+\lambda^k & k \lambda^{k-1}
+& \lambda^k
+}.
+$$
 
 
 ## Caucy's integral formula
 
 The last approach we detail in the next lecture is to use the
 Cauchy integral formula:
+
 **Def (Cauchy's integral  matrix function)** Suppose
 $\gamma$ is a simple, closed contour that surrounds the spectrum of $A$. Then define
 $$
@@ -155,7 +192,7 @@ scatter!(real(λ),imag(λ); color=:black, legend=false)
 plot!(real(γ.(θ)), imag(γ.(θ)); color=:blue, arrow=true)
 ```
 
-We use the periodic Trapezium rule to integrate over the contour:
+We use the periodic Trapezium rule to integrate over the contour, showing it is valid:
 ```julia
 periodic_rule(N) = 2π/N*(0:(N-1)), 2π/N*ones(N)
 γp = θ -> (z = exp(im*θ); im*z*(2 + 2z + 1.5/z^2))
@@ -164,3 +201,4 @@ N = 1000
 
 norm(sum(w .* γp.(θ).*sqrt.(γ.(θ)) .* [inv(γ(θ)*I-A) for θ in θ])/(2π*im) - sqrt(A))
 ```
+We will discuss more next lecture.
