@@ -174,7 +174,7 @@ The last approach we detail in the next lecture is to use the
 Cauchy integral formula:
 
 **Def (Cauchy's integral  matrix function)** Suppose
-$\gamma$ is a simple, closed contour that surrounds the spectrum of $A$. Then define
+$\gamma$ is a simple, closed contour that surrounds the spectrum of $A$ and $f$ is analytic in the interior. Then define
 $$
 f(A) := {1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta
 $$

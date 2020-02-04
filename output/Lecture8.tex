@@ -174,6 +174,50 @@
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
 
+\def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
+
+\def\map[#1]{\mapengine #1,\void.}
+
+\def\mapenginesep_#1#2,#3.{\mapfunction{#2}\ifx\void#3\else#1\mapengine #3.\fi }
+
+\def\mapsep_#1[#2]{\mapenginesep_{#1}#2,\void.}
+
+
+\def\vcbr[#1]{\pr(#1)}
+
+
+\def\bvect[#1,#2]{
+{
+\def\dots{\cdots}
+\def\mapfunction##1{\ | \  ##1}
+	\sopmatrix{
+		 \,#1\map[#2]\,
+	}
+}
+}
+
+
+
+\def\vect[#1]{
+{\def\dots{\ldots}
+	\vcbr[{#1}]
+} }
+
+\def\vectt[#1]{
+{\def\dots{\ldots}
+	\vect[{#1}]^{\top}
+} }
+
+\def\Vectt[#1]{
+{
+\def\mapfunction##1{##1 \cr} 
+\def\dots{\vdots}
+	\begin{pmatrix}
+		\map[#1]
+	\end{pmatrix}
+} }
+
+
 \begin{document}
 
 \textbf{M3M6: Methods of Mathematical Physics}
@@ -183,214 +227,64 @@ Dr. Sheehan Olver
 s.olver@imperial.ac.uk
 
 \section{Lecture 8: Matrix  functions via Cauchy's integral formula}
-\subsubsection{Application: calculating matrix exponentials}
-Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
+Here we investigate the definition of Cauchy's integral formula.
+
+\textbf{Def (Cauchy's integral  matrix function)} Suppose $\gamma$ is a simple, closed contour that surrounds the spectrum of $A$ and $f$ is analytic in the interior. Then define
 
 \[
-    {\mathbf u}'(t) = A {\mathbf u}(t)\qquad\hbox{and}\qquad {\mathbf u}(0) = {\mathbf u}_0(0)
+f(A) := {1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta
 \]
-The solution to this is given by the \emph{matrix exponential}
-
-\[
-    {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
-\]
-\begin{verbatim}
-where the matrix exponential is defined by it's Taylor series:
-\end{verbatim}
-\[
-    \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
-\]
-This has stability problems, so a more convenient form is as follows:
-
-\textbf{Theorem (Cauchy integral representation for matrix exponential)} Let $A \in {\mathbb C}^{n \times n}$ be a diagonalizable matrix:
-
-\[
-    A = V \Lambda V^{-1} \qquad\hbox{for}\qquad\Lambda =
-    \begin{pmatrix}\lambda_1 \cr &\ddots \cr && \lambda_d\end{pmatrix}
-\]
-Let $\gamma$ be a contour that surrounds the spectrum of $A$. Then we have
-
-\[
-    \exp(A) = {1 \over 2 \pi i} \oint_\gamma e^z (z I - A)^{-1} dz
-\]
-\textbf{Proof} Note by definition
+\subsection{Equivalence to diagonalisation/Jordan canonical form}
+We first show for diagonalisable $f$ this is equivalent to the definition by diagonalisation: if $A = V \Lambda V^{-1}$ we have
 
 
 \begin{align*}
-\exp(A) &= \sum_{k=0}^\infty {A^k \over k!} = V \sum_{k=0}^\infty {\Lambda^k \over k!}V^{-1} = V \begin{pmatrix} \E^{\lambda_1}\\ & \ddots \\ && \E^{\lambda_d} \end{pmatrix} V^{-1}  \\
-&= {1 \over 2\pi \I} V \begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta &= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) V (\zeta I - \Lambda)^{-1} V^{-1} \D \zeta \\
+&= {1 \over 2 \pi \I}  V \oint_\gamma f(\zeta)  (\zeta I - \Lambda)^{-1}  \D \zeta V^{-1}\\
+&=  V \sopmatrix{ {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_1)^{-1} \D \zeta\\
+&\ddots \\ && {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_d)^{-1} \D \zeta }  \D \zeta V^{-1} \\
+&= V \sopmatrix{ f(\lambda_1)\\
+&\ddots \\ && f(\lambda_d) }  \D \zeta V^{-1}  = f(A).
 \end{align*}
-It was important here that $\gamma$ surrounded all $\zeta_j$.
+For Jordan canonical form we need only show its valid on Jordan blocks. Note that provided $\alpha \neq 0$ we have
 
-We now take out the integration from the matrix, the easiest way to see this is to apply the Trapezium rule approximation:
+\[
+\sopmatrix{\alpha  & -1 \\  
+            & \ddots &\ddots \\
+            &&\alpha & -1 \\ &&& \alpha}^{-1} = \sopmatrix{\alpha^{-1} & \alpha^{-2} & \cdots & \alpha^{-d} \\
+                                                                    & \ddots& \ddots&\vdots \\
+                                                                    & & \alpha^{-1} & \alpha^{-2} \\
+                                                                    &&& \alpha^{-1}}
+\]
+which is verifiable by inspection. Therefore for a Jordan block
+
+\[
+A =\sopmatrix{\lambda  & 1 \\  
+            & \ddots &\ddots \\
+            &&\lambda & 1 \\ &&& \lambda}
+\]
+we have
 
 
 \begin{align*}
-V\begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} &= V\lim_{n \rightarrow \infty} \begin{pmatrix} \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_1 }  \\ & \ddots \\ && \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  V\sum_{j=1}^n w_j \E^\zeta_j \begin{pmatrix}  {1 \over \zeta_j - \lambda_1 }  \\ & \ddots \\ &&  {1 \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  \sum_{j=1}^n w_j \E^\zeta_j V(I \zeta_j - \Lambda)^{-1}V^{-1} \\
-&= \oint_\gamma \E^\zeta V(I \zeta - \Lambda)^{-1} V^{-1} \D \zeta 
-= \oint_\gamma \E^\zeta (I \zeta - V\Lambda V^{-1})^{-1}  \D \zeta \\
-& = \oint_\gamma \E^\zeta (I \zeta - A)^{-1}  \D \zeta \\
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta 
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{\zeta - \lambda  & -1 \\  
+            & \ddots &\ddots \\
+            &&\zeta - \lambda & -1 \\ &&& \zeta - \lambda}^{-1} \D \zeta \\
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{(\zeta-\lambda)^{-1}\D & (\zeta-\lambda)^{-2} & \cdots & (\zeta-\lambda)^{-d} \\
+                                                                    & \ddots& \ddots&  &\vdots \\
+                                                                    & & (\zeta-\lambda)^{-1} & (\zeta-\lambda)^{-2} \\
+                                                                    &&& (\zeta-\lambda)^{-1}} \D \zeta \\
+&= \begin{pmatrix} f(\lambda) & f'(\lambda) & \cdots & f^{(d-1)}(\lambda)/(d-1)! \\
+        & \ddots & \ddots & \vdots \\
+            & & f(\lambda) & f'(\lambda)\\
+            &&& f(\lambda)
+            \end{pmatrix} = f(A).
 \end{align*}
-\ensuremath{\blacksquare}
-
-\emph{Demonstration} we use this formula alongside the complex trapezium rule to calculate matrix exponentials.  Begin by creating a random symmetric matrix (which only has real eigenvalues):
-
-
-\begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{LinearAlgebra}@*)
-
-(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{randn}@*)(*@\HLJLp{(}@*)(*@\HLJLni{5}@*)(*@\HLJLp{,}@*)(*@\HLJLni{5}@*)(*@\HLJLp{)}@*)
-(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{A}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{A}@*)(*@\HLJLoB{{\textquotesingle}}@*)
-(*@\HLJLn{\ensuremath{\lambda}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-5-element Array{Float64,1}:
- -3.161605416383148 
- -1.8023650248203766
-  0.5534971606981841
-  1.8458549349231879
-  4.448031066956975
-\end{lstlisting}
-
-
-We can now by hand create a circle that surrounds all the eigenvalues:
-
-
-\begin{lstlisting}
-(*@\HLJLk{function}@*) (*@\HLJLnf{circle{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*) (*@\HLJLn{r}@*)(*@\HLJLp{)}@*) 
-    (*@\HLJLn{\ensuremath{\theta}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{periodic{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{)[}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]}@*)
-    (*@\HLJLn{r}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{exp}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{\ensuremath{\theta}}@*)(*@\HLJLp{),}@*) (*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{r}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{n}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{exp}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{\ensuremath{\theta}}@*)(*@\HLJLp{)}@*)
-(*@\HLJLk{end}@*)
-(*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{circle{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLni{100}@*)(*@\HLJLp{,}@*)(*@\HLJLnf{maximum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{abs}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\lambda}}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: periodic_rule not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: plot not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLnf{scatter!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\lambda}}@*)(*@\HLJLp{,}@*)(*@\HLJLnf{zeros}@*)(*@\HLJLp{(}@*)(*@\HLJLni{5}@*)(*@\HLJLp{);}@*) (*@\HLJLn{label}@*) (*@\HLJLoB{=}@*) (*@\HLJLs{"{}eigenvalues}@*) (*@\HLJLs{of}@*) (*@\HLJLs{A"{}}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: scatter! not defined
-\end{lstlisting}
-
-
-Here we wrap this up into a function \texttt{circle\_exp} that calculates the matrix exponential:
-
-
-\begin{lstlisting}
-(*@\HLJLk{function}@*) (*@\HLJLnf{circle{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*) (*@\HLJLn{n}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{r}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{circle{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{r}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLn{z}@*) (*@\HLJLoB{.+=}@*) (*@\HLJLn{z\ensuremath{\_0}}@*)
-
-    (*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{zero}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLk{for}@*) (*@\HLJLn{j}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)
-        (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{w}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{])}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{inv}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{I}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLk{end}@*)
-
-    (*@\HLJLn{ret}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
-(*@\HLJLk{end}@*)
-   
-(*@\HLJLnf{circle{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*) (*@\HLJLni{100}@*)(*@\HLJLp{,}@*) (*@\HLJLni{0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{8.0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{|>}@*)(*@\HLJLn{norm}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: periodic_rule not defined
-\end{lstlisting}
-
-
-In this case, it is beneficial to use an ellipse:
-
-
-\begin{lstlisting}
-(*@\HLJLk{function}@*) (*@\HLJLnf{ellipse{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*) (*@\HLJLn{n}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{a}@*)(*@\HLJLp{,}@*) (*@\HLJLn{b}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{ellipse{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{n}@*)(*@\HLJLp{,}@*)(*@\HLJLn{a}@*)(*@\HLJLp{,}@*)(*@\HLJLn{b}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLn{z}@*) (*@\HLJLoB{.+=}@*) (*@\HLJLn{z\ensuremath{\_0}}@*)
-
-    (*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{zero}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLk{for}@*) (*@\HLJLn{j}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)
-        (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{w}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{])}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{inv}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{I}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLk{end}@*)
-    (*@\HLJLn{ret}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
-(*@\HLJLk{end}@*)
-
-
-(*@\HLJLnf{ellipse{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*) (*@\HLJLni{50}@*)(*@\HLJLp{,}@*) (*@\HLJLni{0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{8.0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{5.0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{|>}@*)(*@\HLJLn{norm}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: ellipse_rule not defined
-\end{lstlisting}
-
-
-For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
-
-
-\begin{lstlisting}
-(*@\HLJLk{function}@*) (*@\HLJLnf{taylor{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*)(*@\HLJLn{n}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Matrix}@*)(*@\HLJLp{(}@*)(*@\HLJLn{I}@*)(*@\HLJLp{,}@*) (*@\HLJLnf{size}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{))}@*)
-    (*@\HLJLk{for}@*) (*@\HLJLn{k}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLn{n}@*)
-        (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{A}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLn{k}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{factorial}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLn{k}@*)(*@\HLJLp{)}@*)
-    (*@\HLJLk{end}@*)
-    (*@\HLJLn{ret}@*)
-(*@\HLJLk{end}@*)
-
-(*@\HLJLn{B}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{A}@*) (*@\HLJLoB{-}@*) (*@\HLJLni{20}@*)(*@\HLJLn{I}@*)
-
-(*@\HLJLnf{taylor{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{B}@*)(*@\HLJLp{,}@*) (*@\HLJLni{200}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{B}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{|>}@*)(*@\HLJLn{norm}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-2.2269613035365295e-7
-\end{lstlisting}
-
-
-We can use an ellpise to surround the spectrum:
-
-
-\begin{lstlisting}
-(*@\HLJLnf{scatter}@*)(*@\HLJLp{(}@*)(*@\HLJLn{complex}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{B}@*)(*@\HLJLp{)))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: scatter not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{ellipse{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLni{50}@*)(*@\HLJLp{,}@*)(*@\HLJLni{8}@*)(*@\HLJLp{,}@*)(*@\HLJLni{5}@*)(*@\HLJLp{)[}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]}@*) (*@\HLJLoB{.-}@*) (*@\HLJLni{20}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: ellipse_rule not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLnf{norm}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{ellipse{\_}exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{B}@*)(*@\HLJLp{,}@*) (*@\HLJLni{50}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{20.0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{8.0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{5.0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{B}@*)(*@\HLJLp{))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: ellipse_rule not defined
-\end{lstlisting}
-
-
-\subsubsection{Gershgorin circle theorem}
+\subsection{Gershgorin circle theorem}
 If we only know $A$, how do we know how big to make the contour? Gershgorin's circle theorem gives the answer:
 
 \textbf{Theorem (Gershgorin)} Let $A \in {\mathbb C}^{d \times d}$ and define 
@@ -407,12 +301,33 @@ where $\bar B(z_0, r)$ is the closed disk of radius $r$ and $\rho(A)$ is the set
 
 **Proof **
 
+We can assume any eigenvalue has at least one nonzero eigenvector, whose maximum entry is $1$ in the $k$-th entry. (Otherwise, rescale.) That is, there exists
+
+\[
+\vc v = \Vectt[v_1,\dots,v_{k-1},1,v_{k+1},\dots,v_d]
+\]
+so that
+
+\[
+A \vc v = \lambda \vc v
+\]
+The result follows from:
+
+\[
+\lambda = \vc e_k^\top (\lambda  \vc v) = \vc e_k^\top A \vc v = a_{kk} + \sum_{j \neq k} a_{kj} v_j
+\]
+so that
+
+\[
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| = R_k. 
+\]
 \ensuremath{\blacksquare}
 
 \emph{Demonstration} Here we apply this to a particular matrix:
 
 
 \begin{lstlisting}
+(*@\HLJLk{using}@*) (*@\HLJLn{LinearAlgebra}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ApproxFun}@*)
 (*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLp{[}@*)(*@\HLJLni{1}@*) (*@\HLJLni{2}@*) (*@\HLJLni{3}@*)(*@\HLJLp{;}@*) (*@\HLJLni{1}@*) (*@\HLJLni{5}@*) (*@\HLJLni{2}@*)(*@\HLJLp{;}@*) (*@\HLJLoB{-}@*)(*@\HLJLni{4}@*) (*@\HLJLni{1}@*) (*@\HLJLni{6}@*)(*@\HLJLp{]}@*)
 \end{lstlisting}
 
@@ -447,50 +362,15 @@ Gershgorin's theorem tells us that the spectrum lies in the union of the circles
 
 (*@\HLJLn{\ensuremath{\lambda}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)
 (*@\HLJLn{p}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{plot}@*)(*@\HLJLp{()}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: plot not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
 (*@\HLJLk{for}@*) (*@\HLJLn{k}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLnf{size}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
     (*@\HLJLnf{drawcircle!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{[}@*)(*@\HLJLn{k}@*)(*@\HLJLp{,}@*)(*@\HLJLn{k}@*)(*@\HLJLp{],}@*) (*@\HLJLn{R}@*)(*@\HLJLp{[}@*)(*@\HLJLn{k}@*)(*@\HLJLp{])}@*)
 (*@\HLJLk{end}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: plot! not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
 (*@\HLJLnf{scatter!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{complex}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\lambda}}@*)(*@\HLJLp{);}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}eigenvalues"{}}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: scatter! not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
 (*@\HLJLnf{scatter!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{complex}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{diag}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLp{));}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}diagonals"{}}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: scatter! not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
 (*@\HLJLn{p}@*)
 \end{lstlisting}
 
-\begin{lstlisting}
-Error: UndefVarError: p not defined
-\end{lstlisting}
-
+\includegraphics[width=\linewidth]{figures/Lecture8_3_1.pdf}
 
 We can therefore use this to choose a contour big enough to surround all the circles. Here's a fairly simplistic construction for our case where everything is real:
 
@@ -502,111 +382,7 @@ We can therefore use this to choose a contour big enough to surround all the cir
 (*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{r}@*)(*@\HLJLp{))}@*)
 \end{lstlisting}
 
-\begin{lstlisting}
-Error: UndefVarError: Circle not defined
-\end{lstlisting}
-
-
-Here we consider two cases
-
-
-\begin{lstlisting}
-(*@\HLJLn{N}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1000}@*)
-(*@\HLJLn{h}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{N}@*)
-(*@\HLJLn{\ensuremath{\Delta}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{SymTridiagonal}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{fill}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLn{N}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{fill}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLn{N}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)
-(*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*)
-
-
-(*@\HLJLn{u0}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)
-
-(*@\HLJLn{t}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
-(*@\HLJLn{xx}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{range}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{;}@*) (*@\HLJLn{length}@*)(*@\HLJLoB{=}@*)(*@\HLJLn{N}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
-(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Matrix}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Need}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{convert}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{dense}@*) (*@\HLJLcs{matrix}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{diagonalise}@*)
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{])}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: plot not defined
-\end{lstlisting}
-
-
-\begin{lstlisting}
-(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{])}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: plot! not defined
-\end{lstlisting}
-
-
-Slow!
-
-
-\begin{lstlisting}
-(*@\HLJLn{t}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{10}@*)
-(*@\HLJLk{using}@*) (*@\HLJLn{BenchmarkTools}@*)
-(*@\HLJLnd{@btime}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-178.308 ms (28 allocations: 53.77 MiB)
-1000(*@\ensuremath{\times}@*)1000 Array{Float64,2}:
- 3.28482e-51  6.56961e-51  9.85434e-51  (*@\ensuremath{\dots}@*)  6.56961e-51  3.28482e-51
- 6.56961e-51  1.31392e-50  1.97086e-50     1.31392e-50  6.56961e-51
- 9.85434e-51  1.97086e-50  2.95626e-50     1.97086e-50  9.85434e-51
- 1.3139e-50   2.62778e-50  3.94164e-50     2.62778e-50  1.3139e-50 
- 1.64235e-50  3.28468e-50  4.92697e-50     3.28468e-50  1.64235e-50
- 1.97078e-50  3.94154e-50  5.91226e-50  (*@\ensuremath{\dots}@*)  3.94154e-50  1.97078e-50
- 2.29919e-50  4.59837e-50  6.89749e-50     4.59837e-50  2.29919e-50
- 2.62759e-50  5.25514e-50  7.88265e-50     5.25514e-50  2.62759e-50
- 2.95595e-50  5.91187e-50  8.86774e-50     5.91187e-50  2.95595e-50
- 3.28429e-50  6.56854e-50  9.85273e-50     6.56854e-50  3.28429e-50
- (*@\ensuremath{\vdots}@*)                                      (*@\ensuremath{\ddots}@*)                          
- 2.95595e-50  5.91187e-50  8.86774e-50     5.91187e-50  2.95595e-50
- 2.62759e-50  5.25514e-50  7.88265e-50     5.25514e-50  2.62759e-50
- 2.29919e-50  4.59837e-50  6.89749e-50     4.59837e-50  2.29919e-50
- 1.97078e-50  3.94154e-50  5.91226e-50     3.94154e-50  1.97078e-50
- 1.64235e-50  3.28468e-50  4.92697e-50  (*@\ensuremath{\dots}@*)  3.28468e-50  1.64235e-50
- 1.3139e-50   2.62778e-50  3.94164e-50     2.62778e-50  1.3139e-50 
- 9.85434e-51  1.97086e-50  2.95626e-50     1.97086e-50  9.85434e-51
- 6.56961e-51  1.31392e-50  1.97086e-50     1.31392e-50  6.56961e-51
- 3.28482e-51  6.56961e-51  9.85434e-51     6.56961e-51  3.28482e-51
-\end{lstlisting}
-
-
-Inverse is fast!
-
-
-\begin{lstlisting}
-(*@\HLJLn{v0}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{])}@*)
-(*@\HLJLnd{@time}@*) (*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{I}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{{\textbackslash}}@*) (*@\HLJLn{v0}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-0.000054 seconds (15 allocations: 79.094 KiB)
-1000-element Array{Complex{Float64},1}:
- -0.00012698534640807264 + 1.3694267632523385e-6im
- -0.00025396969395258777 + 2.7388408279700356e-6im
-  -0.0003809520437729823 + 4.108229495718337e-6im 
-  -0.0005079313970146893 + 5.4775800682622626e-6im
-  -0.0006349067548321476 + 6.846879847666487e-6im 
-  -0.0007618771183918197 + 8.216116136395228e-6im 
-  -0.0008888414888752172 + 9.58527623741213e-6im  
-  -0.0010157988674819353 + 1.0954347454280142e-5im
-  -0.0011427482554326937 + 1.2323317091261413e-5im
-   -0.001269688653972387 + 1.3692172453417137e-5im
-                         (*@\ensuremath{\vdots}@*)                        
-  -0.0013945493469472022 + 1.2921824147992476e-5im
-  -0.0012396601917373797 + 1.14864171677115e-5im  
-  -0.0010847496583173222 + 1.0050886221411347e-5im
-  -0.0009298203814081073 + 8.615246800145361e-6im 
-  -0.0007748750064125377 + 7.179514396841236e-6im 
-  -0.0006199161894392533 + 5.743704506036466e-6im 
-  -0.0004649465973268873 + 4.307832623612753e-6im 
- -0.00030996890766826464 + 2.8719142465293073e-6im
- -0.00015498580883464345 + 1.4359648725550954e-6im
-\end{lstlisting}
-
+\includegraphics[width=\linewidth]{figures/Lecture8_4_1.pdf}
 
 
 \end{document}

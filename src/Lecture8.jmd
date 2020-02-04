@@ -6,135 +6,72 @@ s.olver@imperial.ac.uk
 
 # Lecture 8: Matrix  functions via Cauchy's integral formula
 
+Here we investigate the definition of Cauchy's integral formula.
+
+**Def (Cauchy's integral  matrix function)** Suppose
+$\gamma$ is a simple, closed contour that surrounds the spectrum of $A$ and $f$ is analytic in the interior. Then define
+$$
+f(A) := {1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta
+$$
 
 
-### Application: calculating matrix exponentials
+## Equivalence to diagonalisation/Jordan canonical form
 
-Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
-
-$$
-    {\mathbf u}'(t) = A {\mathbf u}(t)\qquad\hbox{and}\qquad {\mathbf u}(0) = {\mathbf u}_0(0)
-$$
-    
-The solution to this is given by the _matrix exponential_
-$$
-    {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
-$$
-    where the matrix exponential is defined by it's Taylor series:
-$$
-    \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
-$$
-This has stability problems, so a more convenient form is as follows:
-
-**Theorem (Cauchy integral representation for matrix exponential)**
-Let $A \in {\mathbb C}^{n \times n}$ be a diagonalizable matrix:
-$$
-    A = V \Lambda V^{-1} \qquad\hbox{for}\qquad\Lambda =
-    \begin{pmatrix}\lambda_1 \cr &\ddots \cr && \lambda_d\end{pmatrix}
-$$
-Let $\gamma$ be a contour that surrounds the spectrum of $A$. Then we have
-$$
-    \exp(A) = {1 \over 2 \pi i} \oint_\gamma e^z (z I - A)^{-1} dz
-$$
-    
-**Proof** Note by definition
+We first show for diagonalisable $f$ this is equivalent to the definition by diagonalisation: if $A = V \Lambda V^{-1}$ we have
 $$
 \begin{align*}
-\exp(A) &= \sum_{k=0}^\infty {A^k \over k!} = V \sum_{k=0}^\infty {\Lambda^k \over k!}V^{-1} = V \begin{pmatrix} \E^{\lambda_1}\\ & \ddots \\ && \E^{\lambda_d} \end{pmatrix} V^{-1}  \\
-&= {1 \over 2\pi \I} V \begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} 
-\end{align*}
-$$
-It was important here that $\gamma$ surrounded all $\zeta_j$.
-
-We now take out the integration from the matrix, the easiest way to see this is to apply the Trapezium rule approximation:
-$$
-\begin{align*}
-V\begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} &= V\lim_{n \rightarrow \infty} \begin{pmatrix} \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_1 }  \\ & \ddots \\ && \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  V\sum_{j=1}^n w_j \E^\zeta_j \begin{pmatrix}  {1 \over \zeta_j - \lambda_1 }  \\ & \ddots \\ &&  {1 \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  \sum_{j=1}^n w_j \E^\zeta_j V(I \zeta_j - \Lambda)^{-1}V^{-1} \\
-&= \oint_\gamma \E^\zeta V(I \zeta - \Lambda)^{-1} V^{-1} \D \zeta 
-= \oint_\gamma \E^\zeta (I \zeta - V\Lambda V^{-1})^{-1}  \D \zeta \\
-& = \oint_\gamma \E^\zeta (I \zeta - A)^{-1}  \D \zeta \\
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta &= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) V (\zeta I - \Lambda)^{-1} V^{-1} \D \zeta \\
+&= {1 \over 2 \pi \I}  V \oint_\gamma f(\zeta)  (\zeta I - \Lambda)^{-1}  \D \zeta V^{-1}\\
+&=  V \sopmatrix{ {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_1)^{-1} \D \zeta\\
+&\ddots \\ && {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_d)^{-1} \D \zeta }  \D \zeta V^{-1} \\
+&= V \sopmatrix{ f(\lambda_1)\\
+&\ddots \\ && f(\lambda_d) }  \D \zeta V^{-1}  = f(A).
 \end{align*}
 $$
 
-
-■
-
-_Demonstration_ we use this formula alongside the complex trapezium rule to calculate matrix exponentials. 
-Begin by creating a random symmetric matrix (which only has real eigenvalues):
-```julia
-using LinearAlgebra
-
-A = randn(5,5)
-A = A + A'
-λ = eigvals(A)
-```
-We can now by hand create a circle that surrounds all the eigenvalues:
-```julia
-function circle_rule(n, r) 
-    θ = periodic_rule(n)[1]
-    r*exp.(im*θ), 2π*im*r/n*exp.(im*θ)
-end
-z,w = circle_rule(100,maximum(abs.(λ))+1)
-
-plot(z)
-scatter!(λ,zeros(5); label = "eigenvalues of A")
-```
-Here we wrap this up into a function `circle_exp` that calculates the matrix exponential:
-```julia
-function circle_exp(A, n, z₀, r)
-    z,w = circle_rule(n,r)
-    z .+= z₀
-
-    ret = zero(A)
-    for j=1:n
-        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
-    end
-
-    ret/(2π*im)
-end
-   
-circle_exp(A, 100, 0, 8.0) -exp(A) |>norm
-```
-In this case, it is beneficial to use an ellipse:
-```julia
-function ellipse_exp(A, n, z₀, a, b)
-    z,w = ellipse_rule(n,a,b)
-    z .+= z₀
-
-    ret = zero(A)
-    for j=1:n
-        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
-    end
-    ret/(2π*im)
-end
+For Jordan canonical form we need only show its valid on Jordan blocks. Note that provided $\alpha \neq 0$ we have
+$$
+\sopmatrix{\alpha  & -1 \\  
+            & \ddots &\ddots \\
+            &&\alpha & -1 \\ &&& \alpha}^{-1} = \sopmatrix{\alpha^{-1} & \alpha^{-2} & \cdots & \alpha^{-d} \\
+                                                                    & \ddots& \ddots&\vdots \\
+                                                                    & & \alpha^{-1} & \alpha^{-2} \\
+                                                                    &&& \alpha^{-1}}
+$$
+which is verifiable by inspection. Therefore for a Jordan block
+$$
+A =\sopmatrix{\lambda  & 1 \\  
+            & \ddots &\ddots \\
+            &&\lambda & 1 \\ &&& \lambda}
+$$
+we have
+$$
+\begin{align*}
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta 
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{\zeta - \lambda  & -1 \\  
+            & \ddots &\ddots \\
+            &&\zeta - \lambda & -1 \\ &&& \zeta - \lambda}^{-1} \D \zeta \\
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{(\zeta-\lambda)^{-1}\D & (\zeta-\lambda)^{-2} & \cdots & (\zeta-\lambda)^{-d} \\
+                                                                    & \ddots& \ddots&  &\vdots \\
+                                                                    & & (\zeta-\lambda)^{-1} & (\zeta-\lambda)^{-2} \\
+                                                                    &&& (\zeta-\lambda)^{-1}} \D \zeta \\
+&= \begin{pmatrix} f(\lambda) & f'(\lambda) & \cdots & f^{(d-1)}(\lambda)/(d-1)! \\
+        & \ddots & \ddots & \vdots \\
+            & & f(\lambda) & f'(\lambda)\\
+            &&& f(\lambda)
+            \end{pmatrix} = f(A).
+\end{align*}
+$$
 
 
-ellipse_exp(A, 50, 0, 8.0, 5.0) -exp(A) |>norm
-```
-For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
-```julia
-function taylor_exp(A,n)
-    ret = Matrix(I, size(A))
-    for k=1:n
-        ret += A^k/factorial(1.0k)
-    end
-    ret
-end
 
-B = A - 20I
 
-taylor_exp(B, 200) -exp(B) |>norm
-```
-We can use an ellpise to surround the spectrum:
-```julia
-scatter(complex.(eigvals(B)))
-plot!(ellipse_rule(50,8,5)[1] .- 20)
 
-norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
-```
-### Gershgorin circle theorem
+
+## Gershgorin circle theorem
 
 If we only know $A$, how do we know how big to make the contour? Gershgorin's circle theorem gives the answer:
 
@@ -150,11 +87,28 @@ where $\bar B(z_0, r)$ is the closed disk of radius $r$ and $\rho(A)$ is the set
 
 **Proof **
 
+We can assume any eigenvalue has at least one nonzero eigenvector, whose maximum entry is $1$ in the $k$-th entry. (Otherwise, rescale.) That is, there exists
+$$
+\vc v = \Vectt[v_1,\dots,v_{k-1},1,v_{k+1},\dots,v_d]
+$$
+so that
+$$
+A \vc v = \lambda \vc v
+$$
+The result follows from:
+$$
+\lambda = \vc e_k^\top (\lambda  \vc v) = \vc e_k^\top A \vc v = a_{kk} + \sum_{j \neq k} a_{kj} v_j
+$$
+so that
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| = R_k. 
+$$
 
 ■
 
 _Demonstration_ Here we apply this to a particular matrix:
 ```julia
+using LinearAlgebra, Plots, ComplexPhasePortrait, ApproxFun
 A = [1 2 3; 1 5 2; -4 1 6]
 ```
 The following calculates the row sums:
@@ -181,34 +135,3 @@ r = max(abs.(diag(A) .- R .- z₀)..., abs.(diag(A) .+ R .- z₀)...)
 
 plot!(Circle(z₀, r))
 ```
-
-Here we consider two cases
-```julia
-N = 1000
-h = 1/N
-Δ = SymTridiagonal(fill(-2,N), fill(1,N-1))/h^2
-eigvals(Δ)
-
-
-u0 = x -> x * (1-x) * exp(x)
-
-t = 0.1
-xx = range(0,1; length=N+2)
-A = Matrix(Δ) # Need to convert to dense matrix to diagonalise
-plot(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0])
-plot!(xx, [0; exp(-sqrt(-A)*t)*u0.(xx[2:end-1]); 0])
-```
-Slow!
-```julia
-t=10
-using BenchmarkTools
-@btime exp(A*t)
-```
-
-Inverse is fast!
-```julia
-v0 = u0.(xx[2:end-1])
-@time (Δ-0.1im*I) \ v0
-```
-
-

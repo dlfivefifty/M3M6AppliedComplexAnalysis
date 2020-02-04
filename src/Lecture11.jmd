@@ -1,0 +1,109 @@
+
+## Representing analytic functions by their behaviour near singularities and branch cuts
+
+A _key_ theme in complex analysis is representing functions by their behaviour near singularities.  
+A rather simple example of this is a side-effect of Cauchy's integral representation:
+
+**Corollary (Cauchy's integral representation around holes)** Let $D \subset {\mathbb C}$ be a domain with $g$ holes (i.e., genus $g$). 
+Suppose $f$ is holmorphic in and on the boundary of $D$.  Given $g$ simple closed negatively oriented contours 
+ surrounding the holes $\gamma_1, \ldots, \gamma_g$ and a simple closed positively oriented contour $\gamma_{0}$ surrounding 
+ the outer boundary of $D$, we have
+$$
+f(z) = {1 \over 2 \pi i} \sum_{k=0}^{g} \oint_{\gamma_k} {f(\zeta) \over \zeta - z} d \zeta
+$$
+
+Here are two examples:
+```julia
+f = z -> (exp(1/z) + exp(z))/(z*(z+2))
+Γ = Circle(0.0, 4.0) ∪ Circle(0.0,0.5,false) ∪ Circle(-2.0,0.1,false)
+phaseplot(-5..5, -5..5, f)
+plot!(Γ; color=:black, label=:contour, arrow=true, linewidth=1.5)
+
+ζ = Fun(Γ)
+z = 2.0+1.0im
+sum(f.(ζ)/(ζ - z))/(2π*im)
+
+f(z)
+```
+
+### Application: Partial fraction expansion
+
+Suppose we have a rational function 
+$$
+r(z) = {p(z) \over q(z)}
+$$
+where $p,q$ are both polynomials. This is analytic everywhere apart for the roots of $q$, which we enumerate $\lambda_1,\ldots,\lambda_g$.   If we draw negatively oriented circles around each root, the previous result applies:
+
+n = 7
+m = 5
+p = Fun(Taylor(), randn(n))
+q = Fun(Taylor(), randn(m))
+λ = complexroots(q)
+
+Γ = Circle(0.0, 5.0)
+for λ in λ
+    Γ = Γ ∪ Circle(λ, 0.1, false)
+end
+r = z -> extrapolate(p,z)/extrapolate(q,z)
+
+phaseplot(-5..5, -5..5, r)
+plot!(Γ; color=:black, label=:contour)
+
+ζ = Fun(Γ)
+z = 2.0+2.0im
+sum(r.(ζ)/(ζ - z))/(2π*im) - r(z)
+
+But now we can use the residue theorem to simplify the integrals! Note the following:
+
+
+
+
+For example,  near the $j$th root we have the Laurent series
+$$
+r(z) = r_{-N_j}^j (z-\lambda_j)^{-N_j}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1} + r_0 + r_1 (z-\lambda_j) + \cdots
+$$
+where $N_j$ is the order of the zero of $q(z)$ at $\lambda_j$.
+
+Then it follows that
+$${1 \over 2 \pi i} \oint_{\gamma_j} {r(\zeta) \over z - \zeta} d\zeta = r_{-N_j}^j (z-\lambda_j)^{-N}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1}$$
+for $z$ outside the contour $\gamma_j$.
+
+Similarly, for the contour around infinity $\gamma_0$, if we have the Laurent series
+$$
+r(z) = \cdots + r_{-1}^0 z^{-1} + r_0^0  + r_1^0 z + \dots + r_{N_0}^0 z^{N_0}
+$$
+where $N_0$ is the degree of $p(z)$ divided by the degree of $q(z)$. 
+Then we have
+$${1 \over 2 \pi i} \oint_{\gamma_{g+1}} {r(\zeta) \over z - \zeta} d\zeta = r_0^0 + r_1^0 z + \cdots +  r_{N_0}^0 z^{N_0}.$$
+
+Thus we have the expansion summing over the behaviour near each singularity that holds for all $z$:
+
+$$
+r(z) = \sum_{k=0}^{N_0} r_k^0 z^k  +  \sum_{j=1}^d \sum_{k = -N_j}^{-1} r_k^j (z - \lambda_j)^k
+$$
+
+*Example* When we only have simple poles and no polynomial growth at $\infty$, this has a simple form in terms of residues:
+
+$$
+r(z) = r(\infty)  +  \sum_{j=1}^d    (z - \lambda_j)^{-1} \underset{z = \lambda_j}{\rm Res}\, r(z)
+$$
+
+n = 5
+m = 5
+p = Fun(Taylor(), randn(n))
+q = Fun(Taylor(), randn(m))
+λ = complexroots(q)
+
+r = z -> extrapolate(p,z)/extrapolate(q,z)
+
+phaseplot(-7..7, -7..7, r)
+
+res = extrapolate.(p,λ)./extrapolate.(q',λ)
+r∞ = p.coefficients[n]/q.coefficients[m]
+
+r̃ = z -> r∞ + sum(res.*(z .- λ).^(-1))
+
+z = 0.1+0.2im
+r(z) - r̃(z)
+
+phaseplot(-7..7, -7..7, r̃)
