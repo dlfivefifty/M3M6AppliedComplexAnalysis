@@ -1,163 +1,204 @@
-### Application: calculating matrix exponentials
+__M3M6: Methods of Mathematical Physics__
 
-Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
+Dr. Sheehan Olver
 
-$$
-    {\mathbf u}'(t) = A {\mathbf u}(t)\qquad\hbox{and}\qquad {\mathbf u}(0) = {\mathbf u}_0(0)
-    $$
-    
-The solution to this is given by the _matrix exponential_
-$$
-    {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
-    $$
-    where the matrix exponential is defined by it's Taylor series:
-$$
-    \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
-    $$
-This has stability problems, so a more convenient form is as follows:
+s.olver@imperial.ac.uk
 
-**Theorem (Cauchy integral representation for matrix exponential)**
-Let $A \in {\mathbb C}^{n \times n}$ be a diagonalizable matrix:
-$$
-    A = V \Lambda V^{-1} \qquad\hbox{for}\qquad\Lambda =
-    \begin{pmatrix}\lambda_1 \cr &\ddots \cr && \lambda_d\end{pmatrix}
-$$
-Let $\gamma$ be a contour that surrounds the spectrum of $A$. Then we have
-$$
-    \exp(A) = {1 \over 2 \pi i} \oint_\gamma e^z (z I - A)^{-1} dz
-    $$
-    
-**Proof** Note by definition
-$$
-\begin{align*}
-\exp(A) &= \sum_{k=0}^\infty {A^k \over k!} = V \sum_{k=0}^\infty {\Lambda^k \over k!}V^{-1} = V \begin{pmatrix} \E^{\lambda_1}\\ & \ddots \\ && \E^{\lambda_d} \end{pmatrix} V^{-1}  \\
-&= {1 \over 2\pi \I} V \begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} 
-\end{align*}
-$$
-It was important here that $\gamma$ surrounded all $\zeta_j$.
+# Lecture 7: Matrix norms and matrix functions
 
-We now take out the integration from the matrix, the easiest way to see this is to apply the Trapezium rule approximation:
+This lecture we start to introduce an application of Cauchy's integral formula and trapezium rule:
+computing matrix functions, e.g., the matrix exponential $\E^A$. There are three possible definitions
+for matrix functions:
+
+1. Taylor series
+2. Diagonalisation/Jordan canonical form
+3. Cauchy's integral formula
+
+## Matrix norms
+
+Before discussing matrix functions we first review the notion of a matrix norm induced by a vector norm:
 $$
-\begin{align*}
-V\begin{pmatrix} \oint_\gamma {\E^\zeta \over \zeta - \lambda_1 } \D\zeta \\ & \ddots \\ && \oint_\gamma {\E^\zeta \over \zeta - \lambda_d } \D\zeta\end{pmatrix} V^{-1} &= V\lim_{n \rightarrow \infty} \begin{pmatrix} \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_1 }  \\ & \ddots \\ && \sum_{j=1}^n {w_j \E^\zeta_j \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  V\sum_{j=1}^n w_j \E^\zeta_j \begin{pmatrix}  {1 \over \zeta_j - \lambda_1 }  \\ & \ddots \\ &&  {1 \over \zeta_j - \lambda_d } \end{pmatrix} V^{-1} \\
-&= \lim_{n \rightarrow \infty}  \sum_{j=1}^n w_j \E^\zeta_j V(I \zeta_j - \Lambda)^{-1}V^{-1} \\
-&= \oint_\gamma \E^\zeta V(I \zeta - \Lambda)^{-1} V^{-1} \D \zeta 
-= \oint_\gamma \E^\zeta (I \zeta - V\Lambda V^{-1})^{-1}  \D \zeta \\
-& = \oint_\gamma \E^\zeta (I \zeta - A)^{-1}  \D \zeta \\
-\end{align*}
+\| A\| := \sup_{v : \| v \| = 1} \| A v\| = \sup_{v } {\| A v\| \over \| v\|}
+$$
+some examples of matrix norms are the 1-norm
+$$
+\|A \|_1 = \max_j \|A \vc e_j\|_1
+$$
+that is the maximum column sum, the $\infty$-norm
+$$
+\|A \|_\infty = \max_k \|A^\top \vc e_k\|_1
+$$
+that is the maximum row sum and the $2$-norm
+$$
+\|A \|_2
+$$
+which equals the largest singular value, that is the square-root of the largest eigenvalue of $A^\top A$.
+
+Matrix norms have the usual norm properties, here  $\alpha$ is constant and $B$ has same dimensions as $A$:
+
+1. $\|\alpha A\| = |\alpha| \| A \|$
+2. $\| A + B \| \leq \|A \| + \|B \|$
+
+They have the extra feature that
+$$
+\|A B\| \leq \|A \| \|B \|
+$$
+which implies that
+$$
+\|A^k \| \leq \|A\|^k.
+$$
+
+### Taylor series definition
+
+One way to construct matrix exponentials is by Taylor series. 
+
+
+**Def(Taylor series matrix function)** Suppose
+$$
+f(z) = \sum_{k=0}^\infty f_k z^k
+$$
+converges in radius $R$. If $\|A \| < R$ holds true for any matrix norm, then define
+$$
+f(A) := \sum_{k=0}^\infty f_k A^k.
 $$
 
 
-■
+The well-posedness of this construction follows from the fact that the partial sums form a Cauchy sequence. In particular, let $\epsilon > 0$.
+Then for $r = \|A \| < R$ we can choose $N$ such that
+$$
+\sum_{k=n}^m |f_k| r^k \leq \epsilon
+$$
+for all $n,m > N$. Therefore
+$$
+\|\sum_{k=n}^m f_k A^k \| \leq \sum_{k=n}^m |f_k| \|A\|^k \leq \epsilon.
+$$
 
-_Demonstration_ we use this formula alongside the complex trapezium rule to calculate matrix exponentials. Begin by creating a random symmetric matrix (which only has real eigenvalues):
-
-A = randn(5,5)
-A = A + A'
+The issue with Taylor series is that it requires analyticity to converge. We can see this clearly for the case 
+$\sqrt{A}$ with Taylor series around $1$:
+$$
+\sqrt{z+1} = 1 + z/2 - z^2/8 + z^3/16 - \cdots = 1 + z/2 + \sum_{k=3}^\infty {3 \cdots (2k-3) \over 2^k k!} (-z)^k
+$$
+Consider
+```julia
+using Plots, ComplexPhasePortrait, IntervalSets, LinearAlgebra
+A = [1 0.1; 0.2 1]
 λ = eigvals(A)
-
-We can now by hand create a circle that surrounds all the eigenvalues:
-
-z,w = circle_rule(100,maximum(abs.(λ))+1)
-
-plot(z)
-scatter!(λ,zeros(5); label = "eigenvalues of A")
-
-Here we wrap this up into a function `circle_exp` that calculates the matrix exponential:
-
-function circle_exp(A, n, z₀, r)
-    z,w = circle_rule(n,r)
-    z .+= z₀
-
-    ret = zero(A)
-    for j=1:n
-        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
-    end
-
-    ret/(2π*im)
-end
-   
-circle_exp(A, 100, 0, 8.0) -exp(A) |>norm
-
-In this case, it is beneficial to use an ellipse:
-
-function ellipse_exp(A, n, z₀, a, b)
-    z,w = ellipse_rule(n,a,b)
-    z .+= z₀
-
-    ret = zero(A)
-    for j=1:n
-        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
-    end
-    ret/(2π*im)
-end
-
-
-ellipse_exp(A, 50, 0, 8.0, 5.0) -exp(A) |>norm
-
-For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
-
-function taylor_exp(A,n)
-    ret = Matrix(I, size(A))
+phaseplot(-2..2, -1..1, z -> sqrt(z))
+scatter!(real(λ),imag(λ); color=:black)
+```
+Then, using a slightly modified `sqrt_n` from Lecture 6 to compute the Taylor series and 
+comparing with `sqrt(A)` which is Julia's implementation of matrix square root, we see convergence,
+as the spectrum of `A` lies inside the radius of convergence around 1:
+```julia
+function sqrt_n(n,z,z₀) 
+    ret = sqrt(z₀) * one(A)
+    c = 0.5*inv(ret)*(z-z₀*I)
     for k=1:n
-        ret += A^k/factorial(1.0k)
+        ret += c
+        c *= -(2k-1)/(2*(k+1)*z₀)*(z-z₀*I)
     end
     ret
 end
-
-B = A - 20I
-
-taylor_exp(B, 200) -exp(B) |>norm
-
-We can use an ellpise to surround the spectrum:
-
-scatter(complex.(eigvals(B)))
-plot!(ellipse_rule(50,8,5)[1] .- 20)
-
-norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
-
-### Gershgorin circle theorem
-
-If we only know $A$, how do we know how big to make the contour? Gershgorin's circle theorem gives the answer:
-
-**Theorem (Gershgorin)** Let $A \in {\mathbb C}^{d \times d}$ and define 
-$$R_k = \sum_{j=1 \atop j \neq k}^d |a_{kj}| $$
-Then 
-$$
-\rho(A) \subset \bigcup_{k=1}^d \bar B(a_{kk}, R_k)
-$$
-where $\bar B(z_0, r)$ is the closed disk of radius $r$ and $\rho(A)$ is the set of eigenvalues.
-
-**Proof **
-
-
-■
-
-_Demonstration_ Here we apply this to a particular matrix:
-
-A = [1 2 3; 1 5 2; -4 1 6]
-
-The following calculates the row sums:
-
-R = sum(abs.(A - Diagonal(diag(A))),dims=2)
-
-Gershgorin's theorem tells us that the spectrum lies in the union of the circles surrounding the diagonals:
-
-drawcircle!(z0, R) = plot!(θ-> real(z0) + R[1]*cos(θ), θ-> imag(z0) + R[1]*sin(θ), 0, 2π, fill=(0,:red), α = 0.2, legend=false)
-
+norm(sqrt(A) - sqrt_n(100,A,1))
+```
+But  if the eigenvalues become much larger this won't work.
+Here we see an example of a matrix whose eigenvalues are not in the 
+radius of convergence:
+```julia
+using Plots, ComplexPhasePortrait, IntervalSets
+A = [-0.5 -4; 3 -0.5]
 λ = eigvals(A)
-p = plot()
-for k = 1:size(A,1)
-    drawcircle!(A[k,k], R[k])
-end
-scatter!(complex.(λ); label="eigenvalues")
-scatter!(complex.(diag(A)); label="diagonals")
-p
+phaseplot(-2..2, -5..5, z -> sqrt(z))
+scatter!(real(λ),imag(λ); color=:black, legend=false)
+```
+Using the partial sum of the Taylor series completely
+fails, and catastrophically so:
+```julia
+norm(sqrt(A) - sqrt_n(100,A,1))
+```
 
-We can therefore use this to choose a contour big enough to surround all the circles. Here's a fairly simplistic construction for our case where everything is real:
+## Diagonalisation/Jordan canonical form
 
-z₀ = (maximum(diag(A) .+ R) + minimum(diag(A) .- R)) /2 # average edges of circle
-r = max(abs.(diag(A) .- R .- z₀)..., abs.(diag(A) .+ R .- z₀)...)
+**Def (Diagonalisation matrix function)** Suppose $A = V \Lambda V^{-1}$ where
+$$
+\Lambda = \begin{pmatrix} \lambda_1 \\ & \ddots \\ && \lambda_d \end{pmatrix}
+$$
+Then
+define 
+$$
+f(A) := V f(\Lambda) V^{-1} = V \begin{pmatrix} f(\lambda_1) \\ & \ddots \\ && f(\lambda_d) \end{pmatrix} V^{-1}
+$$
+This works very well as a definition but is slow for large matrices and does not take advantage of sparsity. 
 
-plot!(Circle(z₀, r))
+We can extend it to Jordan canonical form:
+
+**Def (Jordan canonical form)** Suppose 
+$$
+A = V \begin{pmatrix} J_1 \\ & \ddots & \\&&& J_{\tilde d} \end{pmatrix} V^{-1}
+$$
+where $J_k$ are Jordan blocks, that is, 
+$$
+J_k = \begin{pmatrix} \lambda_k & 1 \\ & \ddots & \ddots \\ && \lambda_k & 1 \\ &&& \lambda_k \end{pmatrix}
+$$
+Then
+define 
+$$
+f(A) := V \begin{pmatrix} f(J_1) \\ & \ddots \\ && f(J_{\tilde d}) \end{pmatrix} V^{-1}
+$$
+using 
+$$
+f\fpr(
+\begin{pmatrix} \lambda & 1 \\ & \ddots & \ddots \\ && \lambda & 1 \\ &&& \lambda \end{pmatrix}) = 
+\begin{pmatrix} f(\lambda) & f'(\lambda) & \cdots & f^{(m-1)}(\lambda)/(m-1)! \\
+        & \ddots & \ddots & \vdots \\
+            & & f(\lambda) & f'(\lambda)\\
+            &&& f(\lambda)
+            \end{pmatrix}.
+$$
+This definition can be verified to be consistent with Taylor series when both are valid by direct inspection. For example, 
+we have
+$$
+\sopmatrix{
+\lambda & 1
+& \lambda
+}^k = \sopmatrix{
+\lambda^k & k \lambda^{k-1}
+& \lambda^k
+}.
+$$
+
+
+## Caucy's integral formula
+
+The last approach we detail in the next lecture is to use the
+Cauchy integral formula:
+
+**Def (Cauchy's integral  matrix function)** Suppose
+$\gamma$ is a simple, closed contour that surrounds the spectrum of $A$ and $f$ is analytic in the interior. Then define
+$$
+f(A) := {1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta
+$$
+Here the integrand is a matrix-valued function, hence consider the integral as defined entrywise.
+
+
+Before we explain where this comes from, we can test on a simple example. 
+```julia
+A = [-0.5 -4; 3 -0.5]
+λ= eigvals(A)
+θ = range(0,2π,length=1000)
+γ = θ -> (z = exp(im*θ);  2z + z^2 - 1.5/z) # a curve containing λ
+phaseplot(-2..2, -5..5, z -> sqrt(z))
+scatter!(real(λ),imag(λ); color=:black, legend=false)
+plot!(real(γ.(θ)), imag(γ.(θ)); color=:blue, arrow=true)
+```
+
+We use the periodic Trapezium rule to integrate over the contour, showing it is valid:
+```julia
+periodic_rule(N) = 2π/N*(0:(N-1)), 2π/N*ones(N)
+γp = θ -> (z = exp(im*θ); im*z*(2 + 2z + 1.5/z^2))
+N = 1000
+θ,w = periodic_rule(N)
+
+norm(sum(w .* γp.(θ).*sqrt.(γ.(θ)) .* [inv(γ(θ)*I-A) for θ in θ])/(2π*im) - sqrt(A))
+```
+We will discuss more next lecture.

@@ -1,103 +1,137 @@
-## Representing analytic functions by their behaviour near singularities
+__M3M6: Methods of Mathematical Physics__
 
-A _key_ theme in complex analysis is representing functions by their behaviour near singularities.  A rather simple example of this is a side-effect of Cauchy's integral representation:
+Dr. Sheehan Olver
 
-**Corollary (Cauchy's integral representation around holes)** Let $D \subset {\mathbb C}$ be a domain with $g$ holes (i.e., genus $g$). Suppose $f$ is holmorphic in and on the boundary of $D$.  Given $g$ simple closed negatively oriented contours  surrounding the holes $\gamma_1, \ldots, \gamma_g$ and a simple closed positively oriented contour $\gamma_{0}$ surrounding the outer boundary of $D$, we have
+s.olver@imperial.ac.uk
+
+# Lecture 8: Matrix  functions via Cauchy's integral formula
+
+Here we investigate the definition of Cauchy's integral formula.
+
+**Def (Cauchy's integral  matrix function)** Suppose
+$\gamma$ is a simple, closed contour that surrounds the spectrum of $A$ and $f$ is analytic in the interior. Then define
 $$
-f(z) = {1 \over 2 \pi i} \sum_{k=0}^{g} \oint_{\gamma_k} {f(\zeta) \over \zeta - z} d \zeta
+f(A) := {1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta
 $$
 
-Here are two examples:
 
-f = z -> (exp(1/z) + exp(z))/(z*(z+2))
-Γ = Circle(0.0, 4.0) ∪ Circle(0.0,0.5,false) ∪ Circle(-2.0,0.1,false)
-phaseplot(-5..5, -5..5, f)
-plot!(Γ; color=:black, label=:contour, arrow=true, linewidth=1.5)
+## Equivalence to diagonalisation/Jordan canonical form
 
-ζ = Fun(Γ)
-z = 2.0+1.0im
-sum(f.(ζ)/(ζ - z))/(2π*im)
-
-f(z)
-
-### Application: Partial fraction expansion
-
-Suppose we have a rational function 
+We first show for diagonalisable $f$ this is equivalent to the definition by diagonalisation: if $A = V \Lambda V^{-1}$ we have
 $$
-r(z) = {p(z) \over q(z)}
+\begin{align*}
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta &= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) V (\zeta I - \Lambda)^{-1} V^{-1} \D \zeta \\
+&= {1 \over 2 \pi \I}  V \oint_\gamma f(\zeta)  (\zeta I - \Lambda)^{-1}  \D \zeta V^{-1}\\
+&=  V \sopmatrix{ {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_1)^{-1} \D \zeta\\
+&\ddots \\ && {1 \over 2 \pi \I} \oint_\gamma f(\zeta)  (\zeta - \lambda_d)^{-1} \D \zeta }  \D \zeta V^{-1} \\
+&= V \sopmatrix{ f(\lambda_1)\\
+&\ddots \\ && f(\lambda_d) }  \D \zeta V^{-1}  = f(A).
+\end{align*}
 $$
-where $p,q$ are both polynomials. This is analytic everywhere apart for the roots of $q$, which we enumerate $\lambda_1,\ldots,\lambda_g$.   If we draw negatively oriented circles around each root, the previous result applies:
 
-n = 7
-m = 5
-p = Fun(Taylor(), randn(n))
-q = Fun(Taylor(), randn(m))
-λ = complexroots(q)
+For Jordan canonical form we need only show its valid on Jordan blocks. Note that provided $\alpha \neq 0$ we have
+$$
+\sopmatrix{\alpha  & -1 \\  
+            & \ddots &\ddots \\
+            &&\alpha & -1 \\ &&& \alpha}^{-1} = \sopmatrix{\alpha^{-1} & \alpha^{-2} & \cdots & \alpha^{-d} \\
+                                                                    & \ddots& \ddots&\vdots \\
+                                                                    & & \alpha^{-1} & \alpha^{-2} \\
+                                                                    &&& \alpha^{-1}}
+$$
+which is verifiable by inspection. Therefore for a Jordan block
+$$
+A =\sopmatrix{\lambda  & 1 \\  
+            & \ddots &\ddots \\
+            &&\lambda & 1 \\ &&& \lambda}
+$$
+we have
+$$
+\begin{align*}
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta)(\zeta I - A)^{-1} \D \zeta 
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{\zeta - \lambda  & -1 \\  
+            & \ddots &\ddots \\
+            &&\zeta - \lambda & -1 \\ &&& \zeta - \lambda}^{-1} \D \zeta \\
+&= 
+{1 \over 2 \pi \I} \oint_\gamma f(\zeta) \sopmatrix{(\zeta-\lambda)^{-1}\D & (\zeta-\lambda)^{-2} & \cdots & (\zeta-\lambda)^{-d} \\
+                                                                    & \ddots& \ddots&  &\vdots \\
+                                                                    & & (\zeta-\lambda)^{-1} & (\zeta-\lambda)^{-2} \\
+                                                                    &&& (\zeta-\lambda)^{-1}} \D \zeta \\
+&= \begin{pmatrix} f(\lambda) & f'(\lambda) & \cdots & f^{(d-1)}(\lambda)/(d-1)! \\
+        & \ddots & \ddots & \vdots \\
+            & & f(\lambda) & f'(\lambda)\\
+            &&& f(\lambda)
+            \end{pmatrix} = f(A).
+\end{align*}
+$$
 
-Γ = Circle(0.0, 5.0)
-for λ in λ
-    Γ = Γ ∪ Circle(λ, 0.1, false)
+
+
+
+
+
+## Gershgorin circle theorem
+
+If we only know $A$, how do we know how big to make the contour? Gershgorin's circle theorem gives the answer:
+
+**Theorem (Gershgorin)** Let $A \in {\mathbb C}^{d \times d}$ and define 
+$$
+R_k = \sum_{j=1 \atop j \neq k}^d |a_{kj}| 
+$$
+Then 
+$$
+\rho(A) \subset \bigcup_{k=1}^d \bar B(a_{kk}, R_k)
+$$
+where $\bar B(z_0, r)$ is the closed disk of radius $r$ and $\rho(A)$ is the set of eigenvalues.
+
+**Proof **
+
+We can assume any eigenvalue has at least one nonzero eigenvector, whose maximum entry is $1$ in the $k$-th entry. (Otherwise, rescale.) That is, there exists
+$$
+\vc v = \Vectt[v_1,\dots,v_{k-1},1,v_{k+1},\dots,v_d]
+$$
+so that
+$$
+A \vc v = \lambda \vc v
+$$
+The result follows from:
+$$
+\lambda = \vc e_k^\top (\lambda  \vc v) = \vc e_k^\top A \vc v = a_{kk} + \sum_{j \neq k} a_{kj} v_j
+$$
+so that
+$$
+|\lambda - a_{kk}| \leq \sum_{j \neq k} |a_{kj}| = R_k. 
+$$
+
+■
+
+_Demonstration_ Here we apply this to a particular matrix:
+```julia
+using LinearAlgebra, Plots, ComplexPhasePortrait, ApproxFun
+A = [1 2 3; 1 5 2; -4 1 6]
+```
+The following calculates the row sums:
+```julia
+R = sum(abs.(A - Diagonal(diag(A))),dims=2)
+```
+Gershgorin's theorem tells us that the spectrum lies in the union of the circles surrounding the diagonals:
+```julia
+drawcircle!(z0, R) = plot!(θ-> real(z0) + R[1]*cos(θ), θ-> imag(z0) + R[1]*sin(θ), 0, 2π, fill=(0,:red), α = 0.2, legend=false)
+
+λ = eigvals(A)
+p = plot()
+for k = 1:size(A,1)
+    drawcircle!(A[k,k], R[k])
 end
-r = z -> extrapolate(p,z)/extrapolate(q,z)
+scatter!(complex.(λ); label="eigenvalues")
+scatter!(complex.(diag(A)); label="diagonals")
+p
+```
+We can therefore use this to choose a contour big enough to surround all the circles. Here's a fairly simplistic construction for our case where everything is real:
+```julia
+z₀ = (maximum(diag(A) .+ R) + minimum(diag(A) .- R)) /2 # average edges of circle
+r = max(abs.(diag(A) .- R .- z₀)..., abs.(diag(A) .+ R .- z₀)...)
 
-phaseplot(-5..5, -5..5, r)
-plot!(Γ; color=:black, label=:contour)
-
-ζ = Fun(Γ)
-z = 2.0+2.0im
-sum(r.(ζ)/(ζ - z))/(2π*im) - r(z)
-
-But now we can use the residue theorem to simplify the integrals! Note the following:
-
-
-
-
-For example,  near the $j$th root we have the Laurent series
-$$
-r(z) = r_{-N_j}^j (z-\lambda_j)^{-N_j}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1} + r_0 + r_1 (z-\lambda_j) + \cdots
-$$
-where $N_j$ is the order of the zero of $q(z)$ at $\lambda_j$.
-
-Then it follows that
-$${1 \over 2 \pi i} \oint_{\gamma_j} {r(\zeta) \over z - \zeta} d\zeta = r_{-N_j}^j (z-\lambda_j)^{-N}  + \cdots + r_{-1}^j (z-\lambda_j)^{-1}$$
-for $z$ outside the contour $\gamma_j$.
-
-Similarly, for the contour around infinity $\gamma_0$, if we have the Laurent series
-$$
-r(z) = \cdots + r_{-1}^0 z^{-1} + r_0^0  + r_1^0 z + \dots + r_{N_0}^0 z^{N_0}
-$$
-where $N_0$ is the degree of $p(z)$ divided by the degree of $q(z)$. 
-Then we have
-$${1 \over 2 \pi i} \oint_{\gamma_{g+1}} {r(\zeta) \over z - \zeta} d\zeta = r_0^0 + r_1^0 z + \cdots +  r_{N_0}^0 z^{N_0}.$$
-
-Thus we have the expansion summing over the behaviour near each singularity that holds for all $z$:
-
-$$
-r(z) = \sum_{k=0}^{N_0} r_k^0 z^k  +  \sum_{j=1}^d \sum_{k = -N_j}^{-1} r_k^j (z - \lambda_j)^k
-$$
-
-*Example* When we only have simple poles and no polynomial growth at $\infty$, this has a simple form in terms of residues:
-
-$$
-r(z) = r(\infty)  +  \sum_{j=1}^d    (z - \lambda_j)^{-1} \underset{z = \lambda_j}{\rm Res}\, r(z)
-$$
-
-n = 5
-m = 5
-p = Fun(Taylor(), randn(n))
-q = Fun(Taylor(), randn(m))
-λ = complexroots(q)
-
-r = z -> extrapolate(p,z)/extrapolate(q,z)
-
-phaseplot(-7..7, -7..7, r)
-
-res = extrapolate.(p,λ)./extrapolate.(q',λ)
-r∞ = p.coefficients[n]/q.coefficients[m]
-
-r̃ = z -> r∞ + sum(res.*(z .- λ).^(-1))
-
-z = 0.1+0.2im
-r(z) - r̃(z)
-
-phaseplot(-7..7, -7..7, r̃)
+plot!(Circle(z₀, r))
+```

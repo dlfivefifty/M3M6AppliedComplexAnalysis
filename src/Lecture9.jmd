@@ -1,0 +1,140 @@
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+# Lecture 9: Computing matrix functions via the trapezium rule
+
+
+
+
+### Application: calculating matrix exponentials
+
+Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
+$$
+    {\mathbf u}'(t) = A {\mathbf u}(t)\qquad\hbox{and}\qquad {\mathbf u}(0) = {\mathbf u}_0(0)
+$$
+    
+The solution to this is given by the _matrix exponential_
+$$
+    {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
+$$
+    where the matrix exponential is defined by it's Taylor series:
+$$
+    \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
+$$
+This has stability problems, so a more convenient form is as follows:
+
+
+_Demonstration_ we use this formula alongside the complex trapezium rule to calculate matrix exponentials. 
+Begin by creating a random symmetric matrix (which only has real eigenvalues):
+```julia
+using LinearAlgebra, Plots, ComplexPhasePortrait, ApproxFun
+
+A = randn(5,5)
+A = A + A'
+λ = eigvals(A)
+```
+We can now by hand create a circle that surrounds all the eigenvalues:
+```julia
+periodic_rule(N) = 2π/N*(0:(N-1)), 2π/N*ones(N)
+function circle_rule(n, r) 
+    θ = periodic_rule(n)[1]
+    r*exp.(im*θ), 2π*im*r/n*exp.(im*θ)
+end
+z,w = circle_rule(100,maximum(abs.(λ))+1)
+
+plot(z)
+scatter!(λ,zeros(5); label = "eigenvalues of A")
+```
+Here we wrap this up into a function `circle_exp` that calculates the matrix exponential:
+```julia
+function circle_exp(A, n, z₀, r)
+    z,w = circle_rule(n,r)
+    z .+= z₀
+
+    ret = zero(A)
+    for j=1:n
+        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
+    end
+
+    ret/(2π*im)
+end
+   
+circle_exp(A, 100, 0, 8.0) -exp(A) |>norm
+```
+In this case, it is beneficial to use an ellipse:
+```julia
+function ellipse_rule(n, a, b) 
+    θ = periodic_rule(n)[1]
+    a*cos.(θ) + b*im*sin.(θ), 2π/n*(-a*sin.(θ) + im*b*cos.(θ))
+end
+function ellipse_exp(A, n, z₀, a, b)
+    z,w = ellipse_rule(n,a,b)
+    z .+= z₀
+
+    ret = zero(A)
+    for j=1:n
+        ret += w[j]*exp(z[j])*inv(z[j]*I - A)
+    end
+    ret/(2π*im)
+end
+
+
+ellipse_exp(A, 50, 0, 8.0, 5.0) -exp(A) |>norm
+```
+For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
+```julia
+function taylor_exp(A,n)
+    ret = Matrix(I, size(A))
+    for k=1:n
+        ret += A^k/factorial(1.0k)
+    end
+    ret
+end
+
+B = A - 20I
+
+taylor_exp(B, 200) -exp(B) |>norm
+```
+We can use an ellpise to surround the spectrum:
+```julia
+scatter(complex.(eigvals(B)))
+plot!(ellipse_rule(50,8,5)[1] .- 20)
+
+norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
+```
+
+
+
+Here we consider two cases
+```julia
+N = 1000
+h = 1/N
+Δ = SymTridiagonal(fill(-2,N), fill(1,N-1))/h^2
+eigvals(Δ)
+
+
+u0 = x -> x * (1-x) * exp(x)
+
+t = 0.1
+xx = range(0,1; length=N+2)
+A = Matrix(Δ) # Need to convert to dense matrix to diagonalise
+plot(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0])
+plot!(xx, [0; exp(-sqrt(-A)*t)*u0.(xx[2:end-1]); 0])
+```
+Slow!
+```julia
+t=10
+using BenchmarkTools
+@btime exp(A*t)
+```
+
+Inverse is fast!
+```julia
+v0 = u0.(xx[2:end-1])
+@time (Δ-0.1im*I) \ v0
+```
+
+
