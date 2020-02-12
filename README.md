@@ -13,7 +13,7 @@ See also previous lecture notes for previous course [M3M6 Methods of Mathematica
 ## Problem sheets and mastery material 
 
 1. [Problem Sheet 1](sheets/Sheet1.pdf)
-2. Problem Sheet 2
+1. [Problem Sheet 2](sheets/Sheet2.pdf)
 3. Problem Sheet 3
 4. Problem Sheet 4
 5. Mastery material
