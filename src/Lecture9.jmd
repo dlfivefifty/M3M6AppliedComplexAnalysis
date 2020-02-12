@@ -6,10 +6,10 @@ s.olver@imperial.ac.uk
 
 # Lecture 9: Computing matrix functions via the trapezium rule
 
+Here we look at computing matrix functions via discretising Cauchy's integral formula with the Trapezium rule. 
 
 
-
-### Application: calculating matrix exponentials
+## Matrix exponentials
 
 Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
 $$
@@ -106,7 +106,7 @@ plot!(ellipse_rule(50,8,5)[1] .- 20)
 norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
 ```
 
-
+## Finite differences
 
 Here we consider two cases
 ```julia

@@ -1,0 +1,23 @@
+# Electrostatic potentials
+
+```julia
+using DifferentialEquations, StaticArrays, Plots
+
+V = x -> x^2/2  # Potential
+Vp = x -> x     # Force
+
+λ_0 = 2.3  # initial location
+v_0 = 1.2  # initial position
+γ = 1.0    # damping
+
+λv = solve(ODEProblem(((λ,v),_,t) -> SVector(v,-Vp(λ) - γ*v), SVector(λ_0,v_0), (0.0, 20.0)); reltol=1E-6);
+
+t = 5.0
+plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
+scatter!([first(λv(t))] ,[0.0]; label="charge")
+
+@gif for t=0.0:0.05:7.0
+    plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
+    scatter!([first(λv(t))] ,[0.0]; label="charge")
+end
+```
