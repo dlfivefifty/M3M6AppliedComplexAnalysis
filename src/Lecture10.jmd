@@ -1,2 +1,208 @@
 ## Branch cuts
 
+# M3M6: Methods of Mathematical Physics
+
+$$
+\def\dashint{{\int\!\!\!\!\!\!-\,}}
+\def\infdashint{\dashint_{\!\!\!-\infty}^{\,\infty}}
+\def\D{\,{\rm d}}
+\def\dx{\D x}
+\def\C{{\mathbb C}}
+\def\CC{{\cal C}}
+\def\HH{{\cal H}}
+\def\I{{\rm i}}
+\def\qqfor{\qquad\hbox{for}\qquad}
+$$
+
+Dr. Sheehan Olver
+<br>
+s.olver@imperial.ac.uk
+
+Office Hours: 3-4pm Mondays, Huxley 6M40
+<br>
+Website: https://github.com/dlfivefifty/M3M6LectureNotes
+
+
+
+# Lecture 8: Functions with branch cuts
+
+
+
+We now discuss functions with branch cuts
+
+1. $\log z$ with a cut on $(-\infty,0]$
+2. $z^\alpha$ with a cut on $(-\infty,0]$
+3. $\sqrt{z-1}\sqrt{z+1}$ with a cut on $[-1,1]$
+4. $\rm{sign}(|z|-1)$ with a cut on the unit circle.
+
+This is a step towards a Cauchy integral theorem on cuts, for recovering a holomorphic function from its behaviour on a cut.
+
+1. Complex logarithm
+2. Algebraic powers
+3. Inferred analyticity
+
+We begin with $\log z$. 
+
+## Complex logarithm
+
+
+
+**Definition (Complex Logarithm)**
+$$\log z = \int_1^z {1 \over \zeta} d\zeta$$
+where the integral is understood to be on a straight line segment, that is
+$$\log z = \int_{\gamma_z} {1 \over \zeta} d\zeta$$
+where
+$\gamma_z(t) = 1 + (z-1)t$ for $0 \leq t \leq 1$.
+
+_Demonstration_ this shows the integral path for a point $z$. We see how the path avoids the pole of $\zeta^{-1}$ at the origin:
+
+z = -2 + 1.0im
+phaseplot(-3..3, -3..3, ζ -> 1/ζ)
+t = 0:0.1:1
+γ = 1 .+ (z-1)*t
+plot!(real.(γ), imag.(γ); color=:black, label="contour", arrow=true)
+
+This is well-defined apart from $z \in (-\infty,0]$, where there is a pole on the contour. This induces a _branch cut_: a jump in the value of the function. 
+
+phaseplot(-3..3, -3..3, z -> log(z))
+
+We see that the limits from above and below exist: we can define
+$$
+\begin{align*}
+\log_+ x &= \lim_{\epsilon \rightarrow 0^+} \log(x+\I \epsilon) \\
+\log_- x &= \lim_{\epsilon \rightarrow 0^+} \log(x-\I \epsilon)
+\end{align*}
+$$
+and calculate their values via:
+
+log(-1+0.0im), log(-1-0.0im)
+
+By deformation, the value of the integrals is independent of the path: here we calculate the integral on an arc:
+
+θ = range(0, stop=0.9π, length=100)
+a = exp.(im*θ)
+
+z = exp(0.9*π*im)
+
+γ = 1 .+ (z-1)*t
+phaseplot(-3..3, -3..3, ζ -> 1/ζ)
+plot!(real.(γ), imag.(γ); color=:black, label="contour", arrow=true)
+plot!(real.(a), imag.(a), color=:black, linestyle=:dash, label="deformed", arrow=true)
+
+This works all the way to the negative real axis. Here we calculate $\log_\pm 1$ using integrals over half circles:
+
+sum(Fun(ζ -> 1/ζ, Arc(0.,1.,(0.,π)))),
+sum(Fun(ζ -> 1/ζ, Arc(0.,1.,(0.,-π))))
+
+Combining the two contours we have
+$$
+\log_+(-1) - \log_-(-1) = \oint {\D\zeta \over \zeta}  = 2 \pi \I
+$$
+
+log(-1.0+0im) - log(-1.0-0im), sum(Fun(ζ -> 1/ζ, Circle()))
+
+We can establish some properties. First we show that $\log z = - \log {1 \over z}$ by considering the change of variables $\zeta = {1 \over s}$.  Because $\gamma_z(t)^{-1}$ stays uniformly in the lower-half plane, we can deform it to a straight contour, which gives us the result:
+$$
+\log z = \int_{\gamma_z} {\D\zeta \over \zeta} = -\int_{{1 \over \zeta} \circ \gamma_z} {\D s \over s} = - \int_{\gamma_{z^{-1}}} {\D s \over s} = -\log z^{-1} 
+$$
+
+Here's a plot of the relevant contours:
+
+phaseplot(-3..3, -3..3, z -> log(z))
+z = -2 + 2im
+
+γ = (z,t) -> 1 + t*(z-1)
+tt = range(0,stop=1,length=100)
+
+plot!(real.(γ.(z,tt)), imag.(γ.(z,tt)); color=:black, label="contour", arrow=true)
+plot!(real.(1 ./ γ.(z,tt)), imag.(1 ./ γ.(z,tt)); color=:black, linestyle=:dash, arrow=true, label="change of variables contour")
+plot!(real.(γ.(1/z,tt)), imag.(γ.(1/z,tt)); color=:black, linestyle=:dashdot, arrow=true, label="deformed contour")
+
+Here we see by looking at the phase plot that the two functions match:
+
+phaseplot(-3..3, -3..3, z -> -log(1/z))
+
+## Algebraic powers
+
+
+**Definition (algebraic power)** 
+$$z^\alpha = e^{\alpha \log z}$$
+
+Note, for example, when $\alpha = 1/2$, $\sqrt z \equiv z^{1/2}$ is only one solution to $y^2 = z$.
+
+Here's a phase plot showing that $\sqrt{z}$ also has a branch cut on $(-\infty,0]$:
+
+α = 0.5
+phaseplot(-3..3, -3..3, z -> z^α)
+
+On the branch cut  along $(-\infty,0]$ it has the jump:
+
+$${x_+^\alpha \over x_-^\alpha} = e^{\alpha (\log_+ x - \log_- x)} = e^{2 \pi \I \alpha}$$
+
+In particular,
+
+$$\sqrt{x}_+ = -\sqrt{x}_- = i \sqrt{|x|}$$
+
+sqrt(-1-0.0im) , -sqrt(-1 + 0.0im)
+
+These are _multiplicative jumps_. We also have a _subtractive jumps_:
+
+\begin{align*}
+x_+^\alpha - x_-^\alpha &= e^{\alpha \log_+ x} - e^{\alpha \log_- x} = e^{\alpha \log(-x) + \I  \pi \alpha} - e^{\alpha \log(-x) - \I \pi \alpha} \cr
+    & = 2 \I (-x)^\alpha \sin \pi \alpha
+\end{align*}
+
+x = -2
+(x+0.0im)^α - (x-0.0im)^α, 2im*(-x)^α*sin(π*α)
+
+
+and an _additive jump_:
+\begin{align*}
+x_+^\alpha + x_-^\alpha & = 2  (-x)^\alpha \cos \pi \alpha
+\end{align*}
+
+x = -1
+(x+0.0im)^α + (-1-0.0im)^α, 2*(-x)^α*cos(π*α)
+
+In particular, for $x < 0$,
+\begin{align*}
+\sqrt{x}_+ - \sqrt{x}_- &= 2 \I \sqrt{-x} \\
+\sqrt{x}_+ + \sqrt{x}_- &= 0
+\end{align*}
+
+sqrt(x+0.0im) - sqrt(x-0.0im) == 2im*sqrt(-x)
+
+sqrt(x+0.0im) + sqrt(x-0.0im)
+
+Let's look at another example: $\varphi(z) = \sqrt{z-1}\sqrt{z+1}$. 
+
+φ = z -> sqrt(z-1)*sqrt(z+1)
+phaseplot(-3..3, -3..3, φ)
+
+For $x > 0$ it's holomorphic. For $-1 < x < 1$ we have the multiplicative jump
+
+$$\varphi_+(x) = \sqrt{x-1}_+ \sqrt{x+1} = - \sqrt{x-1}_- \sqrt{x+1} = -\varphi_-(x)$$
+which gives the additive jump
+$$
+\varphi_+(x) + \varphi_-(x) = 0
+$$
+
+x = 0.1
+φ(x + 0.0im) + φ(x - 0.0im)
+
+ But we also have a _subtractive jump_:
+$$
+\varphi_+(x) - \varphi_-(x) = (\sqrt{x-1}_+ - \sqrt{x-1}_-) \sqrt{x+1} = 2\I \sqrt{1-x}\sqrt{x+1} = 2\I \sqrt{1 - x^2}
+$$
+
+x = 0.1
+φ(x + 0.0im) - φ(x - 0.0im), 2im*sqrt(1-x^2)
+
+For $x < -1$ we actually have continuity:
+
+$$\varphi_+(x) = \sqrt{x-1}_+ \sqrt{x+1}_+ = (- \sqrt{x-1}_-)(- \sqrt{x+1}_-) = \varphi_-(x)$$
+
+φ = z -> sqrt(z-1)sqrt(z+1)
+
+x = -3.0
+φ(x+0.0im), φ(x-0.0im)

@@ -6,10 +6,26 @@ s.olver@imperial.ac.uk
 
 # Lecture 9: Computing matrix functions via the trapezium rule
 
-Here we look at computing matrix functions via discretising Cauchy's integral formula with the Trapezium rule. 
+Here we look at computing matrix functions via discretising Cauchy's integral formula with the Trapezium rule. That is,
+we saw that we can define matrix functions via
+$$
+f(A) = {1 \over 2 \pi \I} \oint_\gamma f(\zeta) (\zeta I - A)^{-1} \D \zeta
+$$
+where $\gamma$ is a contour surrounding the spectrum such that $f$ is analytic in the interior, often a circle or an ellipse. If we parameterise the curve from the circle
+$\gamma : [0,2 \pi) \rightarrow \CC$ then we can apply Trapezium rule:
+$$
+f(A) = {1 \over 2 \pi \I} \int_0^{2\pi}  f(\gamma(\theta)) (\gamma(\theta) I - A)^{-1}\gamma'(\theta)  \D \theta \approx 
+{1 \over \I N}  \sum_{j=0}^{N-1} f(\gamma(\theta_j)) \gamma'(\theta_j) (\gamma(\theta_j) I - A)^{-1}.
+$$
+Thus matrix functions are reduced to a sum of inverses. This is useful if applying an inverse is fast, for example, we have
+$$
+f(A) \vc v \approx {1 \over \I N}  \sum_{j=0}^{N-1} f(\gamma(\theta_j)) \gamma'(\theta_j) (\gamma(\theta_j) I - A)^{-1} \vc v
+$$
+and if $A$ is sparse then each inverse is fast. 
 
 
-## Matrix exponentials
+
+## Example: Matrix exponentials
 
 Let $A \in {\mathbb C}^{d \times d}$,   ${\mathbf u}_0 \in {\mathbb C}^d$ and consider the constant coefficient linear ODE
 $$
@@ -20,7 +36,7 @@ The solution to this is given by the _matrix exponential_
 $$
     {\mathbf u}(t) = \exp(A t) {\mathbf u}_0
 $$
-    where the matrix exponential is defined by it's Taylor series:
+where the matrix exponential is defined by it's Taylor series:
 $$
     \exp(A) = \sum_{k=0}^\infty {A^k \over k!}
 $$
@@ -81,7 +97,6 @@ function ellipse_exp(A, n, z₀, a, b)
     ret/(2π*im)
 end
 
-
 ellipse_exp(A, 50, 0, 8.0, 5.0) -exp(A) |>norm
 ```
 For matrices with large negative eigenvalues (For example, discretisations of the Laplacian), complex quadrature can lead to much better accuracy than Taylor series:
@@ -106,35 +121,117 @@ plot!(ellipse_rule(50,8,5)[1] .- 20)
 norm(ellipse_exp(B, 50, -20.0, 8.0, 5.0) - exp(B))
 ```
 
-## Finite differences
+## Finite differences and (fractional) heat equation
+As a first application we consider approximation of the solution of the heat equation $u(t,x)$, for $\Delta u := u_{xx}$ we have:
+$$
+u_t = \Delta u
+$$
+on $[0,1]$ with Dirichlet conditions $u(t,0) = u(t,1) = 0$ and initial condition $u(0,x) = u_0(x)$. 
+We approximate the solution by its values at a grid, that is, we have time dependent vector $\vc u(t)$ 
+which we hope satisfies the property that at any time $t$
+$$
+\vc u(t) \approx \Vectt[u(t,x_1), \dots, u(t,x_N)]
+$$
+where $x_j = j/(N+1)$ is an evenly spaced grid. Note we use that $u(t,x_0) = u(t,0) = 0$ and $u(t,x_{N+1}) = u(t,1) = 0$.
 
-Here we consider two cases
+Recall from Taylor series that for a smooth enough function $f(x)$ we have 
+$$
+{f(x+h) - 2 f(x) + f(x-h) \over h^2} \approx {f(x) + f'(x) h + f''(x) h^2/2 - 2 f(x) + f(x) - f'(x) h + f''(x) h^2/2  \over h^2}
+= f''(x)
+$$
+For $h = 1/(N+1)$ this therefore gives
+$$
+\begin{align*}
+u_xx(t,x_1) & \approx {u(t,x_2) - 2 u(t,x_1) + u(t,x_0) \over h^2} = {u(t,x_2) - 2 u(t,x_1) \over h^2}  \\
+u_xx(t,x_N) & \approx {u(t,x_{N+1}) - 2 u(t,x_N) + u(t,x_{N-1}) \over h^2} = { - 2 u(t,x_N) + u(t,x_{N-1}) \over h^2}  \\
+u_xx(t,x_j) & \approx {u(t,x_{j+1}) - 2 u(t,x_j) + u(t,x_{j-1}) \over h^2}
+\end{align*}
+$$
+Or in vector form we have
+$$
+\Vectt[{u_xx(t,x_1)}, \dots, {u_xx(t,x_N)}] \approx \Delta \Vectt[{u(t,x_1)}, \dots, {u(t,x_N)}]
+$$
+where 
+$$
+\Delta_N = {1 \over h^2} \sopmatrix{-2 & 1 \\ 1 & -2 & 1 \\ & \ddots & \ddots & \ddots \\ && 1 & -2 & 1 \\ &&&1 &-2 }
+$$
+In short: a natural approximation to the heat equation is
+$$
+\vc u'(t) = \Delta_N \vc u(t), \qquad u(0) = \vc u_0
+$$
+where $\vc u_0 = \vectt[u_0(x_1), \dots, u_0(x_N)]$. Thus to evaluate the solution at time $t$ we have
+$$
+\vc u(t) = \E^{\Delta_N t} \vc u_0 \approx {1 \over 2\pi \I} \oint_\gamma \E^{\zeta t} (\zeta I - \Delta_N)^{-1} \vc u_0 \D \zeta.
+$$
+We need to surround the spectrum of $\Delta_N$. In this case it suffices to use Gershgorin's theorem to determine:
+$$
+\sigma(\Delta_N) \subset [-4/h^2,0] = [-4 (N+1)^2,0]
+$$
+
+Now for something more complicated, the fractional heat equation:
+$$
+u_t = - (-\Delta)^\alpha u
+$$
+where $\alpha$ is say $1/2$. These come up in applications involving "memory", for example, in medical imaging where 
+tissue changes over time. They also come up in Levy flights, that is, stochastic differential equations with heavy-tailed 
+distributions. The precise definition is beyond the scope of this course, but in terms of numerical approximation it is
+natural to discretise as
+$$
+\vc u'(t) = - (-\Delta_N)^\alpha \vc u
+$$
+Or in other words,
+$$
+\vc u(t) = \E^{-(-\Delta_N)^\alpha t} \vc u_0 \approx {1 \over 2\pi \I} \oint_\gamma \E^{-\zeta^\alpha t} (\zeta I + \Delta_N)^{-1}  \vc u_0 \D \zeta.
+$$
+Gershgorin's theorem does not help us: it states 
+$$
+\sigma(-\Delta_N) \subset [0,4/h^2]
+$$
+but $\E^{- \zeta^\alpha t }$ has a branch cut right at 0. Fortunately in this case we have more understanding of the spectrum of $\Delta_N$. In 
+particular, for 
+$$
+J = \sopmatrix{0 & 1 \\ 1 & 0 & 1 \\ & \ddots & \ddots & \ddots \\ && 1 & 0 & 1 \\ &&& 1 & 0}
+$$
+we have from trigonometric relationships 
+$$
+2\cos \theta \sin k \theta = \sin (k+1) \theta + \sin(k-1) \theta
+$$
+that
+$$
+\begin{align*}
+J \Vectt[\sin \theta, \sin 2 \theta , \dots, \sin N \theta] = \Vectt[\sin 2 \theta, \sin 3 \theta + \sin \theta ,\dots, \sin(N-2) \theta + \sin N \theta, \sin (N-1) \theta ]\\
+&= 2 \cos \theta\Vectt[\sin \theta, \sin 2 \theta , \dots, \sin (N-1) \theta,\sin N \theta] - \Vectt[0,0,\dots,0,\sin (N+1) \theta]
+\end{align*}
+$$
+The second term is zero when $\theta = \theta_j = j \pi / (N+1)$, thus we know the eigenvalues of $\Delta$ are $\lambda_j = 2 \cos \theta_j$
+for $j = 1,\ldots,N$. ($j = 0$ is not valid as then the "eigenvector" would be zero.)
+We need to bound the spectrum away from $0$ and $2$. First note from telescoping properties of cosine Taylor series we have
+$$
+\cos x = 1 - x^2/2  + x^4/24 - \cdots \leq 1 - x^2/2
+$$
+thus our bound above is
+$$
+2 \cos \theta_1 = 2 \cos {\pi  \over N+1} \leq 2 - \pr({\pi \over N+1})^2
+$$
+
+
+
+__Demonstration__
+We first demonstrate using the built-in matrix exponential. We can construct $\Delta$ as follows:
 ```julia
 N = 1000
 h = 1/N
 Δ = SymTridiagonal(fill(-2,N), fill(1,N-1))/h^2
-eigvals(Δ)
-
-
+```
+The solution with an initial condition $u_0(x) = x (1-x) \E^x$ is then:
+```julia
 u0 = x -> x * (1-x) * exp(x)
-
 t = 0.1
 xx = range(0,1; length=N+2)
 A = Matrix(Δ) # Need to convert to dense matrix to diagonalise
 plot(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0])
+```
+
+```julia
 plot!(xx, [0; exp(-sqrt(-A)*t)*u0.(xx[2:end-1]); 0])
 ```
-Slow!
-```julia
-t=10
-using BenchmarkTools
-@btime exp(A*t)
-```
-
-Inverse is fast!
-```julia
-v0 = u0.(xx[2:end-1])
-@time (Δ-0.1im*I) \ v0
-```
-
-

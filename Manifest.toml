@@ -184,9 +184,9 @@ version = "0.3.1"
 
 [[Conda]]
 deps = ["JSON", "VersionParsing"]
-git-tree-sha1 = "457ed99182beb33124aa5e602596b67fc6e1c96f"
+git-tree-sha1 = "7a58bb32ce5d85f8bf7559aa7c2842f9aecf52fc"
 uuid = "8f4d0f93-b110-5947-807f-2305c1781a2d"
-version = "1.4.0"
+version = "1.4.1"
 
 [[Contour]]
 deps = ["LinearAlgebra", "StaticArrays", "Test"]
@@ -387,9 +387,9 @@ version = "0.2.1"
 
 [[IJulia]]
 deps = ["Base64", "Conda", "Dates", "InteractiveUtils", "JSON", "Markdown", "MbedTLS", "Pkg", "Printf", "REPL", "Random", "SoftGlobalScope", "Test", "UUIDs", "ZMQ"]
-git-tree-sha1 = "0fe6aceb9a3c27811797afaf73d6f2ff6021916d"
+git-tree-sha1 = "b60c883405f31b90c5a7b6862e1d21caad5b411a"
 uuid = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
-version = "1.20.2"
+version = "1.21.1"
 
 [[IdentityRanges]]
 deps = ["OffsetArrays"]
@@ -399,9 +399,9 @@ version = "0.3.1"
 
 [[ImageAxes]]
 deps = ["AxisArrays", "ImageCore", "MappedArrays", "Reexport", "SimpleTraits"]
-git-tree-sha1 = "26163e074948735a6548cc59e750bb569a089a23"
+git-tree-sha1 = "c0aca8db7e9fddda18c9cebff5d147b0e799d676"
 uuid = "2803e5a7-5153-5ecf-9a86-9b4c37f5f5ac"
-version = "0.6.3"
+version = "0.6.4"
 
 [[ImageCore]]
 deps = ["Colors", "FixedPointNumbers", "Graphics", "MappedArrays", "OffsetArrays", "PaddedViews", "Reexport", "Requires"]
@@ -634,9 +634,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mustache]]
 deps = ["Printf", "Tables"]
-git-tree-sha1 = "e06eef2abee113c49695f5347668e15d4c02978a"
+git-tree-sha1 = "f39de3a12232eb47bd0629b3a661054287780276"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "1.0.0"
+version = "0.5.13"
 
 [[NaNMath]]
 git-tree-sha1 = "928b8ca9b2791081dc71a51c55347c27c618760f"
@@ -728,12 +728,6 @@ deps = ["LinearAlgebra", "RecipesBase"]
 git-tree-sha1 = "ae71c2329790af97b7682b11241b3609e4d48626"
 uuid = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 version = "0.6.0"
-
-[[PooledArrays]]
-deps = ["DataAPI"]
-git-tree-sha1 = "b1333d4eced1826e15adbdf01a4ecaccca9d353c"
-uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
-version = "0.5.3"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -862,10 +856,10 @@ uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.32.0"
 
 [[StructArrays]]
-deps = ["PooledArrays", "Tables", "WeakRefStrings"]
-git-tree-sha1 = "e860d3808176ace576a45d658ba80d7c815bf1ce"
+deps = ["DataAPI", "Tables"]
+git-tree-sha1 = "ad1f5fd155426dcc879ec6ede9f74eb3a2d582df"
 uuid = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
-version = "0.4.1"
+version = "0.4.2"
 
 [[TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
@@ -875,9 +869,9 @@ version = "1.0.0"
 
 [[Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "TableTraits", "Test"]
-git-tree-sha1 = "aaed7b3b00248ff6a794375ad6adf30f30ca5591"
+git-tree-sha1 = "22eea0f6619df63954b9404c8d47cd42c5d529f9"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "0.2.11"
+version = "1.0.1"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
@@ -912,12 +906,6 @@ version = "0.4.0"
 git-tree-sha1 = "80229be1f670524750d905f8fc8148e5a8c4537f"
 uuid = "81def892-9a0e-5fdd-b105-ffc91e053289"
 version = "1.2.0"
-
-[[WeakRefStrings]]
-deps = ["DataAPI", "Random", "Test"]
-git-tree-sha1 = "28807f85197eaad3cbd2330386fac1dcb9e7e11d"
-uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
-version = "0.6.2"
 
 [[Weave]]
 deps = ["Base64", "Compat", "Dates", "Highlights", "JSON", "Markdown", "Mustache", "Printf", "REPL", "Requires", "Serialization", "YAML"]
@@ -963,9 +951,9 @@ version = "1.2.0"
 
 [[ZeroMQ_jll]]
 deps = ["Libdl", "Pkg"]
-git-tree-sha1 = "a22171d073707dbcc99a1dfefc2c6e823beb9664"
+git-tree-sha1 = "a2973b77e69568da1294d940b51031e7a5cea850"
 uuid = "8f1865be-045e-5c20-9c9f-bfbfb0764568"
-version = "4.3.1+0"
+version = "4.3.2+0"
 
 [[Zlib_jll]]
 deps = ["Libdl", "Pkg"]
