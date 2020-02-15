@@ -276,11 +276,11 @@ This has stability problems, so a more convenient form is as follows:
 
 \begin{lstlisting}
 5-element Array{Float64,1}:
- -3.8914989454160533
- -2.029755565698448 
-  0.2016229890832312
-  2.0116215644349933
-  3.6130034729306777
+ -4.8623419724960115 
+ -3.821888917430011  
+ -2.3379462912444375 
+ -0.20821177802310226
+  1.8004964803479173
 \end{lstlisting}
 
 
@@ -321,7 +321,7 @@ Here we wrap this up into a function \texttt{circle\_exp} that calculates the ma
 \end{lstlisting}
 
 \begin{lstlisting}
-4.411579696631165e-13
+3.3328584042922336e-13
 \end{lstlisting}
 
 
@@ -348,7 +348,7 @@ In this case, it is beneficial to use an ellipse:
 \end{lstlisting}
 
 \begin{lstlisting}
-1.3655250400391074e-13
+1.62222700111046e-13
 \end{lstlisting}
 
 
@@ -370,7 +370,7 @@ For matrices with large negative eigenvalues (For example, discretisations of th
 \end{lstlisting}
 
 \begin{lstlisting}
-1.1961108560189016e-6
+2.510768384184886e-6
 \end{lstlisting}
 
 
@@ -385,29 +385,30 @@ We can use an ellpise to surround the spectrum:
 \end{lstlisting}
 
 \begin{lstlisting}
-8.393158516734329e-22
+6.021275802588526e-22
 \end{lstlisting}
 
 
-\subsection{Finite differences and heat equation}
-As a first application we consider approximation of the solution of the heat equation $u(t,x)$:
+\subsection{Finite differences and (fractional) heat equation}
+As a first application we consider approximation of the solution of the heat equation $u(t,x)$, for $\Delta u := u_{xx}$ we have:
 
 \[
-u_t = u_{xx}
+u_t = \Delta u
 \]
 on $[0,1]$ with Dirichlet conditions $u(t,0) = u(t,1) = 0$ and initial condition $u(0,x) = u_0(x)$.  We approximate the solution by its values at a grid, that is, we have time dependent vector $\vc u(t)$  which we hope satisfies the property that at any time $t$
 
 \[
-\vc u(t) \approx \Vectt[u(t,x_1), \dots, u(t,x_N)]
+\vc u(t) \approx \Vectt[u({t,x_1}), \dots, u({t,x_N})]
 \]
 where $x_j = j/(N+1)$ is an evenly spaced grid. Note we use that $u(t,x_0) = u(t,0) = 0$ and $u(t,x_{N+1}) = u(t,1) = 0$.
 
 Recall from Taylor series that for a smooth enough function $f(x)$ we have 
 
-\[
-{f(x+h) - 2 f(x) + f(x-h) \over h^2} \approx {f(x) + f'(x) h + f''(x) h^2/2 - 2 f(x) + f(x) - f'(x) h + f''(x) h^2/2  \over h^2}
-= f''(x)
-\]
+
+\begin{align*}
+{f(x+h) - 2 f(x) + f(x-h) \over h^2} &\approx {f(x) + f'(x) h + f''(x) h^2/2 - 2 f(x) + f(x) - f'(x) h + f''(x) h^2/2  \over h^2}\\
+&= f''(x)
+\end{align*}
 For $h = 1/(N+1)$ this therefore gives
 
 
@@ -419,32 +420,216 @@ u_xx(t,x_j) & \approx {u(t,x_{j+1}) - 2 u(t,x_j) + u(t,x_{j-1}) \over h^2}
 Or in vector form we have
 
 \[
-\Vectt[u_xx(t,x_1), \dots, u_xx(t,x_N)] \approx \Delta \Vectt[u(t,x_1), \dots, u(t,x_N)]
+\Vectt[{u_xx(t,x_1)}, \dots, {u_xx(t,x_N)}] \approx \Delta \Vectt[{u(t,x_1)}, \dots, {u(t,x_N)}]
 \]
 where 
 
 \[
-\Delta = {1 \over h^2} \sopmatrix{-2 & 1 \\ 1 & -2 & 1 \\ & \ddots & \ddots & \ddots \\ && 1 & -2 & 1 \\ &&&1 &-2 }
+\Delta_N = {1 \over h^2} \sopmatrix{-2 & 1 \\ 1 & -2 & 1 \\ & \ddots & \ddots & \ddots \\ && 1 & -2 & 1 \\ &&&1 &-2 }
 \]
-Here we consider two cases
+In short: a natural approximation to the heat equation is
+
+\[
+\vc u'(t) = \Delta_N \vc u(t), \qquad u(0) = \vc u_0
+\]
+where $\vc u_0 = \vectt[u_0(x_1), \dots, u_0(x_N)]$. Thus to evaluate the solution at time $t$ we have
+
+\[
+\vc u(t) = \E^{\Delta_N t} \vc u_0 \approx {1 \over 2\pi \I} \oint_\gamma \E^{\zeta t} (\zeta I - \Delta_N)^{-1} \vc u_0 \D \zeta.
+\]
+We need to surround the spectrum of $\Delta_N$. In this case it suffices to use Gershgorin's theorem to determine:
+
+\[
+\sigma(\Delta_N) \subset [-4/h^2,0] = [-4 (N+1)^2,0]
+\]
+Now for something more complicated, the fractional heat equation:
+
+\[
+u_t = - (-\Delta)^\alpha u
+\]
+where $\alpha$ is say $1/2$. These come up in applications involving "memory", for example, in medical imaging where  tissue changes over time. They also come up in Levy flights, that is, stochastic differential equations with heavy-tailed  distributions. The precise definition is beyond the scope of this course, but in terms of numerical approximation it is natural to discretise as
+
+\[
+\vc u'(t) = - (-\Delta_N)^\alpha \vc u
+\]
+Or in other words,
+
+\[
+\vc u(t) = \E^{-(-\Delta_N)^\alpha t} \vc u_0 \approx {1 \over 2\pi \I} \oint_\gamma \E^{-\zeta^\alpha t} (\zeta I + \Delta_N)^{-1}  \vc u_0 \D \zeta.
+\]
+Gershgorin's theorem does not help us: it states 
+
+\[
+\sigma(-\Delta_N) \subset [0,4/h^2]
+\]
+but $\E^{- \zeta^\alpha t }$ has a branch cut right at 0. Fortunately in this case we have more understanding of the spectrum of $\Delta_N$. In  particular, for 
+
+\[
+J = \sopmatrix{0 & 1 \\ 1 & 0 & 1 \\ & \ddots & \ddots & \ddots \\ && 1 & 0 & 1 \\ &&& 1 & 0}
+\]
+we have from trigonometric relationships 
+
+\[
+2\cos \theta \sin k \theta = \sin (k+1) \theta + \sin(k-1) \theta
+\]
+that
+
+
+\begin{align*}
+J \Vectt[\sin \theta, \sin 2 \theta , \dots, \sin N \theta] = \Vectt[\sin 2 \theta, \sin 3 \theta + \sin \theta ,\dots, \sin(N-2) \theta + \sin N \theta, \sin (N-1) \theta ]\\
+&= 2 \cos \theta\Vectt[\sin \theta, \sin 2 \theta , \dots, \sin (N-1) \theta,\sin N \theta] - \Vectt[0,0,\dots,0,\sin (N+1) \theta]
+\end{align*}
+The second term is zero when $\theta = \theta_j = j \pi / (N+1)$, thus we know the eigenvalues of $\Delta$ are $\lambda_j = 2 \cos \theta_j$ for $j = 1,\ldots,N$. ($j = 0$ is not valid as then the "eigenvector" would be zero.) We need to bound the spectrum away from $0$ and $2$. First note from telescoping properties of cosine Taylor series we have
+
+\[
+\cos x = 1 - x^2/2  + x^4/24 - \cdots \leq 1 - x^2/2 + x^4/24
+\]
+thus our bound above is
+
+\[
+2 \cos \theta_1 = 2 \cos {\pi  \over N+1} \leq 2 - \pr({\pi \over N+1})^2 + \pr({\pi \over N+1})^4/12
+\]
+The same holds for the bound below:
+
+\[
+2 \cos \theta_N \geq -2 + \pr({\pi \over N+1})^2 - {\pi^4 \over 12 (N+1)^2}
+\]
+Thus we have
+
+\[
+\sigma(\Delta_N) = \sigma(J - 2I)/h^2 \subset \br[-4 (N+1)^2 + \pi^2 - {\pi^4 \over 12 (N+1)^2},-\pi^2 + {\pi^4 \over 12 (N+1)^2}]
+\]
+Thus it suffices to take an ellipse contour passing through say $\pi^2/2$ and $-4 (N+1)^2$.
+
+\textbf{Demonstration} We first demonstrate using the built-in matrix exponential. We can construct $\Delta$ as follows:
 
 
 \begin{lstlisting}
-(*@\HLJLn{N}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1000}@*)
+(*@\HLJLn{N}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{20}@*)
 (*@\HLJLn{h}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{N}@*)
 (*@\HLJLn{\ensuremath{\Delta}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{SymTridiagonal}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{fill}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLn{N}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{fill}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLn{N}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)
-(*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*)
-
-(*@\HLJLn{u0}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)
-
-(*@\HLJLn{t}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
-(*@\HLJLn{xx}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{range}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{;}@*) (*@\HLJLn{length}@*)(*@\HLJLoB{=}@*)(*@\HLJLn{N}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
-(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Matrix}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Need}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{convert}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{dense}@*) (*@\HLJLcs{matrix}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{diagonalise}@*)
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{])}@*)
-(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{A}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{])}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture9_7_1.pdf}
+\begin{lstlisting}
+20(*@\ensuremath{\times}@*)20 SymTridiagonal{Float64,Array{Float64,1}}:
+ -800.0   400.0      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)   (*@\ensuremath{\dots}@*)      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+  400.0  -800.0   400.0      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)    400.0  -800.0   400.0      (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)    400.0  -800.0   400.0         (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)    400.0  -800.0         (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)    400.0  (*@\ensuremath{\dots}@*)      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)   (*@\ensuremath{\dots}@*)      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)   (*@\ensuremath{\dots}@*)   400.0      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)      -800.0   400.0      (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       400.0  -800.0   400.0      (*@\ensuremath{\cdot}@*) 
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)    400.0  -800.0   400.0
+     (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)          (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\cdot}@*)    400.0  -800.0
+\end{lstlisting}
+
+
+The solution with an initial condition $u_0(x) = x (1-x) \E^x$ is then:
+
+
+\begin{lstlisting}
+(*@\HLJLn{u0}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{xx}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{range}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{;}@*) (*@\HLJLn{length}@*)(*@\HLJLoB{=}@*)(*@\HLJLn{N}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Matrix}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{Need}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{convert}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{dense}@*) (*@\HLJLcs{matrix}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{diagonalise}@*)
+(*@\HLJLn{p}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{plot}@*)(*@\HLJLp{()}@*)
+(*@\HLJLk{for}@*) (*@\HLJLn{t}@*) (*@\HLJLkp{in}@*) (*@\HLJLni{0}@*)(*@\HLJLoB{:}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{:}@*)(*@\HLJLnfB{0.5}@*)
+    (*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}t}@*) (*@\HLJLs{=}@*) (*@\HLJLsi{{\$}t}@*)(*@\HLJLs{"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLk{end}@*)
+(*@\HLJLn{p}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture9_8_1.pdf}
+
+The above calculation is expensive: it does not take into account the sparsity of \texttt{\ensuremath{\Delta}}. To do  better we use Cauchy's integral formula with trapezium rule. First design an ellipse that surrounds the spectrum:
+
+
+\begin{lstlisting}
+(*@\HLJLn{m}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{20{\_}000}@*)
+(*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{ellipse{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{m}@*)(*@\HLJLp{,}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{z}@*) (*@\HLJLoB{.-=}@*) (*@\HLJLni{2}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{shift}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{negative}@*)
+(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}contour"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{scatter!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{zeros}@*)(*@\HLJLp{(}@*)(*@\HLJLn{N}@*)(*@\HLJLp{);}@*) (*@\HLJLn{markersize}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}eigenvalues"{}}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture9_9_1.pdf}
+
+We thus can evaluate the matrix exponential at time $t$ using the quadrature rule:
+
+
+\begin{lstlisting}
+(*@\HLJLn{u0{\_}v}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{])}@*)
+(*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{zero}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{complex}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{t}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.5}@*)
+(*@\HLJLk{for}@*) (*@\HLJLn{j}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLnf{length}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+    (*@\HLJLkd{global}@*) (*@\HLJLn{ret}@*)(*@\HLJLp{,}@*) (*@\HLJLn{w}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*)
+    (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{w}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{t}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{])}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{((}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{I}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{{\textbackslash}}@*) (*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{)}@*)
+(*@\HLJLk{end}@*)
+(*@\HLJLnf{norm}@*)(*@\HLJLp{(}@*)(*@\HLJLn{ret}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{matches}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{high}@*) (*@\HLJLcs{accuracy}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+2.058538199502512e-13
+\end{lstlisting}
+
+
+For fractional heat equation, we have slower diffusion:
+
+
+\begin{lstlisting}
+(*@\HLJLn{A}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{Matrix}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{p}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{plot}@*)(*@\HLJLp{()}@*)
+(*@\HLJLk{for}@*) (*@\HLJLn{t}@*) (*@\HLJLkp{in}@*) (*@\HLJLni{0}@*)(*@\HLJLoB{:}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{:}@*)(*@\HLJLnfB{0.5}@*)
+    (*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLp{[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{;}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]);}@*) (*@\HLJLni{0}@*)(*@\HLJLp{];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}t}@*) (*@\HLJLs{=}@*) (*@\HLJLsi{{\$}t}@*)(*@\HLJLs{"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLk{end}@*)
+(*@\HLJLn{p}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture9_11_1.pdf}
+
+We need to be more careful and navigate the branch cut of $\E^{-\sqrt{z}}$. That is, we need the following contour (note we evaluate on $-\Delta$):
+
+
+\begin{lstlisting}
+(*@\HLJLn{m}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{20{\_}000}@*)
+(*@\HLJLn{z}@*)(*@\HLJLp{,}@*)(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{ellipse{\_}rule}@*)(*@\HLJLp{(}@*)(*@\HLJLn{m}@*)(*@\HLJLp{,}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{z}@*) (*@\HLJLoB{.+=}@*) (*@\HLJLni{2}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{h}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{shift}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{positive}@*)
+(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}contour"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{scatter!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{eigvals}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{zeros}@*)(*@\HLJLp{(}@*)(*@\HLJLn{N}@*)(*@\HLJLp{);}@*) (*@\HLJLn{markersize}@*)(*@\HLJLoB{=}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}eigenvalues"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{([}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2000}@*)(*@\HLJLp{,}@*)(*@\HLJLni{0}@*)(*@\HLJLp{],[}@*)(*@\HLJLni{0}@*)(*@\HLJLp{,}@*)(*@\HLJLni{0}@*)(*@\HLJLp{];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}branch}@*) (*@\HLJLs{cut"{}}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture9_12_1.pdf}
+
+\begin{lstlisting}
+(*@\HLJLn{u0{\_}v}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{u0}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{[}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{:}@*)(*@\HLJLk{end}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{])}@*)
+(*@\HLJLn{ret}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{zero}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{complex}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{t}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.5}@*)
+(*@\HLJLk{for}@*) (*@\HLJLn{j}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLnf{length}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+    (*@\HLJLkd{global}@*) (*@\HLJLn{ret}@*)(*@\HLJLp{,}@*) (*@\HLJLn{w}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*)
+    (*@\HLJLn{ret}@*) (*@\HLJLoB{+=}@*) (*@\HLJLn{w}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{t}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]))}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{((}@*)(*@\HLJLn{z}@*)(*@\HLJLp{[}@*)(*@\HLJLn{j}@*)(*@\HLJLp{]}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{I}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{\ensuremath{\Delta}}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{{\textbackslash}}@*) (*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{)}@*)
+(*@\HLJLk{end}@*)
+(*@\HLJLnf{norm}@*)(*@\HLJLp{(}@*)(*@\HLJLn{ret}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{A}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{t}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{u0{\_}v}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{matches}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{high}@*) (*@\HLJLcs{accuracy}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+8.085801026256326e-12
+\end{lstlisting}
+
+
+In both cases this is the start, not the end, of a very interesting computational problem.  As \texttt{N} becomes large there it is delicate to get the shape of the contour and the number of quadrature points right to get a desired accuracy. Higham, Functions of Matrices: Theory and Computation, SIAM, 2008  provides a starting point with a number of more recent developments.
+
 
 
 \end{document}

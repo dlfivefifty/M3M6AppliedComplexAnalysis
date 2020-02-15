@@ -130,14 +130,16 @@ on $[0,1]$ with Dirichlet conditions $u(t,0) = u(t,1) = 0$ and initial condition
 We approximate the solution by its values at a grid, that is, we have time dependent vector $\vc u(t)$ 
 which we hope satisfies the property that at any time $t$
 $$
-\vc u(t) \approx \Vectt[u(t,x_1), \dots, u(t,x_N)]
+\vc u(t) \approx \Vectt[u({t,x_1}), \dots, u({t,x_N})]
 $$
 where $x_j = j/(N+1)$ is an evenly spaced grid. Note we use that $u(t,x_0) = u(t,0) = 0$ and $u(t,x_{N+1}) = u(t,1) = 0$.
 
 Recall from Taylor series that for a smooth enough function $f(x)$ we have 
 $$
-{f(x+h) - 2 f(x) + f(x-h) \over h^2} \approx {f(x) + f'(x) h + f''(x) h^2/2 - 2 f(x) + f(x) - f'(x) h + f''(x) h^2/2  \over h^2}
-= f''(x)
+\begin{align*}
+{f(x+h) - 2 f(x) + f(x-h) \over h^2} &\approx {f(x) + f'(x) h + f''(x) h^2/2 - 2 f(x) + f(x) - f'(x) h + f''(x) h^2/2  \over h^2}\\
+&= f''(x)
+\end{align*}
 $$
 For $h = 1/(N+1)$ this therefore gives
 $$
@@ -207,31 +209,99 @@ The second term is zero when $\theta = \theta_j = j \pi / (N+1)$, thus we know t
 for $j = 1,\ldots,N$. ($j = 0$ is not valid as then the "eigenvector" would be zero.)
 We need to bound the spectrum away from $0$ and $2$. First note from telescoping properties of cosine Taylor series we have
 $$
-\cos x = 1 - x^2/2  + x^4/24 - \cdots \leq 1 - x^2/2
+\cos x = 1 - x^2/2  + x^4/24 - \cdots \leq 1 - x^2/2 + x^4/24
 $$
 thus our bound above is
 $$
-2 \cos \theta_1 = 2 \cos {\pi  \over N+1} \leq 2 - \pr({\pi \over N+1})^2
+2 \cos \theta_1 = 2 \cos {\pi  \over N+1} \leq 2 - \pr({\pi \over N+1})^2 + \pr({\pi \over N+1})^4/12
 $$
+The same holds for the bound below:
+$$
+2 \cos \theta_N \geq -2 + \pr({\pi \over N+1})^2 - {\pi^4 \over 12 (N+1)^2}
+$$
+Thus we have
+$$
+\sigma(\Delta_N) = \sigma(J - 2I)/h^2 \subset \br[-4 (N+1)^2 + \pi^2 - {\pi^4 \over 12 (N+1)^2},-\pi^2 + {\pi^4 \over 12 (N+1)^2}]
+$$
+Thus it suffices to take an ellipse contour passing through say $\pi^2/2$ and $-4 (N+1)^2$.
 
 
 
 __Demonstration__
 We first demonstrate using the built-in matrix exponential. We can construct $\Delta$ as follows:
 ```julia
-N = 1000
+N = 20
 h = 1/N
 Δ = SymTridiagonal(fill(-2,N), fill(1,N-1))/h^2
 ```
 The solution with an initial condition $u_0(x) = x (1-x) \E^x$ is then:
 ```julia
 u0 = x -> x * (1-x) * exp(x)
-t = 0.1
+
 xx = range(0,1; length=N+2)
 A = Matrix(Δ) # Need to convert to dense matrix to diagonalise
-plot(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0])
+p = plot()
+for t in 0:0.1:0.5
+    plot!(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0]; label="t = $t")
+end
+p
+```
+The above calculation is expensive: it does not take into account the sparsity of `Δ`. To do 
+better we use Cauchy's integral formula with trapezium rule. First design an ellipse that surrounds the spectrum:
+```julia
+m = 20_000
+z,w = ellipse_rule(m,2/h^2,1)
+z .-= 2/h^2 # shift to negative
+plot(z; label="contour")
+scatter!(eigvals(Δ), zeros(N); markersize=0.5, label="eigenvalues")
+```
+We thus can evaluate the matrix exponential at time $t$ using the quadrature rule:
+```julia
+u0_v = u0.(xx[2:end-1])
+ret = zero(complex(u0_v))
+t = 0.5
+for j=1:length(z)
+    global ret, w, z
+    ret += w[j]*exp(t*z[j]) * ((z[j]*I - Δ) \ u0_v)
+end
+norm(ret/(2π*im) - exp(A*t)*u0_v) # matches to high accuracy
 ```
 
+For fractional heat equation, we have slower diffusion:
+
 ```julia
-plot!(xx, [0; exp(-sqrt(-A)*t)*u0.(xx[2:end-1]); 0])
+A = -sqrt(-Matrix(Δ))
+p = plot()
+for t in 0:0.1:0.5
+    plot!(xx, [0; exp(A*t)*u0.(xx[2:end-1]); 0]; label="t = $t")
+end
+p
 ```
+
+We need to be more careful and navigate the branch cut of $\E^{-\sqrt{z}}$. That is, we need the following contour
+(note we evaluate on $-\Delta$):
+```julia
+m = 20_000
+z,w = ellipse_rule(m,2/h^2,1)
+z .+= 2/h^2 + π^2/2 # shift to positive
+plot(z; label="contour")
+scatter!(eigvals(-Δ), zeros(N); markersize=0.5, label="eigenvalues")
+plot!([-2000,0],[0,0]; label="branch cut")
+
+``` 
+```julia
+u0_v = u0.(xx[2:end-1])
+ret = zero(complex(u0_v))
+t = 0.5
+for j=1:length(z)
+    global ret, w, z
+    ret += w[j]*exp(-t*sqrt(z[j])) * ((z[j]*I + Δ) \ u0_v)
+end
+norm(ret/(2π*im) - exp(A*t)*u0_v) # matches to high accuracy
+```
+
+
+In both cases this is the start, not the end, of a very interesting computational problem. 
+As `N` becomes large there it is delicate to get the shape of the contour and the number of quadrature
+points right to get a desired accuracy. Higham, Functions of Matrices: Theory and Computation, SIAM, 2008 
+provides a starting point with a number of more recent developments.
