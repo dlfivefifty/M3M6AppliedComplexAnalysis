@@ -90,6 +90,7 @@
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
 \def\lgblksquare{\blacksquare}
+\def\scre{\E}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}
