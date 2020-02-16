@@ -39,3 +39,4 @@ Examples of previous projects:
 7. [Matrix norms and matrix functions](notes/Lecture7.pdf)
 8. [Matrix functions via Cauchy's integral formula](notes/Lecture8.pdf)
 9. [Computing matrix functions via the trapezium rule](notes/Lecture9.pdf)
+10. [Branch cuts](notes/Lecture10.pdf)
