@@ -11,5 +11,6 @@ weave("src/Lecture7.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*
 weave("src/Lecture8.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Lecture9.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Lecture10.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
+weave("src/Lecture11.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 
 end # module

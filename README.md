@@ -40,3 +40,4 @@ Examples of previous projects:
 8. [Matrix functions via Cauchy's integral formula](notes/Lecture8.pdf)
 9. [Computing matrix functions via the trapezium rule](notes/Lecture9.pdf)
 10. [Branch cuts](notes/Lecture10.pdf)
+11. [Representing analytic functions by their behaviour near singularities](notes/Lecture11.pdf)

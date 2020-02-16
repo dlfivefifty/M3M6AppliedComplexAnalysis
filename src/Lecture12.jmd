@@ -9,3 +9,58 @@ $$
 $$
 
 Unlike in Cauchy's integral formula, $f$ need not be analytic and $\Gamma$ need not be closed.
+
+
+
+
+### Uniqueness results from inferred singularity
+
+Recall that an important ingredient of complex analysis is Liouville's theorem:
+
+**Theorem (Liouville)** If $f$ is entire and  bounded in ${\mathbb C}$, then $f$ must be constant.
+
+
+We will see that knowledge of the behaviour of $\phi$ can be used to recover by its behaviour at 
+its singularities at $\infty$ and jump on $[-1,1]$. But before that, we already have the following 
+uniqueness results by combining the above with Liouville's theorem:
+
+
+1. $\phi(z)$ is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\phi(z) \sim z$ and 
+$$\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2} \qqfor -1 < x <1.$$ 
+2. $\kappa(z) = {1 \over \sqrt{z-1} \sqrt{z+1}}$ is the unique function analytic in $\bar\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\kappa(\infty) = 0$ and 
+$$
+\kappa_+(x) - \kappa_-(x) = {-2\I \over \sqrt{1-x^2}}\qqfor -1 < x <1.
+$$
+
+_Demonstration_ From the phase plot we see it has a branch cut on $[-1,1]$:
+
+κ = z -> 1/(sqrt(z-1)sqrt(z+1))
+phaseplot(-3..3, -3..3, κ)
+
+On the branch there is the expected jump:
+
+x = 0.1
+κ(x + 0.0im) - κ(x - 0.0im) , -2im/sqrt(1-x^2)
+
+For $x < -1$ the branch cut is removable: we have continuity and therefore analyticity:
+
+x = -2.3
+κ(x + 0.0im) - κ(x - 0.0im) 
+
+3\. $\mu(z) = {\log(z -1) - \log(z+1) \over 2 \pi \I}$ is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\mu(\infty) = 0$ and 
+$$\mu_+(x) - \mu_-(x) = 1 \qqfor -1 < x < 1.$$
+
+_Demonstration_ Here we see from the phase plot of $mu$ that it has a branch cut on $[-1,1]$:
+
+μ = z -> (log(z-1) - log(z+1))/(2π*im)
+phaseplot(-3..3, -3..3, μ)
+
+For $-1 < x < 1$ we have the jump $1$:
+
+x = 0.3
+μ(x + 0.0im) - μ(x - 0.0im) 
+
+For $x < -1$ we see that the branch cuts cancel and we have continuity:
+
+x = -4.3
+μ(x + 0.0im) - μ(x - 0.0im) 
