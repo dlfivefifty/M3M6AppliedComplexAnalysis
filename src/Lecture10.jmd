@@ -18,11 +18,11 @@ We now discuss functions with branch cuts
 3. Cominations: $\sqrt{z-1}\sqrt{z+1}$ with a cut on $[-1,1]$
 
 This is a step towards a Cauchy transforms on cuts, for recovering a holomorphic function from its behaviour on a cut.
+This lecture we discuss:
 
 1. Complex logarithm
 2. Algebraic powers
-
-We begin with $\log z$. 
+3. Inferring analyticity from continuity
 
 ## Complex logarithm
 
@@ -151,7 +151,7 @@ $$
 $$
 Let's look at another example: $\varphi(z) = \sqrt{z-1}\sqrt{z+1}$. Each square root term induces
 a jump: one on $(-\infty,-1]$ and one on $(-\infty,1]$. Suprisingly these jumps cancel out, in
-fact (as we explain next lecture) $\varphi$ is analytic off $[-1,1]$, as can be seen from the
+fact (as we explain below) $\varphi$ is analytic off $[-1,1]$, as can be seen from the
 phase portrait:
 ```julia
 φ = z -> sqrt(z-1)*sqrt(z+1)
@@ -174,3 +174,115 @@ $$
 \varphi_+(x) = \sqrt{x-1}_+ \sqrt{x+1}_+ = (- \sqrt{x-1}_-)(- \sqrt{x+1}_-) = \varphi_-(x)
 $$
 This feature is what we use to show analyticity.
+
+
+# Inferred analyticity
+
+Here we review properties of inferring analyticity from continuity.
+
+**Theorem (continuity on a curve implies analyticity)** Let $D$ be a domain and $\gamma \subset D$ a contour. 
+Suppose $f$ is analytic in $D \backslash \gamma$, and continuous on the interior of $\gamma$. 
+Then $f$ is analytic in $D \backslash \{\gamma(a), \gamma(b) \}$.
+
+**Sketch of Proof** 
+
+For simplicity, suppose $D$ is a circle of radius 2 and $\gamma$ is the interval $[-1,1]$.  
+For any $z$ off the interval, we can write 
+$$
+f(z) = {1 \over 2 \pi \I} \oint_{\Gamma_x} {f(\zeta) \over  \zeta - z} \D\zeta
+$$
+where $\Gamma_x$ is a simple closed contour that surrounds $z$ and passes through $x$ in both directions:
+```julia
+z = 0.2+0.2im
+x = 0.1
+ε = 0.001
+scatter([x],[0.]; label="x", xlims=(-1.5,1.5), ylims=(-0.5,0.5))
+scatter!([real(z)],[imag(z)]; label="z")
+plot!(-1..1; label="Unit interval", linestyle=:dot)
+
+Γ_x =  Arc(z, 0.1, (-π/2,π)) ∪ Segment(0.2+0.1im,0.2 +0.0im) ∪ Segment(0.2  +0.0im, -0.9 +0.0im) ∪
+     Circle(-1.0, 0.1) ∪ Segment(-0.9 -0.0im, 0.2  -0.0im) ∪ Segment(0.2-0.0im, 0.2 - 0.2im) ∪
+      Segment(0.2 - 0.2im, -1.2-0.2im) ∪ Segment(-1.2 -0.2im, -1.2+ 0.2im) ∪ 
+        Segment(-1.2+ 0.2im, 0.1+0.2im)
+
+plot!(Γ_x; label="Contour")
+```
+Because $f$ is continuous at $x$, we have
+$$
+f_+(x) = f_-(x) = f(x)
+$$
+where
+$$
+f_\pm(x) = \lim_{\epsilon \rightarrow 0} f(x \pm \I \epsilon)
+$$
+Therefore, the two integrals along $[-1,1]$ cancel out and we get:
+$$
+    f(z) = {1 \over 2 \pi \I} \oint_{{\tilde \Gamma}_x} {f(\zeta) \over \zeta - z} \D \zeta
+$$
+where ${\tilde \Gamma}_x$ is $\Gamma_x$ with the contour on the interval removed:
+```julia
+z = 0.2+0.2im
+x = 0.1
+ε = 0.001
+scatter([x],[0.]; label="x", xlims=(-1.5,1.5), ylims=(-0.5,0.5))
+scatter!([real(z)],[imag(z)]; label="z")
+plot!(-1..1; label="Unit interval", linestyle=:dot)
+
+Γt_x =  Arc(z, 0.1, (-π/2,π)) ∪ Segment(0.2+0.1im,0.2 -0.2im) ∪    Circle(-1.0, 0.1) ∪
+      Segment(0.2 - 0.2im, -1.2-0.2im) ∪ Segment(-1.2 -0.2im, -1.2+ 0.2im) ∪ 
+        Segment(-1.2+ 0.2im, 0.1+0.2im)
+
+plot!(Γt_x; label="Contour")
+```
+This integral expression holds for all $z$ inside the contour $\tilde \Gamma_x$ but off the interval.  
+But it therefore holds true for $f(x) = f_+(x) = f_-(x)$ by taking limits.  Thus
+$$f(x) = {1 \over 2 \pi \I} \int_{{\tilde \Gamma}_x} {f(\zeta) \over \zeta -x} \D\zeta$$
+hence $f$ is analytic at $x$.
+
+◼
+
+**Theorem (weaker than pole singularity implies analyticity)** Suppose $f$ is analytic in 
+$D \backslash \{ z_0 \}$ and has a weaker than pole singularity at $z_0$:
+$$
+\lim_{z \rightarrow z_0} (z-z_0) f(z) = 0
+$$
+holds uniformly. Then $f$ is analytic at $z_0$. (More precisely: $f$ can be analytically continued to $z_0$.)
+
+**Proof** 
+
+Around $z_0$ is an annulus $A_{R0}$ inside which $f$ is analytic. 
+Consider $z$ in $A_{R0}$ and a positively oriented circle $\gamma_r$ of radius $r$ with $|r| < |z-z_0|$.  
+Then we have
+$$
+    f(z) = {1 \over 2 \pi \I} \oint_{\gamma_R} {f(\zeta) \over \zeta - z} \D \zeta - {1 \over 2 \pi \I} \oint_{\gamma_r} {f(\zeta) \over \zeta - z} \D \zeta .
+$$
+here's a plot:
+```julia
+z₀ = 0.2 +0.2im
+z = 0.4 +0.2im
+
+scatter([real(z₀)],[imag(z₀)]; label="z_0")
+scatter!([real(z)],[imag(z)]; label="z")
+plot!(Circle(z₀, 0.1); label="gamma_r")
+plot!(Circle(z₀, 0.3); label="gamma_R")
+```
+But we have
+$$
+    \left|  \oint_{\gamma_r} {f(\zeta) \over \zeta - z} \D \zeta \right| \leq 2\pi r \sup_{\zeta \in \gamma_r} \left|{f(\zeta) \over \zeta - z}\right| \leq 2 \pi  {1 \over |z_0-z| - r} \sup_{\zeta \in \gamma_r} |f(\zeta)|
+$$
+which tends to zero as $r \rightarrow 0$.
+
+◼
+
+**Corollary (Weaker than linear growth implies analyticity at infinity)** If 
+$$
+\lim_{z \rightarrow \infty} {f(z)  \over z} = 0,
+$$
+then $f$ is analytic at infinity.
+
+
+From these result we can infer that 
+$$
+\phi(z) = \sqrt{z-1}\sqrt{z+1}
+$$
+is analytic on $\C \backslash [-1,1]$, and $\phi(z) \sim_{z \rightarrow \infty} z$.

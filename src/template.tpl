@@ -51,7 +51,7 @@
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
-
+\def\upepsilon{\varepsilon}
 
 
 \def\Xint#1{ \mathchoice
@@ -89,7 +89,7 @@
 
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
-
+\def\lgblksquare{\blacksquare}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}

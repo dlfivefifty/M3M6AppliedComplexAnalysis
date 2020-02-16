@@ -135,7 +135,7 @@
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
-
+\def\upepsilon{\varepsilon}
 
 
 \def\Xint#1{ \mathchoice
@@ -173,7 +173,7 @@
 
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
-
+\def\lgblksquare{\blacksquare}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}
@@ -238,7 +238,7 @@ We now discuss functions with branch cuts
 \item[3. ] Cominations: $\sqrt{z-1}\sqrt{z+1}$ with a cut on $[-1,1]$
 
 \end{itemize}
-This is a step towards a Cauchy transforms on cuts, for recovering a holomorphic function from its behaviour on a cut.
+This is a step towards a Cauchy transforms on cuts, for recovering a holomorphic function from its behaviour on a cut. This lecture we discuss:
 
 \begin{itemize}
 \item[1. ] Complex logarithm
@@ -246,9 +246,10 @@ This is a step towards a Cauchy transforms on cuts, for recovering a holomorphic
 
 \item[2. ] Algebraic powers
 
-\end{itemize}
-We begin with $\log z$. 
 
+\item[3. ] Inferring analyticity from continuity
+
+\end{itemize}
 \subsection{Complex logarithm}
 One way to define the logarithm is as $\log|z| + \I \arg z$. We find it more convenient in order to understand its behaviour to define it as an integral:
 
@@ -406,7 +407,7 @@ In particular, for $x < 0$,
 \sqrt{x}_+ - \sqrt{x}_- &= 2 \I \sqrt{-x} \\
 \sqrt{x}_+ + \sqrt{x}_- &= 0
 \end{align*}
-Let's look at another example: $\varphi(z) = \sqrt{z-1}\sqrt{z+1}$. Each square root term induces a jump: one on $(-\infty,-1]$ and one on $(-\infty,1]$. Suprisingly these jumps cancel out, in fact (as we explain next lecture) $\varphi$ is analytic off $[-1,1]$, as can be seen from the phase portrait:
+Let's look at another example: $\varphi(z) = \sqrt{z-1}\sqrt{z+1}$. Each square root term induces a jump: one on $(-\infty,-1]$ and one on $(-\infty,1]$. Suprisingly these jumps cancel out, in fact (as we explain below) $\varphi$ is analytic off $[-1,1]$, as can be seen from the phase portrait:
 
 
 \begin{lstlisting}
@@ -437,6 +438,130 @@ For $x < -1$ we actually have continuity:
 \varphi_+(x) = \sqrt{x-1}_+ \sqrt{x+1}_+ = (- \sqrt{x-1}_-)(- \sqrt{x+1}_-) = \varphi_-(x)
 \]
 This feature is what we use to show analyticity.
+
+\section{Inferred analyticity}
+Here we review properties of inferring analyticity from continuity.
+
+\textbf{Theorem (continuity on a curve implies analyticity)} Let $D$ be a domain and $\gamma \subset D$ a contour.  Suppose $f$ is analytic in $D \backslash \gamma$, and continuous on the interior of $\gamma$.  Then $f$ is analytic in $D \backslash \{\gamma(a), \gamma(b) \}$.
+
+\textbf{Sketch of Proof} 
+
+For simplicity, suppose $D$ is a circle of radius 2 and $\gamma$ is the interval $[-1,1]$.   For any $z$ off the interval, we can write 
+
+\[
+f(z) = {1 \over 2 \pi \I} \oint_{\Gamma_x} {f(\zeta) \over  \zeta - z} \D\zeta
+\]
+where $\Gamma_x$ is a simple closed contour that surrounds $z$ and passes through $x$ in both directions:
+
+
+\begin{lstlisting}
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
+(*@\HLJLn{\ensuremath{\upepsilon}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.001}@*)
+(*@\HLJLnf{scatter}@*)(*@\HLJLp{([}@*)(*@\HLJLn{x}@*)(*@\HLJLp{],[}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}x"{}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{xlims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{),}@*) (*@\HLJLn{ylims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{))}@*)
+(*@\HLJLnf{scatter!}@*)(*@\HLJLp{([}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)],[}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}z"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}Unit}@*) (*@\HLJLs{interval"{}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{linestyle}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{dot}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{\ensuremath{\Gamma}{\_}x}@*) (*@\HLJLoB{=}@*)  (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{,}@*) (*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.2}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*)  (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.9}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*)
+     (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.9}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.2}@*)  (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.2}@*) (*@\HLJLoB{-}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*)
+      (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*) (*@\HLJLoB{-}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{+}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) 
+        (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{+}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Gamma}{\_}x}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}Contour"{}}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture10_9_1.pdf}
+
+Because $f$ is continuous at $x$, we have
+
+\[
+f_+(x) = f_-(x) = f(x)
+\]
+where
+
+\[
+f_\pm(x) = \lim_{\epsilon \rightarrow 0} f(x \pm \I \epsilon)
+\]
+Therefore, the two integrals along $[-1,1]$ cancel out and we get:
+
+\[
+    f(z) = {1 \over 2 \pi \I} \oint_{{\tilde \Gamma}_x} {f(\zeta) \over \zeta - z} \D \zeta
+\]
+where ${\tilde \Gamma}_x$ is $\Gamma_x$ with the contour on the interval removed:
+
+
+\begin{lstlisting}
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
+(*@\HLJLn{\ensuremath{\upepsilon}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.001}@*)
+(*@\HLJLnf{scatter}@*)(*@\HLJLp{([}@*)(*@\HLJLn{x}@*)(*@\HLJLp{],[}@*)(*@\HLJLnfB{0.}@*)(*@\HLJLp{];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}x"{}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{xlims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{1.5}@*)(*@\HLJLp{),}@*) (*@\HLJLn{ylims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{))}@*)
+(*@\HLJLnf{scatter!}@*)(*@\HLJLp{([}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)],[}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}z"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1..1}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}Unit}@*) (*@\HLJLs{interval"{}}@*)(*@\HLJLp{,}@*) (*@\HLJLn{linestyle}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{dot}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{\ensuremath{\Gamma}t{\_}x}@*) (*@\HLJLoB{=}@*)  (*@\HLJLnf{Arc}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{,}@*) (*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{,}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.2}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*)    (*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.0}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*)
+      (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.2}@*) (*@\HLJLoB{-}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{+}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) 
+        (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{1.2}@*)(*@\HLJLoB{+}@*) (*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\Gamma}t{\_}x}@*)(*@\HLJLp{;}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}Contour"{}}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture10_10_1.pdf}
+
+This integral expression holds for all $z$ inside the contour $\tilde \Gamma_x$ but off the interval.   But it therefore holds true for $f(x) = f_+(x) = f_-(x)$ by taking limits.  Thus $f(x) = {1 \over 2 \pi \I} \int_{{\tilde \Gamma}_x} {f(\zeta) \over \zeta -x} \D\zeta$ hence $f$ is analytic at $x$.
+
+\ensuremath{\mdblksquare}
+
+\textbf{Theorem (weaker than pole singularity implies analyticity)} Suppose $f$ is analytic in  $D \backslash \{ z_0 \}$ and has a weaker than pole singularity at $z_0$:
+
+\[
+\lim_{z \rightarrow z_0} (z-z_0) f(z) = 0
+\]
+holds uniformly. Then $f$ is analytic at $z_0$. (More precisely: $f$ can be analytically continued to $z_0$.)
+
+\textbf{Proof} 
+
+Around $z_0$ is an annulus $A_{R0}$ inside which $f$ is analytic.  Consider $z$ in $A_{R0}$ and a positively oriented circle $\gamma_r$ of radius $r$ with $|r| < |z-z_0|$.   Then we have
+
+\[
+    f(z) = {1 \over 2 \pi \I} \oint_{\gamma_R} {f(\zeta) \over \zeta - z} \D \zeta - {1 \over 2 \pi \I} \oint_{\gamma_r} {f(\zeta) \over \zeta - z} \D \zeta .
+\]
+here's a plot:
+
+
+\begin{lstlisting}
+(*@\HLJLn{z\ensuremath{\_0}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.2}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.4}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.2}@*)(*@\HLJLn{im}@*)
+
+(*@\HLJLnf{scatter}@*)(*@\HLJLp{([}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)],[}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{)];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}z{\_}0"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{scatter!}@*)(*@\HLJLp{([}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)],[}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)];}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}z"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{);}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}gamma{\_}r"{}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Circle}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z\ensuremath{\_0}}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.3}@*)(*@\HLJLp{);}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}gamma{\_}R"{}}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Lecture10_11_1.pdf}
+
+But we have
+
+\[
+    \left|  \oint_{\gamma_r} {f(\zeta) \over \zeta - z} \D \zeta \right| \leq 2\pi r \sup_{\zeta \in \gamma_r} \left|{f(\zeta) \over \zeta - z}\right| \leq 2 \pi  {1 \over |z_0-z| - r} \sup_{\zeta \in \gamma_r} |f(\zeta)|
+\]
+which tends to zero as $r \rightarrow 0$.
+
+\ensuremath{\mdblksquare}
+
+\textbf{Corollary (Weaker than linear growth implies analyticity at infinity)} If 
+
+\[
+\lim_{z \rightarrow \infty} {f(z)  \over z} = 0,
+\]
+then $f$ is analytic at infinity.
+
+From these result we can infer that 
+
+\[
+\phi(z) = \sqrt{z-1}\sqrt{z+1}
+\]
+is analytic on $\C \backslash [-1,1]$, and $\phi(z) \sim_{z \rightarrow \infty} z$.
 
 
 

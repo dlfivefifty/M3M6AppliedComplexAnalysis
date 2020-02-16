@@ -1,1 +1,11 @@
 ## Plemelj's theorem
+
+For the last part and the next few talks a key definition is Cauchy transforms:
+
+**Definition (Cauchy transform)**
+For a contour $\Gamma$ and $f : \Gamma \rightarrow \C$ define the _Cauchy transform_ as
+$$
+\CC_\Gamma f(z) := \int_\Gamma {f(\zeta) \over \zeta - z} \D \zeta
+$$
+
+Unlike in Cauchy's integral formula, $f$ need not be analytic and $\Gamma$ need not be closed.
