@@ -1,17 +1,201 @@
-## Plemelj's theorem
+__M3M6: Methods of Mathematical Physics__
 
-For the last part and the next few talks a key definition is Cauchy transforms:
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+# Plemelj's theorem
+
+This lecture concerns the properties of the Cauchy transform:
 
 **Definition (Cauchy transform)**
-For a contour $\Gamma$ and $f : \Gamma \rightarrow \C$ define the _Cauchy transform_ as
+For a contour $\gamma$ and $f : \gamma \rightarrow \C$ define the _Cauchy transform_ as
 $$
-\CC_\Gamma f(z) := \int_\Gamma {f(\zeta) \over \zeta - z} \D \zeta
+\CC_\gamma f(z) := \int_\gamma {f(\zeta) \over \zeta - z} \D \zeta
 $$
+Unlike in Cauchy's integral formula, $f$ need not be analytic and $\gamma$ need not be closed.
 
-Unlike in Cauchy's integral formula, $f$ need not be analytic and $\Gamma$ need not be closed.
+We focus on the case of an interval $[a,b]$:
+$$
+\CC_{[a,b]} f(z) := {1 \over 2 \pi \I} \int_a^b {f(x) \over x - z} \dx
+$$
+Here is a phase portrait of the Cauchy transform of a simple function:
+```julia
+using ApproxFun, SingularIntegralEquations, ComplexPhasePortrait, Plots
+x = Fun(-1 .. 1)
+f = exp(x)*sqrt(1-x^2)
+phaseplot(-3..3, -3..3, z -> cauchy(f,z))
+```
+What's evident here is that it has a jump on the contour. 
+It turns out that the Cauchy transform has a very simple subtractive jump. Here we denote
+$$
+    \CC_{[a,b]}^+ f(x) = \lim_{\epsilon \rightarrow 0^+} \CC_{[a,b]} f( x+ \I \epsilon)\\
+        \CC_{[a,b]}^- f(x) = \lim_{\epsilon \rightarrow 0^+} \CC_{[a,b]} f( x- \I \epsilon)
+$$
+that is the limit from above and below. For more complicated contours these would denote limit from the left/right or
+in the case of a simple closed contour, interior/exterior. 
 
 
+**Theorem (Plemelj on the interval I)**
+Suppose $(b-x)^\alpha (x-a)^\beta f(x)$ is differentiable  on $[a,b]$, for $\alpha, \beta < 1$. 
+Then the Cauchy transform has the following properties:
+1. _Analyticity_: $\CC_{[a,b]} f(z)$ is analytic in $\bar \C \backslash [a,b]$
+3. _Decay_: $\CC_{[a,b]} f(\infty) = 0$
+4. _Jump_: It has the subtractive jump:
+$$
+\CC_{[a,b]}^+ f(x) - \CC_{[a,b]}^- f(x) = f(x) \qqfor a < x < b
+$$
+2. _Regularity_: $\CC_{[a,b]} f(z)$ has weaker than pole singularities at $a$ and $b$
 
+**Sketch of Proof** 
+We show the proof for $[-1,1]$.
+
+1. From the dominated convergence theorem, we know that $\CC f(z)$ is complex-differentiable off $[-1,1]$:
+$$
+{\D \over \D z} {\cal C} f(z) = {1 \over 2 \pi \I}\int_{-1}^1  {\D \over \D z} {f(x) \over x - z} \dx = {1 \over 2 \pi \I}\int_{-1}^1   {f(x) \over (x - z)^2} \dx
+$$
+We know it is analytic at $\infty$ because
+$$
+{\cal C} f(z^{-1}) = z {1 \over 2 \pi \I}\int_{-1}^1   {f(x) \over z x - 1} \dx
+$$
+is differentiable at zero. 
+2. ${\cal C} f(\infty) = 0$ follows from uniform convergence of $1 \over z - x$ to zero as $z \rightarrow \infty$.
+3.  For the constant function, which is analytic, this follows by considering a contour $\gamma_x^+$ perturbed above $x$ and $\gamma_x^-$ perturbed below $x$, see plots below.  Therefore, by Cauchy integral formula we have
+$$
+\CC^+ 1 (x) - \CC^- 1 (x) = {1 \over 2 \pi \I}\int_{\gamma_x^+} {1 \over x - z} \dx - {1 \over 2 \pi \I}\int_{\gamma_x^-} {1 \over x - z} \dx = {1 \over 2 \pi \I} \oint {1 \over x -z } \dx = 1.
+$$
+For other functions, we consider, for $z = x + \I \epsilon$,
+$$
+    {\cal C} f(z) =   {1 \over 2 \pi \I} \int_{-1}^1 {f(t) - f(x) \over t - z} \dt + f(x) \CC 1(z)
+$$
+For $\epsilon = 0$, the first integral exists because the singularity at $t = x$ is removable: 
+$$
+\lim_{t \rightarrow x} {f(t) - f(x) \over t - x} = f'(x)
+$$
+We leave it as an excercise (or see [Trogdon & Olver 2015, Lemma 2.7]) to show that $\int_{-1}^1 {f(t) - f(x) \over t - z} \dt$ converges to $\int_{-1}^1 {f(t) - f(x) \over t - x} \dt$ as $z \rightarrow x$. It follows that
+$$
+{\cal C}^\pm f(x) =   {1 \over 2 \pi \I} \int_{-1}^1 {f(t) - f(x) \over t - x} \dt + f(x) \CC^\pm 1(x)
+$$
+and in particular
+$$
+{\cal C}^+ f(x) - {\cal C}^- f(x)  =  f(x) (\CC^+ 1(x) - \CC^- 1(x)) = f(x)
+$$
+4. We show that it has a weaker than pole singularity at $+1$, with $-1$ following by the same argument. First note that $f$ is absolutely integrable. 
+If we assume we approach $1$ at an angle of $-\pi + \delta \leq \theta \leq \pi - \delta$, the uniform convergence of $(z - 1) \CC f(z)$ to zero follows from observing that ${z-1 \over z - t}$ can be made arbitrarily small in a larger and larger interval. This is easiest to see for real $x > 1$, where for
+ $1 \leq x \leq 1 + \epsilon^2$ we have
+$$
+\left|{x -1 \over x-t }\right| \leq \epsilon
+$$
+for all $t \leq 1 + \epsilon^2 - \epsilon$, or more generously, $t \leq 1 - \epsilon$. Therefore,
+$$
+| (x-1) {\cal C} f(x) | \leq {1 \over 2 \pi}\int_{-1}^{1-\epsilon} |f(t) | \left|{x -1 \over x-t }\right| \dt + \int_{1-\epsilon}^1 |f(t) | \dt \leq
+\epsilon \int_{-1}^1 |f(t)| \dt + \int_{1-\epsilon}^1 |f(t) | \dt
+$$
+Both terms tends to zero as $\epsilon \rightarrow 0$, hence so does $| (x-1) {\cal C} f(x) |$.  To extend this to the interval itself (that is, $\delta = 0$), we  use the stronger requirement that $(1-x)^\alpha(1+x)^\beta f(x)$ is differentiable. For $\alpha = \beta = 0$, this follows from the expression in condition (3) and the fact that (found via direct integration)
+$$
+    \CC 1(z) =  {\log(z-1) - \log(z+1) \over 2 \pi \I}
+$$
+has only logarithmic singularities, and $f(x)$ is bounded.
+
+■
+
+Here is a plot of ${x - 1 \over x- t}$ showing that it is small on an increasing portion of the interval as $x \rightarrow 1$ from the right:
+```julia
+x = 1 + 0.01
+tt = range(-1.,1.; length=1000)
+plot(tt, abs.((x - 1) ./ (x .- tt)); legend=false)
+```
+Here is a plot of $\gamma_x^\pm$:
+```julia
+x = 0.4
+r = 0.1
+tt = range(π,0.; length=100)
+plot([-1.; x .+ r*cos.(tt);1.0], [0.; r*sin.(tt); 0.0];ylims=(-0.5,0.5),label="g_x^+")
+plot!([-1.; x .+ r*cos.(tt);1.0], [0.; -r*sin.(tt); 0.0];ylims=(-0.5,0.5),label="g_x^-")
+```
+We can use the results of the previous results to show that it is in fact unique.
+
+
+**Theorem (Plemelj on the interval II)** Suppose $\phi(z)$ satsfies the following properties:
+1. _Analyticity_: $\phi(z)$ is analytic in $\bar \C \backslash [a,b]$
+2. _Regularity_: $\phi(z)$ has weaker than pole singularities at $a$ and $b$
+3. _Decay_: $\phi(\infty) = 0$
+4. _Jump_: It has the subtractive jump:
+$$
+\phi^+(x) - \phi^-(x) = f(x) \qqfor a < x < b
+$$
+where $(b-x)^\alpha (x-a)^\beta f(x)$ is differentiable in $[a,b]$ for $\alpha,\beta < 1$.  
+
+Then $\phi(z) = {\cal C}_{[a,b]} f(z)$.
+
+**Sketch of Proof**
+Consider 
+$$
+A(z) = \phi(z) - {\cal C}_{[a,b]} f(z)
+$$
+This is continuous (hence analytic) on $(a,b)$ as
+$$
+A^+(x) - A^-(x) = \phi^+(x) -\phi^-(x) - {\cal C}_{[a,b]}^+ f(x) + {\cal C}_{[a,b]}^- f(x)  =f(x) - f(x) = 0
+$$
+Also, $A$ has weaker than pole singularities at $a$ and $b$, hence is analytic there as well: it's entire. 
+Only entire functions that are bounded are constant, since it vanishes at $\infty$ the constant must be zero.
+
+■
+
+
+_Example 1_ We can use this theorem to prove the following relationships  (using $\diamond$ for the dummy variable):
+
+$$
+{1 \over \sqrt{z-1} \sqrt{z+1}} = -2 \I {\cal C}\left[{1 \over \sqrt{1-\diamond^2}}\right](z) = 
+-{1 \over \pi}\int_{-1}^1 {\dx \over \sqrt{1-x^2} (x-z)}
+$$
+(1) follows because the jumps cancel. (2 and 3) are immediate. (4) follows from a simple calculation. 
+Here we show that it has the correct jump:
+```julia
+x = Fun()
+z = 2 +2im
+1/(sqrt(z-1)sqrt(z+1)),-2im*cauchy(1/sqrt(1-x^2),z)
+```
+_Example 2_ Now consider a problem of reducing 
+$$
+\phi(z) = \sqrt{z-1} \sqrt{z+1}
+$$
+to its behaviour near its singularities. It has two singularities: it blows up at $\infty$ and has a branch cut on $[-1,1]$
+
+
+We can subtract out the singularity at infinity first to determine
+$$
+\phi(z) = z  + 2 \I {\cal C}[\sqrt{1-\diamond^2}](z)
+$$
+Note this works because, as $z \rightarrow \infty$, we have 
+$$
+\phi(z) = z (\sqrt{1-{1/z}}\sqrt{1 + {1/z}}) = z (1 + O({1/z}))(1+O(1/z)) = z + O(1/z)
+$$
+hence $\phi(z) - z$ vanishes at the origin. This is an example of summing over the behaviour at each singularity to 
+recover the function (in this case, $\phi$ has a singularity along the cut $[-1,1]$ and polynomial growth at $\infty$). 
+
+Because $\phi(z)-z$ decays, we can now deploy Plemelj II to determine:
+$$
+\phi(z) -z = \CC[\phi_+-\phi_-](z)
+$$
+where
+$$
+\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2}
+$$
+Here we see that our derived expression matches $phi(z)$:
+```julia
+sqrt(z-1)sqrt(z+1), z +2im*cauchy(sqrt(1-x^2),z)
+```
+
+
+_Example 3_ Finally, we have the following (also verifiable using indefinite integration):
+
+$$
+{\log(z-1) - \log(z+1) \over 2 \pi \I} =  {\cal C}[1](z) = {1 \over 2 \pi \I} \int_{-1}^1 {\dx \over x -z}
+$$
+```julia
+(log(z-1)-log(z+1))/(2π*im),cauchy(Fun(one(x)),z)
+```
 
 ### Uniqueness results from inferred singularity
 
@@ -26,41 +210,60 @@ uniqueness results by combining the above with Liouville's theorem:
 
 
 1. $\phi(z)$ is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\phi(z) \sim z$ and 
-$$\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2} \qqfor -1 < x <1.$$ 
+$$
+\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2} \qqfor -1 < x <1.
+$$
 2. $\kappa(z) = {1 \over \sqrt{z-1} \sqrt{z+1}}$ is the unique function analytic in $\bar\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\kappa(\infty) = 0$ and 
 $$
 \kappa_+(x) - \kappa_-(x) = {-2\I \over \sqrt{1-x^2}}\qqfor -1 < x <1.
 $$
 
 _Demonstration_ From the phase plot we see it has a branch cut on $[-1,1]$:
-
+```julia
 κ = z -> 1/(sqrt(z-1)sqrt(z+1))
 phaseplot(-3..3, -3..3, κ)
-
+```
 On the branch there is the expected jump:
-
+```julia
 x = 0.1
 κ(x + 0.0im) - κ(x - 0.0im) , -2im/sqrt(1-x^2)
-
+```
 For $x < -1$ the branch cut is removable: we have continuity and therefore analyticity:
-
+```julia
 x = -2.3
 κ(x + 0.0im) - κ(x - 0.0im) 
-
+```
 3\. $\mu(z) = {\log(z -1) - \log(z+1) \over 2 \pi \I}$ is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\mu(\infty) = 0$ and 
-$$\mu_+(x) - \mu_-(x) = 1 \qqfor -1 < x < 1.$$
+$$
+\mu_+(x) - \mu_-(x) = 1 \qqfor -1 < x < 1.
+$$
 
 _Demonstration_ Here we see from the phase plot of $mu$ that it has a branch cut on $[-1,1]$:
-
+```julia
 μ = z -> (log(z-1) - log(z+1))/(2π*im)
 phaseplot(-3..3, -3..3, μ)
-
+```
 For $-1 < x < 1$ we have the jump $1$:
-
+```julia
 x = 0.3
 μ(x + 0.0im) - μ(x - 0.0im) 
-
+```
 For $x < -1$ we see that the branch cuts cancel and we have continuity:
-
+```julia
 x = -4.3
 μ(x + 0.0im) - μ(x - 0.0im) 
+```
+
+**Remark** As an aside, these integrals are computationally difficult because of the singularity in the integrand, 
+hence standard integration methods become slow as $z$ approaches the interval. 
+There are other specialised routines (as implemented in `cauchy(f,z)`) that are much more efficient:
+```julia
+using BenchmarkTools
+z = 0.1 +0.001im
+@btime cauchy(f, z )
+@btime sum(f/(x-z))/(2π*im)
+```
+We can evaluate the limit from above and below. Here we see numerically that we recover $f$ from taking the difference:
+```julia
+cauchy(f, 0.1+0.0im)-cauchy(f, 0.1-0.0im) , f(0.1)
+```
