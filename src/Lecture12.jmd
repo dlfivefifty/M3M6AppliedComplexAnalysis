@@ -4,7 +4,7 @@ Dr. Sheehan Olver
 
 s.olver@imperial.ac.uk
 
-# Plemelj's theorem
+# Cauchy transforms and Plemelj's theorem
 
 This lecture concerns the properties of the Cauchy transform:
 
@@ -62,7 +62,7 @@ is differentiable at zero.
 2. ${\cal C} f(\infty) = 0$ follows from uniform convergence of $1 \over z - x$ to zero as $z \rightarrow \infty$.
 3.  For the constant function, which is analytic, this follows by considering a contour $\gamma_x^+$ perturbed above $x$ and $\gamma_x^-$ perturbed below $x$, see plots below.  Therefore, by Cauchy integral formula we have
 $$
-\CC^+ 1 (x) - \CC^- 1 (x) = {1 \over 2 \pi \I}\int_{\gamma_x^+} {1 \over x - z} \dx - {1 \over 2 \pi \I}\int_{\gamma_x^-} {1 \over x - z} \dx = {1 \over 2 \pi \I} \oint {1 \over x -z } \dx = 1.
+\CC^+ 1 (x) - \CC^- 1 (x) = {1 \over 2 \pi \I}\int_{\gamma_x^-} {1 \over x - z} \dx - {1 \over 2 \pi \I}\int_{\gamma_x^+} {1 \over x - z} \dx = {1 \over 2 \pi \I} \oint {1 \over x -z } \dx = 1.
 $$
 For other functions, we consider, for $z = x + \I \epsilon$,
 $$
@@ -113,7 +113,11 @@ tt = range(π,0.; length=100)
 plot([-1.; x .+ r*cos.(tt);1.0], [0.; r*sin.(tt); 0.0];ylims=(-0.5,0.5),label="g_x^+")
 plot!([-1.; x .+ r*cos.(tt);1.0], [0.; -r*sin.(tt); 0.0];ylims=(-0.5,0.5),label="g_x^-")
 ```
-We can use the results of the previous results to show that it is in fact unique.
+We can use the results of the previous results to show that it is in fact unique, combined
+with Liouville's theorem:
+
+**Theorem (Liouville)** If $f$ is entire and  bounded in ${\mathbb C}$, then $f$ must be constant.
+
 
 
 **Theorem (Plemelj on the interval II)** Suppose $\phi(z)$ satsfies the following properties:
@@ -150,12 +154,7 @@ $$
 -{1 \over \pi}\int_{-1}^1 {\dx \over \sqrt{1-x^2} (x-z)}
 $$
 (1) follows because the jumps cancel. (2 and 3) are immediate. (4) follows from a simple calculation. 
-Here we show that it has the correct jump:
-```julia
-x = Fun()
-z = 2 +2im
-1/(sqrt(z-1)sqrt(z+1)),-2im*cauchy(1/sqrt(1-x^2),z)
-```
+
 _Example 2_ Now consider a problem of reducing 
 $$
 \phi(z) = \sqrt{z-1} \sqrt{z+1}
@@ -182,43 +181,15 @@ where
 $$
 \phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2}
 $$
-Here we see that our derived expression matches $phi(z)$:
-```julia
-sqrt(z-1)sqrt(z+1), z +2im*cauchy(sqrt(1-x^2),z)
-```
-
 
 _Example 3_ Finally, we have the following (also verifiable using indefinite integration):
 
 $$
 {\log(z-1) - \log(z+1) \over 2 \pi \I} =  {\cal C}[1](z) = {1 \over 2 \pi \I} \int_{-1}^1 {\dx \over x -z}
 $$
-```julia
-(log(z-1)-log(z+1))/(2π*im),cauchy(Fun(one(x)),z)
-```
-
-### Uniqueness results from inferred singularity
-
-Recall that an important ingredient of complex analysis is Liouville's theorem:
-
-**Theorem (Liouville)** If $f$ is entire and  bounded in ${\mathbb C}$, then $f$ must be constant.
 
 
-We will see that knowledge of the behaviour of $\phi$ can be used to recover by its behaviour at 
-its singularities at $\infty$ and jump on $[-1,1]$. But before that, we already have the following 
-uniqueness results by combining the above with Liouville's theorem:
-
-
-1. $\phi(z)$ is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\phi(z) \sim z$ and 
-$$
-\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2} \qqfor -1 < x <1.
-$$
-2. $\kappa(z) = {1 \over \sqrt{z-1} \sqrt{z+1}}$ is the unique function analytic in $\bar\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\kappa(\infty) = 0$ and 
-$$
-\kappa_+(x) - \kappa_-(x) = {-2\I \over \sqrt{1-x^2}}\qqfor -1 < x <1.
-$$
-
-_Demonstration_ From the phase plot we see it has a branch cut on $[-1,1]$:
+__Demonstration__ From the phase plot we see it has a branch cut on $[-1,1]$:
 ```julia
 κ = z -> 1/(sqrt(z-1)sqrt(z+1))
 phaseplot(-3..3, -3..3, κ)
@@ -238,7 +209,7 @@ $$
 \mu_+(x) - \mu_-(x) = 1 \qqfor -1 < x < 1.
 $$
 
-_Demonstration_ Here we see from the phase plot of $mu$ that it has a branch cut on $[-1,1]$:
+_Demonstration_ Here we see from the phase plot of $\mu$ that it has a branch cut on $[-1,1]$:
 ```julia
 μ = z -> (log(z-1) - log(z+1))/(2π*im)
 phaseplot(-3..3, -3..3, μ)
@@ -259,11 +230,15 @@ hence standard integration methods become slow as $z$ approaches the interval.
 There are other specialised routines (as implemented in `cauchy(f,z)`) that are much more efficient:
 ```julia
 using BenchmarkTools
-z = 0.1 +0.001im
-@btime cauchy(f, z )
-@btime sum(f/(x-z))/(2π*im)
+z = 0.1 +0.0001im
+x = Fun()
+f = exp(x)
+# μs is micro seconds (1E-6 seconds) while ms is milliseconds (1E-3 seconds) 
+@btime cauchy(f, z ) # specialised routine
+@btime sum(f/(x-z))/(2π*im) # standard quadrature
 ```
-We can evaluate the limit from above and below. Here we see numerically that we recover $f$ from taking the difference:
+We can evaluate the limit from above and below using the specialised routine, 
+where standard quadrature breaks down. Here we see numerically that we recover $f$ from taking the difference:
 ```julia
 cauchy(f, 0.1+0.0im)-cauchy(f, 0.1-0.0im) , f(0.1)
 ```

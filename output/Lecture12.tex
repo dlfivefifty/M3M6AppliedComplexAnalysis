@@ -227,7 +227,7 @@ Dr. Sheehan Olver
 
 s.olver@imperial.ac.uk
 
-\section{Plemelj's theorem}
+\section{Cauchy transforms and Plemelj's theorem}
 This lecture concerns the properties of the Cauchy transform:
 
 \textbf{Definition (Cauchy transform)} For a contour $\gamma$ and $f : \gamma \rightarrow \C$ define the \emph{Cauchy transform} as
@@ -308,7 +308,7 @@ follows from uniform convergence of $1 \over z - x$ to zero as $z \rightarrow \i
 
 \end{itemize}
 \[
-\CC^+ 1 (x) - \CC^- 1 (x) = {1 \over 2 \pi \I}\int_{\gamma_x^+} {1 \over x - z} \dx - {1 \over 2 \pi \I}\int_{\gamma_x^-} {1 \over x - z} \dx = {1 \over 2 \pi \I} \oint {1 \over x -z } \dx = 1.
+\CC^+ 1 (x) - \CC^- 1 (x) = {1 \over 2 \pi \I}\int_{\gamma_x^-} {1 \over x - z} \dx - {1 \over 2 \pi \I}\int_{\gamma_x^+} {1 \over x - z} \dx = {1 \over 2 \pi \I} \oint {1 \over x -z } \dx = 1.
 \]
 For other functions, we consider, for $z = x + \I \epsilon$,
 
@@ -378,7 +378,9 @@ Here is a plot of $\gamma_x^\pm$:
 
 \includegraphics[width=\linewidth]{figures/Lecture12_3_1.pdf}
 
-We can use the results of the previous results to show that it is in fact unique.
+We can use the results of the previous results to show that it is in fact unique, combined with Liouville's theorem:
+
+\textbf{Theorem (Liouville)} If $f$ is entire and  bounded in ${\mathbb C}$, then $f$ must be constant.
 
 \textbf{Theorem (Plemelj on the interval II)} Suppose $\phi(z)$ satsfies the following properties:
 
@@ -422,20 +424,7 @@ Also, $A$ has weaker than pole singularities at $a$ and $b$, hence is analytic t
 {1 \over \sqrt{z-1} \sqrt{z+1}} = -2 \I {\cal C}\left[{1 \over \sqrt{1-\diamond^2}}\right](z) = 
 -{1 \over \pi}\int_{-1}^1 {\dx \over \sqrt{1-x^2} (x-z)}
 \]
-(1) follows because the jumps cancel. (2 and 3) are immediate. (4) follows from a simple calculation.  Here we show that it has the correct jump:
-
-
-\begin{lstlisting}
-(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
-(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{2}@*) (*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)
-(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)),}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{),}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(0.23307736827563616 - 0.2640258983261148im, 0.2330773682756362 - 0.2640258
-983261148im)
-\end{lstlisting}
-
+(1) follows because the jumps cancel. (2 and 3) are immediate. (4) follows from a simple calculation. 
 
 \emph{Example 2} Now consider a problem of reducing 
 
@@ -466,63 +455,12 @@ where
 \[
 \phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2}
 \]
-Here we see that our derived expression matches $phi(z)$:
-
-
-\begin{lstlisting}
-(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{),}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{+}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{),}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(1.8791298183332827 + 2.1286448445312045im, 1.8791298183332823 + 2.12864484
-4531204im)
-\end{lstlisting}
-
-
 \emph{Example 3} Finally, we have the following (also verifiable using indefinite integration):
 
 \[
 {\log(z-1) - \log(z+1) \over 2 \pi \I} =  {\cal C}[1](z) = {1 \over 2 \pi \I} \int_{-1}^1 {\dx \over x -z}
 \]
-
-\begin{lstlisting}
-(*@\HLJLp{(}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{),}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{one}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)),}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(0.08262467026928395 + 0.07603718482849817im, 0.08262467026928397 + 0.07603
-718482849817im)
-\end{lstlisting}
-
-
-\subsubsection{Uniqueness results from inferred singularity}
-Recall that an important ingredient of complex analysis is Liouville's theorem:
-
-\textbf{Theorem (Liouville)} If $f$ is entire and  bounded in ${\mathbb C}$, then $f$ must be constant.
-
-We will see that knowledge of the behaviour of $\phi$ can be used to recover by its behaviour at  its singularities at $\infty$ and jump on $[-1,1]$. But before that, we already have the following  uniqueness results by combining the above with Liouville's theorem:
-
-\begin{itemize}
-\item[1. ] \[
-\phi(z)
-\]
-is the unique function analytic in $\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\phi(z) \sim z$ and 
-
-\end{itemize}
-\[
-\phi_+(x) - \phi_-(x) = 2\I \sqrt{1-x^2} \qqfor -1 < x <1.
-\]
-\begin{itemize}
-\item[2. ] \[
-\kappa(z) = {1 \over \sqrt{z-1} \sqrt{z+1}}
-\]
-is the unique function analytic in $\bar\C \backslash [-1,1]$ with weaker than pole singularities at $\pm 1$ satisfying $\kappa(\infty) = 0$ and 
-
-\end{itemize}
-\[
-\kappa_+(x) - \kappa_-(x) = {-2\I \over \sqrt{1-x^2}}\qqfor -1 < x <1.
-\]
-\emph{Demonstration} From the phase plot we see it has a branch cut on $[-1,1]$:
+\textbf{Demonstration} From the phase plot we see it has a branch cut on $[-1,1]$:
 
 
 \begin{lstlisting}
@@ -530,7 +468,7 @@ is the unique function analytic in $\bar\C \backslash [-1,1]$ with weaker than p
 (*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLn{\ensuremath{\kappa}}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture12_7_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture12_4_1.pdf}
 
 On the branch there is the expected jump:
 
@@ -563,7 +501,7 @@ For $x < -1$ the branch cut is removable: we have continuity and therefore analy
 \[
 \mu_+(x) - \mu_-(x) = 1 \qqfor -1 < x < 1.
 \]
-\emph{Demonstration} Here we see from the phase plot of $mu$ that it has a branch cut on $[-1,1]$:
+\emph{Demonstration} Here we see from the phase plot of $\mu$ that it has a branch cut on $[-1,1]$:
 
 
 \begin{lstlisting}
@@ -571,7 +509,7 @@ For $x < -1$ the branch cut is removable: we have continuity and therefore analy
 (*@\HLJLnf{phaseplot}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLnfB{3..3}@*)(*@\HLJLp{,}@*) (*@\HLJLn{\ensuremath{\mu}}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Lecture12_10_1.pdf}
+\includegraphics[width=\linewidth]{figures/Lecture12_7_1.pdf}
 
 For $-1 < x < 1$ we have the jump $1$:
 
@@ -604,26 +542,29 @@ For $x < -1$ we see that the branch cuts cancel and we have continuity:
 
 \begin{lstlisting}
 (*@\HLJLk{using}@*) (*@\HLJLn{BenchmarkTools}@*)
-(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.001}@*)(*@\HLJLn{im}@*)
-(*@\HLJLnd{@btime}@*) (*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLp{)}@*)
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*) (*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0001}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)
+(*@\HLJLcs{{\#}}@*) (*@\HLJLcs{\ensuremath{\mu}s}@*) (*@\HLJLcs{is}@*) (*@\HLJLcs{micro}@*) (*@\HLJLcs{seconds}@*) (*@\HLJLcs{(1E-6}@*) (*@\HLJLcs{seconds)}@*) (*@\HLJLcs{while}@*) (*@\HLJLcs{ms}@*) (*@\HLJLcs{is}@*) (*@\HLJLcs{milliseconds}@*) (*@\HLJLcs{(1E-3}@*) (*@\HLJLcs{seconds)}@*) 
+(*@\HLJLnd{@btime}@*) (*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*) (*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{specialised}@*) (*@\HLJLcs{routine}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
-494.284 ns (10 allocations: 512 bytes)
+9.501 (*@\ensuremath{\mu}@*)s (18 allocations: 1.64 KiB)
 \end{lstlisting}
 
 
 \begin{lstlisting}
-(*@\HLJLnd{@btime}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnd{@btime}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{standard}@*) (*@\HLJLcs{quadrature}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
-601.203 ns (6 allocations: 544 bytes)
-1.4596050485547113e-5 + 0.06422262213640728im
+197.280 ms (313 allocations: 207.54 MiB)
+0.5525638794337968 - 0.3181012137711178im
 \end{lstlisting}
 
 
-We can evaluate the limit from above and below. Here we see numerically that we recover $f$ from taking the difference:
+We can evaluate the limit from above and below using the specialised routine,  where standard quadrature breaks down. Here we see numerically that we recover $f$ from taking the difference:
 
 
 \begin{lstlisting}
@@ -631,7 +572,7 @@ We can evaluate the limit from above and below. Here we see numerically that we 
 \end{lstlisting}
 
 \begin{lstlisting}
-(1.0996311793408586 + 0.0im, 1.0996311793408586)
+(1.1051709180756475 + 0.0im, 1.1051709180756475)
 \end{lstlisting}
 
 
