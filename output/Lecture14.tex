@@ -304,7 +304,7 @@ Here is a plot of the integration domain, showing how it avoids the singularity:
 
 
 \begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SingularIntegralEquations}@*)
+(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{ComplexPhasePortrait}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SingularIntegralEquations}@*)(*@\HLJLp{,}@*) (*@\HLJLn{LinearAlgebra}@*)
 (*@\HLJLn{\ensuremath{\upepsilon}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.05}@*)
 (*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnfB{0.1}@*)
 (*@\HLJLn{\ensuremath{\Gamma}}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*) (*@\HLJLp{,}@*) (*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{\ensuremath{\upepsilon}}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\cup}}@*) (*@\HLJLnf{Segment}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{\ensuremath{\upepsilon}}@*) (*@\HLJLp{,}@*) (*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
@@ -418,19 +418,8 @@ Here we test it numerically:
 Therefore:
 
 \[
-{\cal H}\left[{1 \over \sqrt{1-\diamond^2}}\right](x) = \I (\CC^+  + \CC^-) \left[{1 \over \sqrt{1-\diamond^2}}\right](x) = {1 \over 2  \sqrt{x-1}_+ \sqrt{x+1}} + {1 \over 2  \sqrt{x-1}_- \sqrt{x+1}} = 0
+{\cal H}\left[{1 \over \sqrt{1-\diamond^2}}\right](x) = -\I (\CC^+  + \CC^-) \left[{1 \over \sqrt{1-\diamond^2}}\right](x) = -{1 \over 2  \sqrt{x-1}_+ \sqrt{x+1}} - {1 \over 2  \sqrt{x-1}_- \sqrt{x+1}} = 0
 \]
-
-\begin{lstlisting}
-(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
-(*@\HLJLnf{norm}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-Error: UndefVarError: norm not defined
-\end{lstlisting}
-
-
 Similarly, recall
 
 \[
@@ -441,13 +430,6 @@ Therefore,
 \[
 {\cal H}\left[{\sqrt{1-\diamond^2}}\right](x) = -\I (\CC^+  + \CC^-) \left[{\sqrt{1-\diamond^2}}\right](x) = x 
 \]
-
-\begin{lstlisting}
-(*@\HLJLnf{plot}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)))}@*)
-\end{lstlisting}
-
-\includegraphics[width=\linewidth]{figures/Lecture14_7_1.pdf}
-
 One more example: since
 
 \[
@@ -458,41 +440,18 @@ we have
 \[
 \HH 1(x) = -{\log_+(x-1) + \log_-(x-1) - 2\log(x+1) \over 2\pi} = -{\log(1-x) - \log(x+1) \over \pi}
 \]
-
-\begin{lstlisting}
-(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Fun}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLnf{Legendre}@*)(*@\HLJLp{()),}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{),}@*) (*@\HLJLoB{-}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(0.06387546623297949, 0.06387546623297947)
-\end{lstlisting}
-
-
-\#\# Real / imaginary parts of the Cauchy transform
-
+\subsection{Real and imaginary parts of the Cauchy transform}
 Suppose $f(x)$ is real. Then we have, for example,
 
 \[
-\CC f(x) = {1 \over 2 \pi \I} \int_{-1}^1 {f(t) \over t- x} \dt
+\CC f(x) = {1 \over 2 \pi \I} \int_a^b {f(t) \over t- x} \dt
 \]
-is strictly imaginary for $x > 1$ and $x < -1$.  Furthermore, for all $z \in \C \backslash [-1,1]$ we have the property that
+is strictly imaginary for $x > b$ and $x < a$.  Furthermore, for all  $z \in \C \backslash [a,b]$ we have the property that
 
 \[
-\overline{\CC f( z)} = \overline{{1 \over 2 \pi \I} \int_{-1}^1 {f(x) \over x - z} \dx} = 
--{1 \over 2 \pi \I} \int_{-1}^1 {f(x) \over x - \bar z} \dx = - \CC f(\bar z)
+\overline{\CC f( z)} = \overline{{1 \over 2 \pi \I} \int_a^b {f(x) \over x - z} \dx} = 
+-{1 \over 2 \pi \I} \int_a^b {f(x) \over x - \bar z} \dx = - \CC f(\bar z)
 \]
-
-\begin{lstlisting}
-(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{exp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
-(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{10.0}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{),}@*) (*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{10.0}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(0.0029553295890040973 + 0.02871472499617892im, -0.0029553295890040973 + 0.
-02871472499617892im)
-\end{lstlisting}
-
-
 It follows that
 
 \[
@@ -503,28 +462,21 @@ for the whole real line, and in particular we can find the real part of the Cauc
 \[
 f(x) = \CC^+ f(x) - \CC^- f(x) = \CC^+ f(x) + \overline{\CC^+ f(x)} = 2 \Re \CC^+ f(x)
 \]
-
-\begin{lstlisting}
-(*@\HLJLnf{f}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{),}@*) (*@\HLJLni{2}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)),}@*) (*@\HLJLoB{-}@*)(*@\HLJLni{2}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)
-\end{lstlisting}
-
-\begin{lstlisting}
-(1.0996311793408589, 1.0996311793408586, 1.0996311793408586)
-\end{lstlisting}
-
-
 Similarly, we can find the imaginary part via:
 
 \[
-{\cal H} f(x) = -\I(\CC^+ f(x) + \CC^- f(x)) = -\I(\CC^+ f(x) - \overline{\CC^+ f(x)}) = 2 \Im \CC^+ f(x) = 2 \Im \CC^- f(x)
+{\cal H} f(x) = -\I(\CC^+ f(x) + \CC^- f(x)) = -\I(\CC^+ f(x) - \overline{\CC^+ f(x)}) = 
+2 \Im \CC^+ f(x) = 2 \Im \CC^- f(x)
 \]
+Here we verify this:
+
 
 \begin{lstlisting}
 (*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{),}@*) (*@\HLJLni{2}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)),}@*) (*@\HLJLni{2}@*)(*@\HLJLnf{imag}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
-(-0.43723982258866934, -0.4372398225886695, -0.4372398225886695)
+(-0.4372398225886694, -0.4372398225886695, -0.4372398225886695)
 \end{lstlisting}
 
 

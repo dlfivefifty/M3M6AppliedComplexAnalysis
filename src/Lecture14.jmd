@@ -146,10 +146,6 @@ Therefore:
 $$
 {\cal H}\left[{1 \over \sqrt{1-\diamond^2}}\right](x) = -\I (\CC^+  + \CC^-) \left[{1 \over \sqrt{1-\diamond^2}}\right](x) = -{1 \over 2  \sqrt{x-1}_+ \sqrt{x+1}} - {1 \over 2  \sqrt{x-1}_- \sqrt{x+1}} = 0
 $$
-```julia
-x = Fun()
-norm(H(1/sqrt(1-x^2)))
-```
 Similarly, recall
 $$
 \sqrt{z-1}\sqrt{z+1} = z  + 2 \I {\cal C}[\sqrt{1-\diamond^2}](z)
@@ -158,9 +154,6 @@ Therefore,
 $$
 {\cal H}\left[{\sqrt{1-\diamond^2}}\right](x) = -\I (\CC^+  + \CC^-) \left[{\sqrt{1-\diamond^2}}\right](x) = x 
 $$
-```julia
-plot(H(sqrt(1-x^2)))
-```
 One more example: since
 $$
 \CC 1(z) = {\log(z-1) - \log(z+1) \over 2 \pi \I},
@@ -169,20 +162,20 @@ we have
 $$
 \HH 1(x) = -{\log_+(x-1) + \log_-(x-1) - 2\log(x+1) \over 2\pi} = -{\log(1-x) - \log(x+1) \over \pi}
 $$
-```julia
-H(Fun(1,Legendre()), 0.1), -(log(1-0.1)-log(0.1+1))/π
-```
 
-## Real / imaginary parts of the Cauchy transform
+
+
+## Real and imaginary parts of the Cauchy transform
 
 Suppose $f(x)$ is real. Then we have, for example,
 $$
-\CC f(x) = {1 \over 2 \pi \I} \int_{-1}^1 {f(t) \over t- x} \dt
+\CC f(x) = {1 \over 2 \pi \I} \int_a^b {f(t) \over t- x} \dt
 $$
-is strictly imaginary for $x > 1$ and $x < -1$.  Furthermore, for all $z \in \C \backslash [-1,1]$ we have the property that
+is strictly imaginary for $x > b$ and $x < a$.  Furthermore, for all 
+$z \in \C \backslash [a,b]$ we have the property that
 $$
-\overline{\CC f( z)} = \overline{{1 \over 2 \pi \I} \int_{-1}^1 {f(x) \over x - z} \dx} = 
--{1 \over 2 \pi \I} \int_{-1}^1 {f(x) \over x - \bar z} \dx = - \CC f(\bar z)
+\overline{\CC f( z)} = \overline{{1 \over 2 \pi \I} \int_a^b {f(x) \over x - z} \dx} = 
+-{1 \over 2 \pi \I} \int_a^b {f(x) \over x - \bar z} \dx = - \CC f(\bar z)
 $$
 It follows that
 $$
@@ -194,7 +187,8 @@ f(x) = \CC^+ f(x) - \CC^- f(x) = \CC^+ f(x) + \overline{\CC^+ f(x)} = 2 \Re \CC^
 $$
 Similarly, we can find the imaginary part via:
 $$
-{\cal H} f(x) = -\I(\CC^+ f(x) + \CC^- f(x)) = -\I(\CC^+ f(x) - \overline{\CC^+ f(x)}) = 2 \Im \CC^+ f(x) = 2 \Im \CC^- f(x)
+{\cal H} f(x) = -\I(\CC^+ f(x) + \CC^- f(x)) = -\I(\CC^+ f(x) - \overline{\CC^+ f(x)}) = 
+2 \Im \CC^+ f(x) = 2 \Im \CC^- f(x)
 $$
 Here we verify this:
 ```julia

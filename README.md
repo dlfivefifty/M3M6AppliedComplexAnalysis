@@ -42,3 +42,4 @@ Examples of previous projects:
 10. [Branch cuts](notes/Lecture10.pdf)
 11. [Representing analytic functions by their behaviour near singularities](notes/Lecture11.pdf)
 12. [Cauchy transforms and Plemelj's theorem](notes/Lecture12.pdf)
+14. [Hilbert transforms](notes/Lecture14.pdf)
