@@ -134,6 +134,8 @@
 	\end{pmatrix}
 } }
 
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
