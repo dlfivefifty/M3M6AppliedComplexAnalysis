@@ -57,109 +57,153 @@ in other words, the minimum of the well, in this case $\lambda = 0$.
 
 ## Two charges in a potential well 
 
-A point charge at $x_0$ in 2D creates a (Newtonian) potential field of $-\log|x - x_0|$. Here
-we are thinking of the charges as 2D but restricted to the real line: think of a 1D wire embedded in 2D space. 
-Suppose there are now two charges, $\lambda_1$ and $\lambda_2$ but no potential well.  The effect on the first charge $\lambda_1$ is 
-to repulse away from $\lambda_2$ via the potential field $V_{\lambda_1}(x) = -\log|x - \lambda_1|$, 
-
-or
+A point charge at $x_0$ in 2D creates a (Newtonian) potential field of $V_{x_0}(x) = -\log|x - x_0|$ with derivative
 $$
-{\D \lambda_1 \over \D t} = {1 \over \lambda_1 -\lambda_2}
+V_{x_0}'(x) = \begin{cases} -{1 \over x - x_0} & x > x_0 \\
+        {1 \over x_0 - x} & x < x_0 
+\end{cases} = {1 \over x_0 - x}
+$$
+Here we are thinking of the charges as 2D but restricted to the real line: think of a 1D wire embedded in 2D space. 
+
+Suppose there are now two charges, $\lambda_1$ and $\lambda_2$ but no potential well.  The effect on the first charge $\lambda_1$ is 
+to repulse away from $\lambda_2$ via the potential field $V_{\lambda_2}(x) = -\log|x - \lambda_2|$. Since we have
+$$
+m {\D^2 \lambda_1 \over \D t^2} = - V_{\lambda_2}'(\lambda_1) =  {1 \over \lambda_1 -\lambda_2}
 $$
 Similarly, the effect on $\lambda_2$ is
 $$
-{\D \lambda_2 \over \D t} = {1 \over \lambda_2 -\lambda_1}
+m {\D^2 \lambda_2 \over \D t^2} = {1 \over \lambda_2 -\lambda_1}
 $$
 Unrestricted, the two potentials will repulse off to infinity:
+```julia
+N = 2
+λ_0 = randn(2)  # random initial location
+v_0 = randn(2)  # random initial velocity
+prob = ODEProblem(function(λv,_,t) 
+        λ = λv[1:N]
+        v = λv[N+1:end]
+        [v; 1/(λ[1] - λ[2]); 1/(λ[2] - λ[1])]
+        end, [λ_0; v_0], (0.0, 10.0))
+λv = solve(prob; reltol=1E-6)
+tt = range(0.,20; length=1000)
+λv(0.1)
 
-λ⁰ = [1.2,2.3]  # initial location
-prob = ODEProblem((λ,_,t) -> [1/(λ[1] - λ[2]), 1/(λ[2] - λ[1])], λ⁰, (0.0, 10.0))
-λ = solve(prob; reltol=1E-6);
-
-@gif for t=0.0:0.05:7.0
-    scatter(λ(t) ,zeros(2); label="charges", xlims=(-5,5), title="t = $t")
+p = plot(;xlabel="x",ylabel="t")
+for j = 1:N
+    plot!(getindex.(λv.(tt),j), tt; label="charge $j")
 end
+p
+```
 
-![Two charges, no potential](twocharges_nov.gif)
 
-Adding in a potential well and we get an equilbrium again:
+Adding in a potential well and damping and we get an equilbrium again:
+$$
 \begin{align*}
-{\D \lambda_1 \over \D t} = {1 \over \lambda_1 -\lambda_2} - V'(\lambda_1) \\
-{\D \lambda_2 \over \D t} = {1 \over \lambda_2 -\lambda_1} - V'(\lambda_2)
+{\D^2 \lambda_1 \over \D t^2} + \gamma {\D \lambda_1 \over \dt} = {1 \over \lambda_1 -\lambda_2} - V'(\lambda_1) \\
+{\D^2 \lambda_2 \over \D t^2}+ \gamma {\D \lambda_2 \over \dt} = {1 \over \lambda_2 -\lambda_1} - V'(\lambda_2)
 \end{align*}
+$$
+which we see here
+```julia
+V = x -> x^2/2  # Potential
+Vp = x -> x     # Force
+γ = 1.0    # damping
 
+prob = ODEProblem(function(λv,_,t) 
+        λ = λv[1:N]
+        v = λv[N+1:end]
+        [v; 1/(λ[1] - λ[2]) - Vp(λ[1]) - γ*v[1]; 1/(λ[2] - λ[1])  - Vp(λ[2]) - γ*v[2]]
+        end, [λ_0; v_0], (0.0, 20.0))
+λv = solve(prob; reltol=1E-6);
 
-λ₀ = [1.2,2.3]  # initial location
-prob = ODEProblem((λ,_,t) -> [1/(λ[1] - λ[2]) - Vp(λ[1]), 1/(λ[2] - λ[1]) - Vp(λ[2])], λ₀, (0.0, 10.0))
-λ = solve(prob; reltol=1E-6);
-
-@gif for t=0.0:0.05:7.0
-    plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
-    scatter!(λ(t) ,zeros(2); label="charges", xlims=(-5,5), title="t = $t")
+xx = range(-sqrt(2*last(tt)),sqrt(2*last(tt)); length=1000)
+p = plot(xx, V.(xx); label="potential", xlabel="x", ylabel="time and potential")
+for j = 1:N
+    plot!(getindex.(λv.(tt),j), tt; label="charge $j")
 end
-
-![Two charges](twocharges.gif)
-
-The limiting distribution is given by
+p
+```
+The fixed point is when the change with time vanishes, given by
+$$
 \begin{align*}
 0 = {1 \over \lambda_1 -\lambda_2} - V'(\lambda_1) \\
 0 = {1 \over \lambda_2 -\lambda_1} - V'(\lambda_2) 
 \end{align*}
+$$
 For this potential, we can solve it exactly: we need to solve
+$$
 \begin{align*}
 \lambda_1 = {1 \over \lambda_1 -\lambda_2}  \\
 \lambda_2 = {1 \over \lambda_2 -\lambda_1} 
 \end{align*}
+$$
 Using $\lambda_1 = -\lambda_2$, we find that $\lambda_1 = \pm{1 \over \sqrt 2}$.
 
 ### $N$ charges in a potential well
 
-Each charge repulses every other charge, so we end up needing to sum over them all:
+We now consider $N$ charges, where each charge repulses every other charge by a logarithmic potential, 
+so we end up needing to sum over them all others:
+$$
 \begin{align*}
-{\D \lambda_k \over \D t} = \sum_{j=1 \atop j \neq k}^N {1 \over \lambda_k -\lambda_j} - V'(\lambda_k) \\
+m {\D^2 \lambda_k \over \D t^2} + \gamma {\D \lambda_k \over \dt}  = 
+    \sum_{j=1 \atop j \neq k}^N {1 \over \lambda_k -\lambda_j} - V'(\lambda_k) 
 \end{align*}
-
-
-
+$$
+```julia
 N = 100
-λ⁰ = randn(N)  # initial location
-prob = ODEProblem((λ,_,t) -> [sum(1 ./ (λ[k] .- λ[[1:k-1;k+1:end]])) - Vp(λ[k]) for k=1:N], λ⁰, (0.0, 10.0))
-λ = solve(prob; reltol=1E-6);
 
-@gif for t=0.0:0.05:7.0
-    plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
-    scatter!(λ(t) ,zeros(N); label="charges", xlims=(-5,5), title="t = $t")
+V = x -> x^2/2  # Potential
+Vp = x -> x     # Force
+
+λ_0 = randn(N)  # initial location
+v_0 = randn(N)  # initial velocity
+γ = 1.0    # damping
+
+prob = ODEProblem(function(λv,_,t) 
+        λ = λv[1:N]
+        v = λv[N+1:end]
+        [v; [sum(1 ./ (λ[k] .- λ[[1:k-1;k+1:end]])) - Vp(λ[k]) -  γ*v[k] for k=1:N]]
+        end, [λ_0; v_0], (0.0, 20.0))
+λv = solve(prob; reltol=1E-6)
+
+xx = range(-sqrt(2*last(tt)),sqrt(2*last(tt)); length=1000)
+p = plot(xx, V.(xx); legend=false, xlabel="x", ylabel="time and potential")
+for j = 1:N
+    plot!(getindex.(λv.(tt),j), tt; color=:red)
 end
+p
+```
 
-![N charges](ncharges.gif)
 
-As the number of charges becomes large, they spread off to infinity. In the case of $V(x) = x^2$, we can renormalize by  dividing by $N$ so they stay bounded:
-$\mu_k = {\lambda_k \over \sqrt N}$
-
-@gif for t=0.0:0.05:7.0
-    scatter(λ(t)/sqrt(N) ,zeros(N); label="charges", xlims=(-2,2), title="t = $t")
+As the number of charges becomes large, they spread off to infinity. In the case of $V(x) = x^2$, 
+we can renormalize by  dividing by $N$ so they stay bounded:
+$\mu_k = {\lambda_k \over \sqrt N}$.
+```julia
+p = plot(xx, V.(xx); legend=false, xlabel="x", ylabel="time and potential")
+for j = 1:N
+    plot!(getindex.(λv.(tt)./sqrt(N),j), tt; color=:red)
 end
+p
+```
 
-![N charges, rescaled](ncharges_scaled.gif)
-
-This begs questions: why does it balance out at $\pm \sqrt 2$? Why does it have a nice histogram precisely like ${\sqrt{2-x^2} \over \pi}$:
-
-histogram(λ(10.0)/sqrt(N); nbins=20, normalize=true, label="histogram of charges")
+This begs questions: why does it balance out at $\pm \sqrt 2$?
+ Why does it have a nice histogram precisely like ${\sqrt{2-x^2} \over \pi}$:
+```julia
+histogram(λv.(20.0)[1:N]./sqrt(N); nbins=20, normalize=true, label="histogram of charges")
 plot!(x -> sqrt(2-x^2)/(π), range(eps()-sqrt(2.0); stop=sqrt(2)-eps(), length=100), label="semicircle")
+```
 
 ### Equilibrium distribution
 
 Plugging in $\lambda_k = \sqrt N \mu_k$, we get a dynamical system for $\mu_k$:
 $$
- {\D  \mu_k \over \D t} = {1 \over N} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} -  \mu_k
+ m {\D^2  \mu_k \over \D t} + \gamma {\D  \mu_k \over \D t}= {1 \over N} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} -  \mu_k
 $$
-(The choice of scaling like $\sqrt N$ was dictated by $V'(x)$, if $V(x) = x^4$ it would be $N^{1/4}$.) Thus the limit of the charges is given by
+(The choice of scaling like $\sqrt N$ was dictated by $V'(x)$, if $V(x) = x^4$ it would be $N^{1/4}$.) 
+Thus the limit of the charges is given when the change with $t$ vanishes, that is 
 $$
 0 = {1 \over N} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} -  \mu_k 
 $$
-
-
-
 It is convenient to represent the point charges by Dirac delta functions:
 $$
     w_N(x) = {1 \over N} \sum_{k=1}^N \delta_{\mu_k}(x)
@@ -170,87 +214,59 @@ $$
 $$
 or in other words, we have 
 $$
- \HH_{(-\infty,\infty)} w_N(\mu_k) = -{V'(\mu_k) \over \pi}
+ \HH_{(-\infty,\infty)} w_N(\mu_k) = {V'(\mu_k) \over \pi}
 $$
 since
 $$
-\HH w_n (\mu_k) = {1 \over \pi} \lim_{\epsilon\rightarrow 0} \left(\int_{-\infty}^{\mu_k-\epsilon} + \int_{\mu_k+\epsilon}^\infty\right) {w_N(t)  \over t - \mu_k} \dt  = {1 \over N\pi} \sum_{j \neq k} {1 \over \mu_j - \mu_k}
+\HH w_n (\mu_k) = {1 \over \pi} \lim_{\epsilon\rightarrow 0} \left(\int_{-\infty}^{\mu_k-\epsilon} + \int_{\mu_k+\epsilon}^\infty\right) {w_N(t)  \over  \mu_k-t} \dt  = {1 \over N\pi} \sum_{j \neq k} {1 \over \mu_k - \mu_j}
 $$
 
-Formally (see a more detailed explanation below), $w_N(x)$ tends to a continuous limit as $N\rightarrow \infty$, which we have guessed from the histogram to be $w(x) = { \sqrt{2-x^2}  \over \pi}$ for $-\sqrt 2 < x < \sqrt2$.  We expect this limit to satisfy the same equation as $w_n$, that is
+Formally (see a more detailed explanation below), $w_N(x)$ tends to a continuous limit as $N\rightarrow \infty$, 
+which we have guessed from the histogram to be $w(x) = { \sqrt{2-x^2}  \over \pi}$ for $-\sqrt 2 < x < \sqrt2$.  
+We expect this limit to satisfy the same equation as $w_n$, that is
 $$
- \HH w(x) = -{x \over \pi}
+ \HH w(x) = {x \over \pi}
 $$
 for $x$ in the support of $w(x)$.
 
-
-Indeed:
-    
-
-x = Fun(-sqrt(2) .. sqrt(2))
-w = sqrt(2-x^2)/π
-
-norm(hilbert(w) + x/π)
-
-Why is it $[-\sqrt 2, \sqrt 2]$? 
-
-We thus want to choose the interval $[a,b]$ so that there exists a $w(x)$  satisfying
+Why is it $[-\sqrt 2, \sqrt 2]$? Consider the problem posed on a general interval $[a,b]$ where $a$ and $b$ are unknowns. 
+We  want to choose the interval $[a,b]$ so that there exists a $w(x)$  satisfying
 
 1. $w$ is bounded (Based on observation)
 2. $w(x) \geq 0$ for $a \leq x \leq b$ (Since it is a probability distribution)
 2. $\int_a^b w(x) \dx = 1$ (Since it is a probability distribution)
-3. $\HH_{[a,b]} w(x) = - x/\pi$ 
+3. $\HH_{[a,b]} w(x) = x/\pi$ 
 
 As we saw last lecture, there exists a bounded solution to 
-$\HH_{[-b,b]} u =  - x/\pi$,
+$\HH_{[-b,b]} u =  x/\pi$,
 namely  $u(x) = { \sqrt{b^2-x^2} \over \pi}$. The choice $b = \sqrt{2}$ ensures that $\int_{-b}^b u(x) \dx = 1$, hence $u(x) = w(x)$.
 
 ### Aside: Explanation of limit of $w_N(x)$
 
-This is beyond the scope of the course, but the convergence of $w_N(x)$ to $w(x)$ is known as weak-\* convergence. A simple version of this is that
+This is beyond the scope of the course, but the convergence of $w_N(x)$ to $w(x)$ is known as weak-\* convergence. 
+A simple version of this is that
 $$
    \int_c^d w_N(x) \dx \rightarrow \int_c^d w(x) \dx
 $$
-for every choice of interval $(c,d)$. $   \int_c^d w_N(x) \dx $ is precisely the number of charges in $(c,d)$ scaled by $1/N$,  which is exactly what a histogram plots.
-
+for every choice of interval $(c,d)$. $   \int_c^d w_N(x) \dx $ is precisely the number of charges in 
+$(c,d)$ scaled by $1/N$,  which is exactly what a histogram plots.
+```julia
+using ApproxFun, SingularIntegralEquations
 a = -0.1; b= 0.3;
 w = Fun(x -> sqrt(2-x^2)/π, a .. b)
-sum(w)  # integral of w(x) between a and b
-
-length(filter(λ -> a ≤ λ ≤ b, λ(10.0)/sqrt(N)))/N # integral of w_N(x) between a and b 
-
-Another varient of describing weak-\* convergence is that the Cauchy transforms converge, that is, for $z$ on any  contour $\gamma$ surrounding $a$ and $b$ (now the support of $w$) we have
+sum(w),  # integral of w(x) between a and b
+length(filter(λ -> a ≤ λ ≤ b, λv(20.0)[1:N]/sqrt(N)))/N # integral of w_N(x) between a and b 
+```
+Another varient of describing weak-\* convergence is that the Cauchy transforms converge, 
+that is, for $z$ on any  contour $\gamma$ surrounding $a$ and $b$ (now the support of $w$) we have
 $$
 \int_a^b {w_N(x) \over x - z} \dx \rightarrow \int_a^b {w(x) \over x - z} \dx
 $$
 converges uniformly with respect to $N \rightarrow \infty$.
 here we demonstrate it converges at a point:
-
+```julia
 x = Fun(-sqrt(2) .. sqrt(2))
 w = sqrt(2-x^2)/π
 z = 0.1+0.2im
-cauchy(w, z)
-
-(sum(1 ./((λ(10.0)/sqrt(N)) .- z))/N)/(2π*im)
-
-```julia
-using DifferentialEquations, StaticArrays, Plots
-
-V = x -> x^2/2  # Potential
-Vp = x -> x     # Force
-
-λ_0 = 2.3  # initial location
-v_0 = 1.2  # initial position
-γ = 1.0    # damping
-
-λv = solve(ODEProblem(((λ,v),_,t) -> SVector(v,-Vp(λ) - γ*v), SVector(λ_0,v_0), (0.0, 20.0)); reltol=1E-6);
-
-t = 5.0
-plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
-scatter!([first(λv(t))] ,[0.0]; label="charge")
-
-@gif for t=0.0:0.05:7.0
-    plot(V, range(-5, stop=5, length=100); label="potential", title="t = $t")
-    scatter!([first(λv(t))] ,[0.0]; label="charge")
-end
+cauchy(w, z), (sum(1 ./((λv(10.0)[1:N]/sqrt(N)) .- z))/N)/(2π*im)
 ```
