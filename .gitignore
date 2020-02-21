@@ -9,3 +9,4 @@ src/.DS_Store
 *.fls
 .ipynb_checkpoints/Untitled-checkpoint.ipynb
 demos/.ipynb_checkpoints/Lecture7-checkpoint.ipynb
+.vscode/settings.json

@@ -36,6 +36,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -47,7 +48,6 @@
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }

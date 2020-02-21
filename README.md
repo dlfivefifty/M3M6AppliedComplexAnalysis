@@ -45,3 +45,4 @@ Examples of previous projects:
 14. [Hilbert transforms](notes/Lecture14.pdf)
 15. [Inverting the Hilbert transform and ideal fluid flow](notes/Lecture15.pdf)
 16. [Electrostatic charges in a potential well](notes/Lecture16.pdf)
+17. [Logarithmic singular integrals](notes/Lecture17.pdf)

@@ -1,1 +1,151 @@
-# Log kernels
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+
+# Lecture 17: Logarithmic singular integrals
+
+1. Evaluating logarithmic singular integrals
+2. Logarithmic singular integrals and orthogonal polynomials
+
+The motivation behind this lecture is to calculate electrostatic potentials. 
+An example is the Faraday cage: imagine a series of metal plates connected together so that they have the same charge. 
+If configured to surround a region, this configuration will shield the interior from an external charge, see figure.
+Here, the coloured lines are equipotential lines, and there is a point source at $x = 2$, which corresponds to a forcing of 
+$$\log\| (x,y)  - (2,0) \| = \log|z - 2|$$
+where  $z = x + \I y$. 
+
+## Logarithmic singular integrals
+
+![Faradaycage](Laplacetangentialplot.pdf)
+
+From the Green's function of the Laplacian, it is natural to consider logarithmic singular integrals over a contour
+$$
+L_\gamma f(z) = {1 \over \pi} \int_\gamma f(\zeta) \log|\zeta-z| \D s
+$$
+where $\D s$ is the arclength differential (as in line integrals, not complex analysis) and $f$ is real-valued.
+We focus on intervals where the arclength differential is just the standard one:
+
+$$L_{a,b} f(z) = {1 \over \pi }\int_a^b f(t) \log | z - t| \dt$$
+
+Note that off $[a,b]$, $u(x,y) \equiv u(x+\I y) = L f(x+\I y)$ solves Laplace's equation, and as the integrand
+has an integrable singularity it is continuous on $[a,b]$:
+```julia
+using ApproxFun, SingularIntegralEquations, Plots
+t = Fun()
+f = sqrt(1-t^2)*exp(t)
+u = z -> logkernel(f, z)  # logkernel(f,z) calculates 1/π * \int f(t)*log|t-z| dt
+
+xx = yy = -2:0.01:2
+U = u.(xx' .+ im*yy)
+
+contour(xx, yy, U)
+plot!(domain(t); color=:black, label="contour")
+```
+Or this can also be seen from a surface plot:
+```julia
+surface(xx, yy, U)
+```
+
+For $z \notin (-\infty,b]$ the fact that $u$ is harmonic (solves Laplace's equation) 
+can also be seen since $u$ is the real part of an analytic function:
+$$
+    u(z) = \Re Mf(z) \qqfor  Mf(z) := {1 \over \pi} \int_a^b f(t) \log ( z - t) \dt
+$$
+Note that the integrand avoids the branch cut of $\log z$. To extend this to $z\in (-\infty,a]$ 
+(or more generally, $z \notin [a,\infty)$), we can use the alternative expression
+$$
+    u(z) = \Re \tilde Mf(z) \qqfor  \tilde Mf(z) := {1 \over \pi} \int_a^b f(t) \log ( t-z) \dt
+$$
+which follows from $\log|z-t| = \log|t-z|$.
+
+
+### Evaluating logarithmic singular integrals
+
+
+To evaluate $L f(z)$ we evaluate $M f(z)$. Following our claim that the right way to represent
+analytic functions is by their behaviour at singularitites/branch cuts, we will accomplish this
+this by investigating the jumps of $M f(z)$. This allows us to reduce it to computing a Cauchy 
+transform.
+
+
+**Lemma (Jumps of $M$)**
+Suppose $f$ satisfies the conditions of Plemelj.
+Then $M f(z)$ satisfies the following
+1. Analyticity: $M$ is analytic off $(-\infty,b]$
+2. Regularity: $M$ has weaker than pole singularities
+3. Asymptotics: 
+$$
+Mf(z) = {1 \over \pi} \int_a^b f(t) \D t \log z + o(1) \qqas z \rightarrow \infty
+$$
+4. Jump: for $x < a$ we have
+$$
+M^+f(x) - M^-f(x) = 2 \I \int_a^b f(t) \D t
+$$
+and for $a < x < b$ we have
+$$
+M^+ f(x) - M^-f(x) = 2 \I \int_x^b f(t) \D t
+$$
+
+
+**Proof**
+
+Analyticity property (1) follows immediately from definition: we have for $z \notin (-\infty,b]$
+$$
+{\D \over \D z} M f(z) = {1 \over \pi} \int_{-1}^1 f(t) {1\over z -t}  \dt = -2 \I \CC f(z)
+$$
+The regularity property (2) follows from the expression as an antiderivative: we know $\CC f(z)$ has weaker than pole
+singularities and integrating only makes them better. To derive the asymptotics (3) we use
+$$
+\log(z - t) = \log z + \log(1 - t/z)
+$$
+Finally we get to the jumps. For any point $c > b$ we write 
+$$
+M f(z) = -2 \I \int_c^z \CC f(\zeta) \D \zeta + M f(c)
+$$
+For $x < a$ we can deform the contour just above/below the interval giving us
+$$
+M^\pm f(x) = Mf(c) -2 \I \int_c^b \CC f(t) \D t -2 \I \int_b^a \CC^\pm f(t) \D t -2 \I \int_a^x \CC f(t) \D t
+$$
+so that
+$$
+(M^+ - M^-) f(x) = -2 \I \int_b^a (\CC^+ - \CC^-) f(t) \D t  = 2 \I \int_a^b f(t) \D t
+$$
+Similarly for $a < x < b$ we have
+$$
+M^\pm f(x) = Mf(c) -2 \I \int_c^b \CC f(t) \D t -2 \I \int_b^x \CC^\pm f(t) \D t 
+$$
+which gives
+$$
+(M^+ - M^-) f(x) = -2 \I \int_b^x (\CC^+ - \CC^-) f(t) \D t  = 2 \I \int_x^b f(t) \D t.
+$$
+
+■
+
+We can construct a function that satisfies the same 4 properties using the Cauchy transform. By uniqueness
+they must be the same.
+
+**Theorem (Log kernel as Cauchy)** 
+Suppose $f$ satisfies the conditions of Plemelj and define the (negative) indefinite integral of $f$ via 
+$$
+F(x) := \int_x^b f(t) \D t.
+$$
+Then
+$$
+M f(z) = {\log(z-a) \over \pi} \int_a^b f(t) \D t + 2 \I \CC F(z)
+$$
+
+**Proof**
+
+Define
+$$
+\phi(z) := {\log(z-a) \over \pi} \int_a^b f(t) \D t + 2 \I \CC F(z)
+$$
+This satisfies conditions (1--4) above. Therefore $\phi(z) - M f(z)$ is continuous hence analytic on $(-\infty,a)$ and $(a,b)$,
+has weaker than pole singularities at $a$ and $b$ so analytic there too: it is entire. The logarithmic growth at infinity
+cancels therefore it is zero by Liouville.
+
+■
+
