@@ -51,6 +51,8 @@
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
 \def\upepsilon{\varepsilon}
 
 

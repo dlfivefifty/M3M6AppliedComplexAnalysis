@@ -1,1 +1,156 @@
-# Log Kernel examples
+__M3M6: Methods of Mathematical Physics__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+# Lecture 18: Examples of logarithmic singular integrals
+
+This lecture we look at 3 examples of computing logarithmic singular integrals: $x/\sqrt{1-x^2}$, $1$, 
+and $1/\sqrt{1-x^2}$
+
+## Example 1
+
+Consider $f(x) = x/\sqrt{1-x^2}$ and we want to compute
+$$
+L f(z) = {1 \over \pi} \int_{-1}^1 {t \over \sqrt{1-t^2}} \log|t-z| \D t = \Re \underbrace{{1 \over \pi} \int_{-1}^1 {t \over \sqrt{1-t^2}} \log(z-t) \D t }_{M f(z)}
+$$
+We have 
+$$
+{\D \over \dx} \sqrt{1-x^2} = - f(x)
+$$
+hence
+$$
+F(x) = \int_x^1 f(t) \D t = \sqrt{1-x^2}.
+$$
+and in particular $F(-1) = 0$. Recall that 
+$$
+\CC F(z) = {\sqrt{z-1} \sqrt{z+1} - z\over 2 \I} 
+$$
+Thus the result from last lecture gives
+$$
+M f(z) = {1 \over \pi} \int_{-1}^1 f(t) \D t \log(z+1)+ 2 \I \CC F(z) = \sqrt{z-1} \sqrt{z+1} - z
+$$
+Let's double check the formula:
+```julia
+using ApproxFun, SingularIntegralEquations, Plots
+x = Fun()
+f = x/sqrt(1-x^2)
+Mf = z -> sqrt(z-1)sqrt(z+1) - z
+Lf = z -> real(Mf(z))
+z = 0.1+0.1im
+logkernel(f,z),Lf(z)
+```
+Here is a plot of the solution:
+```julia
+xx = yy = range(-2,2;length=100)
+Z = Lf.(xx' .+ im*yy)
+contour(xx,yy,Z)
+plot!(-1..1; color=:black, label="contour")
+```
+
+## Example 2
+
+
+Consider $f(x) = 1$ and we want to compute
+$$
+L f(z) = {1 \over \pi} \int_{-1}^1 \log|t-z| \D t = \Re \underbrace{{1 \over \pi} \int_{-1}^1 \log(z-t) \D t }_{M f(z)}
+$$
+We have 
+$$
+F(x) = \int_x^1 f(t) \D t = 1-x.
+$$
+We can determine the Cauchy transform by considering $1-z$ times the known Cauchy transform
+$$
+\CC 1(z) = {\log(z-1) - \log(z+1) \over 2 \pi \I} = {\I  \over  \pi z} + O(z^{-3})
+$$
+so that
+$$
+\CC F(z) =  (1-z) {\log(z-1) - \log(z+1) \over 2 \pi \I} + {\I \over \pi}
+$$
+Thus the result from last lecture gives
+$$
+\begin{align*}
+M 1(z) &= {1 \over \pi} \int_{-1}^1  \D t \log(z+1)+ 2 \I \CC F(z) = {2 \over \pi} \log(z+1) + 
+(1-z) {\log(z-1) - \log(z+1) \over \pi} - {2 \over \pi} \\
+&= {(1-z) \log(z-1) + (1+z) \log(z+1) -2 \over \pi}
+\end{align*}
+$$
+For $-1 < x < 1$ real this gives a particularly simple formula:
+$$
+L 1(x) = \Re M^+ 1(x) = {(1-x) \log(1-x) + (1+x)\log(x+1) - 2\over \pi}
+$$
+We can double check this:
+```julia
+f = Fun(1,-1..1)
+x = 0.1
+logkernel(f,x), ((1-x)*log(1-x) + (1+x)*log(x+1) - 2)/π
+```
+Here is a plot of the solution:
+```julia
+xx = yy = range(-2,2;length=100)
+Lf = z -> real((1-z)*log(z-1) + (1+z)*log(z+1) - 2)/π
+Z = Lf.(xx' .+ im*yy)
+contour(xx,yy,Z)
+plot!(-1..1; color=:black, label="contour")
+```
+
+## Example 3
+
+
+Consider $f(x) = 1/\sqrt(1-x^2)$.
+We have 
+$$
+F(x) = \acos x = 2 \atan {\sqrt{1-x} \over \sqrt{1+x}}
+$$
+where the second version can be verified by differentiation, using $\atan' x = 1/(1+x^2)$. 
+One can determine $M$ by indefinite integration of 
+$$
+\CC f(z) = {\I \over 2 \sqrt{z-1}\sqrt{z+1}}
+$$
+but we prefer to start with an ansatz and verify the solution. Namely, consider
+$$
+\phi(z) := {\log(\sqrt{z-1} + \sqrt{z+1}) \over \I}.
+$$
+First, this is analytic off $(-\infty,1]$, as for $z$ in the upper-half plane we have 
+$\sqrt{z-1}$ and $\sqrt{z+1}$ are  in the upper-right quadrant: we never cross the branch cut of $\log z$.
+Similar argument holds for $z$ in the lower-half plane. On $x \in (-\infty,-1]$ it has the jump
+$$
+\begin{align*}
+\phi_+(x) - \phi_-(x) &= {\log(\I (\sqrt{1-x} + \sqrt{-x-1})) -  \log(-\I (\sqrt{1-x} + \sqrt{-x-1})) \over \I} \\
+& =
+        2 \arg(\I (\sqrt{1-x} + \sqrt{-x-1})) = \pi
+\end{align*}
+$$
+For $x \in (-1,1)$ we have
+$$
+\begin{align*}
+\phi_+(x) - \phi_-(x) &= {\log(\I \sqrt{1-x} + \sqrt{1-x}) -  \log(-\I \sqrt{1-x} + \sqrt{1-x}) \over \I} \\
+& =
+        2 \arg(\I \sqrt{1-x} + \sqrt{-x-1}) = 2 \atan {\sqrt{1-x} \over \sqrt{1+x}} = F(x).
+\end{align*}
+$$
+Finally we have
+$$
+\phi(z) = {\log z \over 2 \I} - \I \log 2 + o(1)
+$$
+We therefore have from Plemelj that
+$$
+\CC F(z) = \phi(z) - {\log(z+1) \over 2 \I} + \I \log 2 
+$$
+and
+$$
+Mf(z) = {F(-1)\over \pi} \log(z+1)  + 2 \I \CC F(z) =2\log(\sqrt{z-1} + \sqrt{z+1}) -2 \log 2
+$$
+Here is a plot of the solution:
+```julia
+xx = yy = range(-2,2;length=100)
+Lf = z -> real(2log(sqrt(z-1) + sqrt(z+1)) - 2log(2))
+Z = Lf.(xx' .+ im*yy)
+contour(xx,yy,Z)
+plot!(-1..1; color=:black, label="contour")
+```
+Note that it is clearly visable that it is constant on the contour, which follows from:
+$$
+L f(x) = \Re M^ f(x) = 2\Re \log(\I \sqrt{1-x} + \sqrt{1+x}) -2 \log 2 = 2 \log\sqrt{1-x+1+x} - 2 \log 2 = - \log 2
+$$
