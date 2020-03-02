@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,15 +128,17 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
-
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
+\def\upepsilon{\varepsilon}
 
 
 \def\Xint#1{ \mathchoice
@@ -148,6 +151,10 @@
      \vcenter{\hbox{$#2#3$}}\kern-.5\wd0} }
 \def\ddashint{\Xint=}
 \def\dashint{\Xint-}
+% \def\dashint
+\def\infdashint{\dashint_{-\infty}^\infty}
+
+
 
 
 \def\addtab#1={#1\;&=}
@@ -159,6 +166,9 @@
 
 \def\norm#1{\left\| #1 \right\|}
 
+\def\pr(#1){\left({#1}\right)}
+\def\br[#1]{\left[{#1}\right]}
+
 \def\abs#1{\left|{#1}\right|}
 \def\fpr(#1){\!\pr({#1})}
 
@@ -166,10 +176,57 @@
 
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
+\def\lgblksquare{\blacksquare}
+\def\scre{\E}
+\def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
+
+\def\map[#1]{\mapengine #1,\void.}
+
+\def\mapenginesep_#1#2,#3.{\mapfunction{#2}\ifx\void#3\else#1\mapengine #3.\fi }
+
+\def\mapsep_#1[#2]{\mapenginesep_{#1}#2,\void.}
+
+
+\def\vcbr[#1]{\pr(#1)}
+
+
+\def\bvect[#1,#2]{
+{
+\def\dots{\cdots}
+\def\mapfunction##1{\ | \  ##1}
+	\sopmatrix{
+		 \,#1\map[#2]\,
+	}
+}
+}
+
+
+
+\def\vect[#1]{
+{\def\dots{\ldots}
+	\vcbr[{#1}]
+} }
+
+\def\vectt[#1]{
+{\def\dots{\ldots}
+	\vect[{#1}]^{\top}
+} }
+
+\def\Vectt[#1]{
+{
+\def\mapfunction##1{##1 \cr} 
+\def\dots{\vdots}
+	\begin{pmatrix}
+		\map[#1]
+	\end{pmatrix}
+} }
+
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 

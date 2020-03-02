@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,14 +128,16 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
 \def\upepsilon{\varepsilon}
 
 
@@ -174,6 +177,7 @@
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
 \def\lgblksquare{\blacksquare}
+\def\scre{\E}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}
@@ -217,10 +221,12 @@
 	\end{pmatrix}
 } }
 
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 
@@ -313,8 +319,8 @@ we recover the function:
 \end{lstlisting}
 
 \begin{lstlisting}
-(-0.43791652197566594 + 2.8021270643729217im, -0.43791652197567027 + 2.8021
-270643729177im)
+(4.372717213418816 - 46.349833892497706im, 4.372717213418801 - 46.349833892
+497685im)
 \end{lstlisting}
 
 
@@ -387,7 +393,7 @@ This constructs \texttt{r\_2} as the partial fraction expansion of \texttt{r}:
 \end{lstlisting}
 
 \begin{lstlisting}
--1.1657341758564144e-15 + 1.6653345369377348e-16im
+0.0 + 8.153200337090993e-16im
 \end{lstlisting}
 
 

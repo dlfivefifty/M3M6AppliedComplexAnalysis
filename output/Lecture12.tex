@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,14 +128,16 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
 \def\upepsilon{\varepsilon}
 
 
@@ -218,10 +221,12 @@
 	\end{pmatrix}
 } }
 
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 
@@ -550,7 +555,7 @@ For $x < -1$ we see that the branch cuts cancel and we have continuity:
 \end{lstlisting}
 
 \begin{lstlisting}
-9.501 (*@\ensuremath{\mu}@*)s (18 allocations: 1.64 KiB)
+9.712 (*@\ensuremath{\mu}@*)s (18 allocations: 1.64 KiB)
 \end{lstlisting}
 
 
@@ -559,7 +564,7 @@ For $x < -1$ we see that the branch cuts cancel and we have continuity:
 \end{lstlisting}
 
 \begin{lstlisting}
-197.280 ms (313 allocations: 207.54 MiB)
+212.546 ms (313 allocations: 207.54 MiB)
 0.5525638794337968 - 0.3181012137711178im
 \end{lstlisting}
 

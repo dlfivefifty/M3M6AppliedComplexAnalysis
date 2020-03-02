@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,15 +128,17 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
-
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
+\def\upepsilon{\varepsilon}
 
 
 \def\Xint#1{ \mathchoice
@@ -173,7 +176,8 @@
 
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
-
+\def\lgblksquare{\blacksquare}
+\def\scre{\E}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}
@@ -217,10 +221,12 @@
 	\end{pmatrix}
 } }
 
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 
