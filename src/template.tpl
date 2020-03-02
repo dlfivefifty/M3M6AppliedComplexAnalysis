@@ -44,6 +44,7 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
