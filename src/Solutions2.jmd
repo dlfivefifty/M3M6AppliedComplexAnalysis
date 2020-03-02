@@ -66,10 +66,8 @@ otherwise we would have at least a full,counter clockwise colour wheel. We can c
 ```
 Finally, we compare it numerically it to `cauchy(f, z)` which is implemented in SingularIntegralEquations.jl:
 ```julia
-φ(2.0+2.0im)
-
 x = Fun()
-cauchy(sqrt(1-x^2)/(1+x^2), 2.0+2.0im)
+φ(2.0+2.0im),cauchy(sqrt(1-x^2)/(1+x^2), 2.0+2.0im)
 ```
 
 ### 2.
@@ -246,7 +244,7 @@ $$
 but doesn't decay at $\infty$:
 $$
 \begin{align*}
-x {\log(x-1) - log(x+1) \over 2 \pi \I} = x {\log x + \log(1-1/x) - \log x -\log(1+1/x) \over 2 \pi \I} \\
+x {\log(x-1) - \log(x+1) \over 2 \pi \I} = x {\log x + \log(1-1/x) - \log x -\log(1+1/x) \over 2 \pi \I} \\
 = -x { 2 \over x 2 \pi \I}  = -{1 \over \I \pi}
 \end{align*}
 $$
@@ -276,8 +274,8 @@ This can be verified in Mathematica via
 ```mathematica
 NIntegrate[-((
    x (Log[1 - x] - Log[1 + x]) + 
-    2)/(π Sqrt[1 - x^2] (x - 0.1))), {x, -1, 0.1, 1}, 
-  PrincipalValue -> True]/π
+    2)/(Pi Sqrt[1 - x^2] (x - 0.1))), {x, -1, 0.1, 1}, 
+  PrincipalValue -> True]/Pi
 ```
 
 2. Following the procedure of multiplying $\CC[\sqrt{1-\diamond^2}](z)$ by $1/(2+z)$ and subtracting off the pole at $z=-2$, we first find:
@@ -376,7 +374,7 @@ b = -3.0
 @show log(a-0.0im) + log(b-0.0im) + 2π*im
 @show log(a+0.0im) + log(b+0.0im) - 2π*im;
 ```
-In the case where $a < 0$ and $b > 0$, then $ a b < 0$, but we can perturb $a$ above/below to get
+In the case where $a < 0$ and $b > 0$, then $a b < 0$, but we can perturb $a$ above/below to get
 $$
 \log_\pm(a b) = \log_\pm a + \log b
 $$
@@ -626,7 +624,8 @@ $$
 This has the jump
 $$
 \begin{align*}
-\phi_+(x) - \E^{\I \theta}\phi_-(x)  = \kappa_+(z) \CC_+\br[{f \over \kappa_+}](x) -  \E^{\I \theta}\kappa_-(z)\CC_-\br[{f \over \kappa_+}](x)  = \kappa_+(x)  \pr({\CC_+\br[{f \over \kappa_+}](x) - \CC_-\br[{f \over \kappa_+}](x)  }) = f(x)
+\phi_+(x) - \E^{\I \theta}\phi_-(x)  = \kappa_+(z) \CC_+\br[{f \over \kappa_+}](x) -  \E^{\I \theta}\kappa_-(z)\CC_-\br[{f \over \kappa_+}](x)  \ccr
+= \kappa_+(x)  \pr({\CC_+\br[{f \over \kappa_+}](x) - \CC_-\br[{f \over \kappa_+}](x)  }) = f(x)
 \end{align*}
 $$
 Thus the general solution is $\phi(z) + C \kappa(z)$.
@@ -661,10 +660,6 @@ We actually have bounded (oscillatory) growth near zero since
 $$
 |\E^{\I \beta \log z}| = |\E^{\I \beta \log |z|} \E^{-\beta \arg z}| = \E^{-\beta \arg z}
 $$
-```julia
-xx = yy = -1:0.01:1
-contourf(xx, yy, abs.((xx' .+ im.*yy).^(im*β)))
-```
 Thus if we write $c = r \E^{\I \theta}$ for $0 < \theta < 2 \pi$ and define $\alpha = -{\theta \over 2 \pi} + \I{\log r \over 2 \pi}$ we can write the solution to 4.1 as
 $$
 \kappa(z) = (z-1)^{-\alpha} (z+1)^{\alpha-1}
@@ -737,44 +732,44 @@ $$
 
 ## Problem 6.1
 
-Let's first do a plot and histogram. Here we see the right scaling is $N^{1/4}$:
+Let's first do a plot and histogram. Here we see the right scaling is $N^{1/4}$, using a simplified model without the second
+derivative (we expect this to go to the same distribution):
 ```julia
+using DifferentialEquations
+
 V = x -> x^4
 Vp = x -> 4x^3
 
-N = 100
+N = 50
 λ_0 = randn(N)  # initial location
-v_0 = randn(N)  # initial velocity
-γ = 1.0    # damping
 
-
-prob = ODEProblem(function(λv,_,t) 
-        λ = λv[1:N]
-        v = λv[N+1:end]
-        [v; [sum(1 ./ (λ[k] .- λ[[1:k-1;k+1:end]])) - Vp(λ[k]) -  γ*v[k] for k=1:N]]
-        end, [λ_0; v_0], (0.0, 20.0))
-λv = solve(prob; reltol=1E-6);
+prob = ODEProblem(function(λ,_,t) 
+       [sum(1 ./ (λ[k] .- λ[[1:k-1;k+1:end]])) - Vp(λ[k]) for k=1:N]
+        end, λ_0, (0.0, 5.0))
+λ = solve(prob; reltol=1E-6);
 
 t = 5.0
-scatter(λv(t)[1:N]/N^(1/4) ,zeros(N); label="charges", xlims=(-2,2), title="t = $t")
+scatter(λ(t)/N^(1/4) ,zeros(N); label="charges", xlims=(-2,2), title="t = $t")
 ```
 The limiting distribution has the following form:
 ```julia
-histogram(λv(t)[1:N]/N^(1/4); nbins=30, normalize=true, label="histogram of charges")
+histogram(λ(t)/N^(1/4); nbins=30, normalize=true, label="histogram of charges")
 ```
 
 
 We want to solve
 $$
-{\D \lambda_k \over \D t} = \sum_{j=1 \atop j \neq k}^N {1 \over \lambda_k -\lambda_j} - 4\lambda_k^3
+{\D^2 \lambda_k \over \D t^2} + \gamma {\D \lambda_k \over \D t} = \sum_{j=1 \atop j \neq k}^N {1 \over \lambda_k -\lambda_j} - 4\lambda_k^3
 $$
 Rescale via $\mu_k = {\lambda_k \over N^{1/4}}$ gives
 $$
-0 = N^{1/4} {\D \mu_k \over \D t} = N^{-1/4} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} - 4 N^{3/4} \mu_k^3
+0 = N^{1/4} \br[{\D^2 \lambda_k \over \D t^2} + \gamma {\D \lambda_k \over \D t}] = 
+N^{-1/4} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} - 4 N^{3/4} \mu_k^3
 $$
 or in other words
 $$
-0 = N^{-1/2} {\D \mu_k \over \D t} = {1 \over N} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} - 4 \mu_k^3
+0 = N^{-1/2} \br[{\D^2 \lambda_k \over \D t^2} + \gamma {\D \lambda_k \over \D t}] = 
+{1 \over N} \sum_{j=1 \atop j \neq k}^N {1 \over \mu_k -\mu_j} - 4 \mu_k^3
 $$
 We can now formally let $N\rightarrow \infty$ to get our equation
 $$
@@ -837,14 +832,14 @@ There's a nice trick: If $-2\pi \I \CC u(z) \sim {1 \over  z}$ then $\int_{-b}^b
 $$
 {1 \over \sqrt{1+z}} = 1 - {z \over 2} + {3z^2 \over 8} - {5z^3 \over 16} + O(z^4)
 $$
-```julia
+$$
 \begin{align*}
  {-z^4 +  {b^2z^2 \over 2} + {b^4 \over 2} \over \sqrt{z-b}\sqrt{z+b}} &=  {-z^3 +  {b^2z \over 2} + {b^4 \over 2 z} \over \sqrt{1-b/z}\sqrt{1+b/z}} \\
  &=  (-z^3 +  {b^2z \over 2} )(1 + {b \over 2 z} + {3 b^2 \over 8 z^2} + {5 b^3 \over 16z^3} )(1 - {b \over 2 z} + {3 b^2 \over 8 z^2}  - {5 b^3 \over 16z^3}) + O(z^{-1}) \\
  &=-z^3  + \pr({b^2  \over 2} +{b^2 \over 4} + {b^2 \over 2} - {3 b^2 \over 8} -{3 b^2 \over 8} ) z +O(z^{-1})\\
  &= -z^3 + O(z^{-1})
  \end{align*}
- ```
+$$
 Thus we know
 $$
 \CC  u(z) = {2\I \over \pi} z^3 +{2 \I \over \pi} {-z^4 +  {b^2z^2 \over 2} + {b^4 \over 2} \over \sqrt{z-b}\sqrt{z+b}}
@@ -858,7 +853,7 @@ z =100.0im;
 taking this one term further we find  
 $$
  {-z^4 +  {b^2z^2 \over 2} + {b^4 \over 2} \over \sqrt{z-b}\sqrt{z+b}} = -z^3 +{3 b^4 \over 8 z} + O(z^{-2})
- $$
+$$
 Hence we want to choose $b$ so that
 $$
 -2\I\pi \CC u(z) = {3 b^4 \over 2 z} \sim {1 \over z}
@@ -873,6 +868,6 @@ sum(u)
 
 And it worked!
 ```julia
-histogram(λv(10.0)[1:N]/N^(1/4); nbins=25, normalize=true, label="histogram of charges")
+histogram(λ(5.0)/N^(1/4); nbins=25, normalize=true, label="histogram of charges")
 plot!(u; label="u",xlims=(-2,2))
 ```
