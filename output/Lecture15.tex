@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,14 +128,16 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
 \def\upepsilon{\varepsilon}
 
 
@@ -223,7 +226,7 @@
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 
@@ -366,20 +369,20 @@ We divide this task into stages:
 \item[4. ] Calculating its Cauchy transform: $w(x)$ to $\phi(z)$
 
 \end{itemize}
-\subsubsection{1. Real and imaginary parts of analytic functions satisfy Laplace's equation}
-The real and imaginary parts of an analytic function satisfy Laplace's equation: that is  if $\phi(z) = \phi(x + \I y) = u(x,y) + \I v(x,y)$ where $u$ and $v$ are the real/imaginary parts, then 
+\subsubsection{Real and imaginary parts of analytic functions satisfy Laplace's equation}
+The real and imaginary parts of an analytic function satisfy Laplace's equation: that is  if  $\phi(z) = \phi(x + \I y) = u(x,y) + \I v(x,y)$ where $u$ and $v$ are the real/imaginary parts, then 
 
 
 \begin{align*}
- u_{xx} + u_{yy}= 0 \ccr
- v_{xx} + v_{yy} = 0
+ u_{xx} + u_{yy}&= 0 \ccr
+ v_{xx} + v_{yy} &= 0
 \end{align*}
 To see this, note that the complex-derivative of $\phi(z)$ can be written in terms of two different partial derivatives:
 
 
 \begin{align*}
     \phi'(z) &= \lim_{h \rightarrow 0} {\phi(z+h) - \phi(z) \over h} = \lim_{h \rightarrow 0} {u(x+h,y)-u(x,y) + \I (v(x+h,y)-v(x,y)) \over h} = u_x + \I v_x \ccr
-    \phi'(z) &= \lim_{h \rightarrow 0} {\phi(z+\I h) - \phi(z) \over \I h} = \lim_{h \rightarrow 0} {u(x,y+h)-u(x,y) + \I (v(x,y+h)-v(x,y)) \over \I h} = - \I u_y + v_y
+    \phi'(z) = \lim_{h \rightarrow 0} {\phi(z+\I h) - \phi(z) \over \I h} = \lim_{h \rightarrow 0} {u(x,y+h)-u(x,y) + \I (v(x,y+h)-v(x,y)) \over \I h} = - \I u_y + v_y
 \end{align*}
 Taking a second derivative we get two equations:
 

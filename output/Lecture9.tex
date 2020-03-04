@@ -120,6 +120,7 @@
 
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
+\def\qqas{\qquad\hbox{as}\qquad}
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
@@ -127,15 +128,17 @@
 \def\R{ {\mathbb R} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
+\def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
 \def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
-
+\def\acos{ {\rm acos}\, }
+\def\atan{ {\rm atan}\, }
+\def\upepsilon{\varepsilon}
 
 
 \def\Xint#1{ \mathchoice
@@ -173,7 +176,8 @@
 
 \def\endash{–}
 \def\mdblksquare{\blacksquare}
-
+\def\lgblksquare{\blacksquare}
+\def\scre{\E}
 \def\mapengine#1,#2.{\mapfunction{#1}\ifx\void#2\else\mapengine #2.\fi }
 
 \def\map[#1]{\mapengine #1,\void.}
@@ -217,10 +221,12 @@
 	\end{pmatrix}
 } }
 
+\def\addtab#1={#1\;&=}
+\def\ccr{\\\addtab}
 
 \begin{document}
 
-\textbf{M3M6: Methods of Mathematical Physics}
+\textbf{M3M6: Applied Complex Analysis}
 
 Dr. Sheehan Olver
 
@@ -276,11 +282,11 @@ This has stability problems, so a more convenient form is as follows:
 
 \begin{lstlisting}
 5-element Array{Float64,1}:
- -4.8623419724960115 
- -3.821888917430011  
- -2.3379462912444375 
- -0.20821177802310226
-  1.8004964803479173
+ -5.900778507426716 
+ -4.20711585707729  
+ -1.42362566997369  
+ -0.5912040639607663
+  4.385843940163735
 \end{lstlisting}
 
 
@@ -321,7 +327,7 @@ Here we wrap this up into a function \texttt{circle\_exp} that calculates the ma
 \end{lstlisting}
 
 \begin{lstlisting}
-3.3328584042922336e-13
+1.0969975702206919e-12
 \end{lstlisting}
 
 
@@ -348,7 +354,7 @@ In this case, it is beneficial to use an ellipse:
 \end{lstlisting}
 
 \begin{lstlisting}
-1.62222700111046e-13
+8.301219305234686e-13
 \end{lstlisting}
 
 
@@ -370,7 +376,7 @@ For matrices with large negative eigenvalues (For example, discretisations of th
 \end{lstlisting}
 
 \begin{lstlisting}
-2.510768384184886e-6
+7.751291385269999e-6
 \end{lstlisting}
 
 
@@ -385,7 +391,7 @@ We can use an ellpise to surround the spectrum:
 \end{lstlisting}
 
 \begin{lstlisting}
-6.021275802588526e-22
+5.991775428348182e-22
 \end{lstlisting}
 
 

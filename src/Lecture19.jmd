@@ -1,4 +1,12 @@
-# Inverting Log kernels
+__M3M6: Applied Complex Analysis__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+
+
+# Lecture 19: Inverting Log kernels
 
 2. Solving a logarithmic singular integral equation
 2. Application: electrostatic potentials in 2D
@@ -10,53 +18,70 @@
 
 ### Solving logarithmic singular integral equations
 
-Oddly enough, it is easier to solve a singular integral equation involving the logarithmic kernel than to actually calculate the logarithmic singular integral, so we begin here. Consider the problem of calculating $u(x)$ such that
+Consider the problem of calculating $u(x)$ such that
 $$
-{1 \over \pi} \int_{-1}^1 u(t) \log | x-t| \dt = f(x) \qqfor -1 < x < 1
+{1 \over \pi} \int_a^b u(t) \log | x-t| \dt = f(x) \qqfor a < x < b
 $$
 
 
-To tackle this problem we first need to understand the additive jump $Re L^\pm(x) = {L^+(x) + L^-(x) \over 2}$. Thinking in terms of integrals of Cauchy transforms we see that
+To tackle this problem, recall that $L u(z) = \Re M u(z)$ for
 $$
-L^+u(x) + L^-u(x) = -2\I (2\int_2^1 \CC u(x) \dx + \int_1^x [C^+ u(t) + C^-u(t)] \dt)  =
-  D   -2 \I \int_1^x (-\I H u(t)) \dt = D + 2\int_x^1 H u(t) dt
+M u(z) = {1 \over \pi} \int_a^b \log|z-t| u(t) \D t =  -2 \I \int_c^z \CC u(\zeta) \D \zeta + M u(c)
 $$
-That is, it is expressed as an indefinite integral of the Hilbert transform.  We therefore have:
+where $c$ is arbitrary, in fact we can choose it to be $b$. Then we have
 $$
-{\D \over \dx} {1 \over \pi} \int_{-1}^1 u(t) \log | x-t| \dt = {\D \over \dx} \int_x^1 H u(t) dt = - Hu(x)
+L u(x) =  \Re M^+ u(x) = 2\Im \int_b^x \CC^+ u(t) \D t =  \int_b^x H u(t) \D t
 $$
-where the minus sign comes from the fact that $x$ is the lower limit. In other words, our original SIE becomes equivalent to inverting the Hilbert transform:
+where 
 $$
-\HH u(x) = -f'(x)
+\HH u(x) = {1 \over \pi} \dashint_a^b {u(t) \over t -x } \D t
+$$
+is the Hilbert transform. In other words, we have
+$$
+{\D \over \dx} L u(x) = \HH u(x).
+$$
+Differentiating both sides of the equation for $u$ therefore gives
+$$
+\HH u(x) = f'(x).
 $$
 recall, we can express the solution as
 $$
-    u = {1 \over \sqrt{1-x^2}} \HH[\sqrt{1-\diamond^2} f'] + {C\over \sqrt{1-x^2}}
+    u = {-\HH[\sqrt{b-\diamond}\sqrt{\diamond-a} f'] + D \over \sqrt{b-x}\sqrt{x-a}} 
 $$
+Here the constant $D$ is not arbitrary: recall that
+$$
+\LL[1/\sqrt{1-\diamond^2}](x) = - \log 2
+$$
+hence varying $D$ will vary $u$ by a constant.
+To choose $D$,  we use the fact that
+$$
+f(c) = {1 \over \pi} \int_a^b u(t) \log |t-c| \dt
+$$
+for any choice of point  $c$.
+
+__Demonstration__
 
 Let's do a numerical example:
+```julia
+using ApproxFun, SingularIntegralEquations, Plots
+H(f) = -hilbert(f) # fix normalisation
+H(f,x) = -hilbert(f,x)
+
 
 x = Fun()
 f = exp(x)
+D = randn()
 
-C = randn()
+u₁ = -H(sqrt(1-x^2)*f')/sqrt(1-x^2) 
 
-u₁ = hilbert(sqrt(1-x^2)*f')/sqrt(1-x^2) 
+u = u₁ + D/sqrt(1-x^2)
 
-u = u₁ + C/sqrt(1-x^2)
-
-@show hilbert(u, 0.1) + f(0.1)
-@show logkernel(u,0.1) - f(0.1)  # didn't work 😩
+@show H(u, 0.1) + f(0.1)
+@show logkernel(u,0.1) - f(0.1)  # didn't work
 @show logkernel(u,0.2) - f(0.2);  # but we are only off by a constant
-
-Remember: for inverting the Hilbert transform we had a degree of freedom: every solution plus $C/\sqrt{1-x^2}$ was also a solution. But here, since we differentiated, we use that degree of freedom to ensure that we have arrived at the right solution. 
-
-To choose $C$,  we use the fact that
-$$
-f(0) = {1 \over \pi} \int_{-1}^1 u(t) \log |t| \dt
-$$
-If we can calculate the right integral, we can use this to choose $C$:
-
+```
+We thus need to choose the constant
+```julia
 # choose C so that
 # logkernel(u₁, 0) + C*logkernel(1/sqrt(1-x^2), 0) == f(0)
 C = (f(0) - logkernel(u₁, 0))/logkernel(1/sqrt(1-x^2), 0)
@@ -65,58 +90,88 @@ u = u₁ + C/sqrt(1-x^2)
 @show hilbert(u, 0.1) + f(0.1)
 @show logkernel(u,0.1) - f(0.1)  # Works!
 @show logkernel(u,0.2) - f(0.2);  # And at all x!
+```
 
-*Example* We now do an example which can be solved by hand. Find $u(x)$ so that: 
+
+__Example 1__ We now do an example which can be solved by hand. 
+Find $u(x)$ so that: 
 $$
-\int_{-1}^1 u(t) \log | x-t| \dt = 1.
+\LL u(x) = x
+$$
+for $-1 < x < 1$. Differentiating his becomes
+$$
+\HH u(x) = 1
+$$
+which we solve via
+$$
+u(x) = {- \HH[\sqrt{1-\diamond^2}](x) + D \over \sqrt{1-x^2}} = {D-x \over \sqrt{1-x^2}}
+$$
+Note that 
+$$
+\LL u(0) = 0
+$$
+A symmetry argument shows that
+$$
+\LL [\diamond/\sqrt{1-\diamond^2}](x) = {1 \over \pi} \int_{-1}^1 {x \over \sqrt{1-x^2}} \log|x| \D x = 0
+$$
+which imples that $D = 0$ and we have 
+$$
+u(x) = {-x \over \sqrt{1-x^2}}
+$$
+We can confirm this:
+```julia
+x = Fun()
+logkernel(-x/sqrt(1-x^2), 0.1) # approximately 0.1
+```
+
+
+
+__Example 2__
+Find $u(x)$ so that: 
+$$
+{1 \over \pi} \int_{-1}^1 u(t) \log | x-t| \dt = 1.
 $$
 Differentiating, we know that 
 $$
 \int_{-1}^1 {u(t) \over x-t} \dt = 0
 $$
-hence $u(x)$ must be of the form ${C \over \sqrt{1-x^2}}$.  Which $C$? Make it work for $x = 0$:
+hence $u(x)$ must be of the form ${D / \sqrt{1-x^2}}$.  Since we know 
 $$
-1 = \int_{-1}^1 u(t) \log | 0 - t| \dt = C \int_{-1}^1 {\log | t| \over \sqrt{1-t^2}}  \dt
+\L[{1 /\sqrt{1-\diamond^2}}](x) = - \log 2
 $$
-To evaluate the integral, we can use trigonmetric variables:
-$$
-\int_0^1 {\log t \over \sqrt{1-t^2}}  \dt = \int_0^{\pi \over 2} {\cos \theta \log \sin \theta \over \sqrt{1-\sin^2 \theta}}   \D\theta = \int_0^{\pi \over 2} \log \sin \theta  \D\theta = - {\pi \log 2\over 2}
-$$
-(The last identity takes some work: I'll leave it as an excercise.)
-
-Thus we have $ C = -{1 \over \pi \log 2}$
-
+we have $D = -1/\log 2$. Let's check:
+```julia
 x = Fun()
-C = -1/(log(2))
-u = C/sqrt(1-x^2)
-
-logkernel(u, 0.2) 
-
+u = -1/(log(2)*sqrt(1-x^2))
+logkernel(u, 0.1) # approximately 0.1
+```
 Physically, this solution gives us the potential field 
-$$
-\int_{-1}^1 u(t) \log|z-t| \dt
-$$
+$
+\LL u(z)
+$
 corresponding to holding a metal plate at constant potential:
-
-v = z -> π*logkernel(u, z)
+```julia
+v = z -> logkernel(u, z)
 
 xx = yy = -2:0.01:2
 V = v.(xx' .+ im*yy)
 
-contour(xx, yy, V)
-plot!(domain(x); color=:black)
-
 surface(xx, yy, V)
+```
 
 ## Application: Potential arising from a point charge and a single plate
 
-Now imagine we put a point source at $x = 2$, and a metal plate on $[-1,1]$. We know the potential on the plate must be constant, but we don't know what constant. This is equivalent to the following problem (see e.g. [\[Chapman, Hewett & Trefethen 2015\]](https://people.maths.ox.ac.uk/trefethen/chapman_hewett_trefethen.pdf)):
+Now imagine we put a point source at $x = 2$, and a metal plate on $[-1,1]$. 
+We know the potential on the plate must be constant, but we don't know what constant. 
+This is equivalent to the following problem (see e.g. [\[Chapman, Hewett & Trefethen 2015\]](https://people.maths.ox.ac.uk/trefethen/chapman_hewett_trefethen.pdf)):
+$$
 \begin{align*}
-v_{xx} + v_{yy} = 0 &\qqfor \hbox{off $[-1,1]$ and $2$}  \\
+v_{xx} + v_{yy} = 0 &\qqfor \hbox{$z$ off $[-1,1]$ and $2$}  \\
 v(z) \sim \log |z - 2| + O(1) &\qqfor z \rightarrow 2 \\
 v(z) \sim \log|z| + o(1) &\qqfor z \rightarrow \infty \\
 v(x) = \kappa &\qqfor -1 < x < 1
 \end{align*}
+$$
 where $\kappa$ is an unknown constant.  We write the solution as
 $$
 v(z) = {1 \over \pi} \int_{-1}^1 u(t) \log|t-z| \dt + \log|z-2|
@@ -126,33 +181,22 @@ $$
  {1 \over \pi} \int_{-1}^1 u(t) \log|t-x| \dt  = \kappa - \log(2-x)
 $$
 
-We can calculate the solution numerically as follows:
-
-x = Fun()
-u₀ = SingularIntegral(0)  \ (-log(2-x)) # solution with κ = 0
-u = u₀  - sum(u₀)/(π*sqrt(1-x^2)) # ensure correct asymptotics
-v = z -> logkernel(u, z) + log(abs(2-z))
-xx = yy = -4:0.011:4
-V = v.(xx' .+ im*yy)
-
-contour(xx, yy, V)
-plot!(domain(x); color=:black, legend=false)
-
 We can solve this equation explicitly. By differentiating we see that $u$ satisfies the following:
 $$
-Hu(x) = -f'(x) = {1 \over x-2}
+\HH u(x) = f'(x) = {1 \over 2-x}
 $$
 We now use the inverse Hilbert formula to determine:
 $$
-u(x) = -{1\over\sqrt{1-x^2}} H[{1 \over \diamond-2} \sqrt{1-\diamond^2}](x) + {D \over \sqrt{1-x^2}}
+u(x) = {1\over\sqrt{1-x^2}} \HH [{1 \over \diamond-2} \sqrt{1-\diamond^2}](x) + {D \over \sqrt{1-x^2}}
 $$
 Using the usual procedure of taking an obvious ansatz and subtracting off the singularities at poles and $\infty$ we find that:
 $$
-C[{\sqrt{1-\diamond^2} \over x -2}](z) = \underbrace{\sqrt{z-1} \sqrt{z+1} \over 2 \I (z-2)}_{\hbox{ansatz}} - \underbrace{\sqrt 3\over 2 \I (z-2)}_{\hbox{remove pole near $z=2$}} - \underbrace{{1 \over 2 \I}}_{\hbox{remove constant at $\infty$}}
+\CC[{\sqrt{1-\diamond^2} \over x -2}](z) = 
+\underbrace{\sqrt{z-1} \sqrt{z+1} \over 2 \I (z-2)}_{\hbox{ansatz}} - \underbrace{\sqrt 3\over 2 \I (z-2)}_{\hbox{remove pole near $z=2$}} - \underbrace{{1 \over 2 \I}}_{\hbox{remove constant at $\infty$}}
 $$
 This implies that
 $$
-H[{1 \over\diamond-2} \sqrt{1-\diamond^2}](x) = \I(C^+ + C^-)[{1 \over\diamond-2} \sqrt{1-\diamond^2}](x) = -{\sqrt 3 \over x -2} - 1
+\HH[{1 \over\diamond-2} \sqrt{1-\diamond^2}](x) = -\I(C^+ + C^-)[{1 \over\diamond-2} \sqrt{1-\diamond^2}](x) = {\sqrt 3 \over x -2} + 1
 $$
 in other words, 
 $$
@@ -163,10 +207,12 @@ $$
 {1 \over \pi} \int_{-1}^1 \log|z-x| u(x) \dx \sim  {\int_{-1}^1 u(x) \dx \over \pi}  \log |z|
 $$
 so we need to choose $D$ so that $\int_{-1}^1 u(x) \dx = 0$ and only the $\log|z-2|$ singularity appears near $\infty$. We first note that 
+$$
 \begin{align*}
 C[{1 \over (\diamond - 2) \sqrt{1-\diamond^2}}](z) &= \underbrace{{\I \over 2 \sqrt{z-1} \sqrt{z+1} (z-2)}}_{\hbox{ansatz}} - \underbrace{{\I \over  2\sqrt{3} (z-2)}}_{\hbox{remove pole}} \\
 & = -{\I \over 2 \sqrt{3} z} + O(z^{-2})
 \end{align*}
+$$
 near $\infty$. Since 
 $$
 Cw(z)  ={ \int_{-1}^1 w(x) \dx \over -2\pi \I z} + O(z^{-2})  
@@ -181,43 +227,23 @@ $$
 $$
 Thus we require $D = 1$ and have the solution:
 $$
-u(x) = {\sqrt{3} \over (x - 2) \sqrt{1-x^2}} - {1 \over \sqrt{1-x^2}}
+u(x) = {\sqrt{3} \over (x - 2) \sqrt{1-x^2}} + {1 \over \sqrt{1-x^2}}
 $$
 
-_Demonstration_ We first check that differentiation reduces to the Hilbert transform:
 
-t = Fun()
-f = -log(2-t)
-hilbert(u, 0.1) ≈ -f'(0.1) ≈ 1/(0.1-2)
+_Demonstration_ 
+```julia
+x = Fun()
+u = sqrt(3)/((x-2)*sqrt(1-x^2)) + 1/sqrt(1-x^2)
+v = z -> logkernel(u, z) + log(abs(z-2))
 
-In the inverse Hilbert transform we calculated the following Cauchy transform:
+xx = yy = -4:0.011:4
+V = v.(xx' .+ im*yy)
 
-z = 1+im
-cauchy((-f')*sqrt(1-t^2), z) ≈ sqrt(z-1)sqrt(z+1)/(2im*(z-2)) - sqrt(3)/(2im*(z-2)) - 1/(2im)
-
-Which means that:
-
-hilbert((-f')*sqrt(1-t^2), 0.1), -sqrt(3)/(0.1-2) - 1
-
-Thus we have the inverse Hilbert transform:
-
-D = randn()
-ũ = sqrt(3)/((x-2)*sqrt(1-x^2))  + D/sqrt(1-x^2)
-hilbert(ũ,0.1) ≈ -f'(0.1)
-
-We still need to determine the constant $D$. What goes wrong if we have the wrong choice is that we don't tend to precisely $\log z$ near $\infty$:
-
-z = 200000
-logkernel(ũ,z), log(z)
-
-We determined the integral
-
-sum(1/((x-2)*sqrt(1-x^2))) ≈ -2π/(2*sqrt(3))
-
-Therefore:
-
-sum(u)
-
-We thus found $u$:
-
-x = 0.1; u(x), sqrt(3)/((x-2)*sqrt(1-x^2)) + 1/sqrt(1-x^2)    
+contour(xx, yy, V)
+plot!(domain(x); color=:black, legend=false)
+```
+We can compute $\kappa$ numerically:
+```julia
+v(0.2)
+```

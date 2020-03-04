@@ -10,10 +10,10 @@ Lecture notes and course material for M3M6 Applied Complex Analysis at Imperial 
 
 See also previous lecture notes for previous course [M3M6 Methods of Mathematical Physics](https://github.com/dlfivefifty/M3M6MethodsOfMathematicalPhysics)
 
-## Problem sheets and mastery material 
+## Problem sheets and mastery material
 
-1. [Problem Sheet 1](sheets/Sheet1.pdf) [(Solution)](sheets/Solution1.pdf)
-1. [Problem Sheet 2](sheets/Sheet2.pdf)
+1. [Problem Sheet 1](sheets/Sheet1.pdf) [(Solutions)](sheets/Solution1.pdf)
+1. [Problem Sheet 2](sheets/Sheet2.pdf) [(Solutions)](sheets/Solution2.pdf)
 3. [Problem Sheet 3](sheets/Sheet3.pdf)
 4. Problem Sheet 4
 5. Mastery material
@@ -47,3 +47,4 @@ Examples of previous projects:
 16. [Electrostatic charges in a potential well](notes/Lecture16.pdf)
 17. [Logarithmic singular integrals](notes/Lecture17.pdf)
 18. [Logarithmic singular integral examples](notes/Lecture18.pdf)
+19. [Inverting logarithmic singular integrals](notes/Lecture19.pdf)
