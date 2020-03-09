@@ -48,3 +48,4 @@ Examples of previous projects:
 17. [Logarithmic singular integrals](notes/Lecture17.pdf)
 18. [Logarithmic singular integral examples](notes/Lecture18.pdf)
 19. [Inverting logarithmic singular integrals](notes/Lecture19.pdf)
+20. [Orthogonal polynomials](notes/Lecture20.pdf)

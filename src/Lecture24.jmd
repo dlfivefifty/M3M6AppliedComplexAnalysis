@@ -1,0 +1,54 @@
+
+## Approximation with Hermite polynomials
+
+
+This is often the case with Hermite polynomials: on the real line polynomial approximation is unnatural unless
+ the function approximated is a polynomial as otherwise the behaviour at ∞ is inconsistent, so what we really want is weighted approximation. 
+ Thus we can either use
+$$
+f(x) = \E^{-x^2}\sum_{k=0}^\infty f_k H_k(x)
+$$
+or
+$$
+f(x) = \E^{-x^2/2}\sum_{k=0}^\infty f_k H_k(x)
+$$
+Depending on your problem, getting this wrong can be disasterous:
+
+f = Fun(x -> 1+x +x^2, Hermite())
+f(0.10)
+
+# nonsense trying to approximating sech(x) by a degree 50 polynomial:
+f = Fun(x -> sech(x), Hermite(), 51)
+xx = -8:0.01:8
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot!(xx, f.(xx); label="f")
+
+# weighted by works sqrt(w(x)) = exp(-x^2/2)
+f = Fun(x -> sech(x), GaussWeight(Hermite(),1/2),101)
+
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot!(xx, f.(xx); label="f")
+
+# weighted by w(x) = exp(-x^2) breaks again
+f = Fun(x -> sech(x), GaussWeight(Hermite()),101)
+
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot(xx, f.(xx); label="f")
+
+Note that correctly weighted Hermite, that is, with $\sqrt{w(x)} = \E^{-x^2/2}$ look "nice":
+
+p = plot()
+for k=0:6
+    H_k = Fun(GaussWeight(Hermite(),1/2),[zeros(k);1])
+    plot!(xx, H_k.(xx); label="H_$k")
+end
+p
+
+Compare this to weighting by $w(x) = \E^{-x^2}$:
+
+p = plot()
+for k=0:6
+    H_k = Fun(GaussWeight(Hermite()),[zeros(k);1])
+    plot!(xx, H_k.(xx); label="H_$k")
+end
+p

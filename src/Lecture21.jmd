@@ -7,3 +7,359 @@ s.olver@imperial.ac.uk
 
 
 # Lecture 21: Classical orthogonal polynomials
+
+
+We will also investigate the properties of _classical_ OPs:
+
+1. Explicit formulae
+3. Rodriguez formulae
+2. Ordinary differential equations
+2. Derivatives
+
+A good reference is  [Digital Library of Mathematical Functions, Chapter 18](http://dlmf.nist.gov/18).
+
+2. Definition of classical orthogonal polynomials
+    - Hermite, Laguerre, and Jacobi polynomials
+    - Legendre, Chebyshev, and ultraspherical polynomials
+    - Explicit construction for Chebyshev polynomials
+
+
+## Definition of classical orthogonal polynomials
+
+Classical orthogonal polynomials are orthogonal with respect to the following three weights:
+
+
+| Name        | Interval $(a,b)$ |Weight  function  $w(x)$      | Standard polynomial   | highest order coefficient $k_n$ |
+|:-------------|:------------- |:----------------------|:-----|:-----|
+| Hermite     |$(-\infty,\infty)$ | $\E^{-x^2}$             | $H_n(x)$ | $2^n$ |
+| Laguerre    | $(0,\infty)$ | $x^\alpha \E^{-x}$      |   $L_n^{(\alpha)}(x)$ | See [Table 18.3.1](http://dlmf.nist.gov/18.3) |
+| Jacobi      | $(-1,1)$ | $(1-x)^{\alpha} (1+x)^\beta$      |    $P_n^{(\alpha,\beta)}(x)$ | See [Table 18.3.1](http://dlmf.nist.gov/18.3) |
+
+
+Note out of convention the parameters for Jacobi polynomials are in the "wrong" order.
+
+We can actually construct these polynomials in Julia: first consider Hermite:
+
+H₀ = Fun(Hermite(), [1])
+H₁ = Fun(Hermite(), [0,1])
+H₂ = Fun(Hermite(), [0,0,1])
+H₃ = Fun(Hermite(), [0,0,0,1])
+H₄ = Fun(Hermite(), [0,0,0,0,1])
+H₅ = Fun(Hermite(), [0,0,0,0,0,1])
+
+xx = -4:0.01:4
+plot(xx, H₀.(xx); label="H_0", ylims=(-400,400))
+plot!(xx, H₁.(xx); label="H_1", ylims=(-400,400))
+plot!(xx, H₂.(xx); label="H_2", ylims=(-400,400))
+plot!(xx, H₃.(xx); label="H_3", ylims=(-400,400))
+plot!(xx, H₄.(xx); label="H_4", ylims=(-400,400))
+plot!(xx, H₅.(xx); label="H_5")
+
+
+We verify their orthogonality:
+
+w = Fun(GaussWeight(), [1.0])
+
+@show sum(H₂*H₅*w)  # means integrate
+@show sum(H₅*H₅*w);
+
+Now Jacobi:
+
+α,β = 0.1,0.2
+P₀ = Fun(Jacobi(β,α), [1])
+P₁ = Fun(Jacobi(β,α), [0,1])
+P₂ = Fun(Jacobi(β,α), [0,0,1])
+P₃ = Fun(Jacobi(β,α), [0,0,0,1])
+P₄ = Fun(Jacobi(β,α), [0,0,0,0,1])
+P₅ = Fun(Jacobi(β,α), [0,0,0,0,0,1])
+
+xx = -1:0.01:1
+plot( xx, P₀.(xx); label="P_0^($α,$β)", ylims=(-2,2))
+plot!(xx, P₁.(xx); label="P_1^($α,$β)")
+plot!(xx, P₂.(xx); label="P_2^($α,$β)")
+plot!(xx, P₃.(xx); label="P_3^($α,$β)")
+plot!(xx, P₄.(xx); label="P_4^($α,$β)")
+plot!(xx, P₅.(xx); label="P_5^($α,$β)")
+
+w = Fun(JacobiWeight(β,α), [1.0])
+@show sum(P₂*P₅*w)  # means integrate
+@show sum(P₅*P₅*w);
+
+## Legendre, Chebyshev, and ultraspherical polynomials
+
+There are special families of Jacobi weights with their own name. 
+
+| Name        | Jacobi parameters  |Weight  function  $w(x)$      | Standard polynomial   | highest order coefficient $k_n$ |
+|:-------------|:------------- |:----------------------|:-----|:------|
+| Jacobi      | $\alpha,\beta$ | $(1-x)^{\alpha} (1+x)^\beta$      |    $P_n^{(\alpha,\beta)}(x)$ | See [Table 18.3.1](http://dlmf.nist.gov/18.3) | 
+| Legendre      | $0,0$ | $1$      |    $P_n(x)$ | $2^n(1/2)_n/n!$ | 
+| Chebyshev (first kind)      | $-{1 \over 2},-{1 \over 2}$ | $1 \over \sqrt{1-x^2}$ | $T_n(x)$ | $1 (n=0), 2^{n-1} (n \neq 0)$ |
+| Chebyshev (second kind)      | ${1 \over 2},{1 \over 2}$ | $\sqrt{1-x^2}$      |    $U_n(x)$ | $2^n$
+| Ultraspherical      | $\lambda-{1 \over 2},\lambda-{1 \over 2}$ | $(1-x^2)^{\lambda - 1/2}, \lambda \neq 0$      |    $C_n^{(\lambda)}(x)$ | $2^n(\lambda)_n/n!$ |
+
+Note that other than Legendre, these polynomials have a different normalization than $P_n^{(\alpha,\beta)}$:
+
+
+T₂ = Fun(Chebyshev(), [0.0,0,1])
+P₂ = Fun(Jacobi(-1/2,-1/2), [0.0,0,1])
+plot(T₂; label="T_2", title="T_2 is C*P_2 for some C")
+plot!(P₂; label="P_2") 
+
+But because they are orthogonal w.r.t. the same weight, they must be a constant multiple of each-other.
+
+### Explicit construction of Chebyshev polynomials (first kind and second kind)
+
+Chebyshev polynomials are pretty much the only OPs with _simple_ closed form expressions.
+
+**Proposition (Chebyshev first kind formula)** 
+$$T_n(x) = \cos n \acos x$$
+or in other words,
+$$
+T_n(\cos \theta) = \cos n \theta
+$$
+
+**Proof** We first show that they are orthogonal w.r.t. $1/\sqrt{1-x^2}$. Too easy: do $x = \cos \theta$, $\dx = -\sin \theta$ to get (for $n \neq m$)
+$$
+    \int_{-1}^1 {\cos n \acos x \cos m \acos x \dx \over \sqrt{1-x^2}} = -\int_\pi^0  \cos n \theta \cos m \theta \D \theta =  \int_0^\pi  {\E^{\I (-n-m)\theta} + \E^{\I (n-m)\theta} + \E^{\I (m-n)\theta} + \E^{\I (n+m)\theta}    \over 4} \D \theta =0
+$$
+
+We then need to show it has the right highest order term $k_n$. Note that $k_0 = k_1 = 1$.  Using $z = \E^{\I \theta}$ we see that $\cos n \theta$ has a simple recurrence for $n=2,3,\ldots$:
+$$
+\cos n \theta = {z^n + z^{-n} \over 2} = 2 {z + z^{-1} \over 2} {z^{n-1} + z^{1-n} \over 2}- {z^{n-2} + z^{2-n} \over 2} = 2 \cos \theta \cos (n-1)\theta - \cos(n-2)\theta 
+$$
+thus 
+$$
+\cos n \acos x = 2 x \cos(n-1) \acos x - \cos(n-2) \acos x
+$$
+It follows that 
+$$
+k_n = 2 x k_{n-1} = 2^{n-1} k_1 = 2^{n-1}
+$$
+By uniqueness we have $T_n(x) \cos n \acos x$.
+
+⬛️
+
+
+
+**Proposition (Chebyshev second kind formula)** 
+$$U_n(x) = {\sin (n+1) \acos x \over \sin \acos x}$$
+or in other words,
+$$
+U_n(\cos \theta) = {\sin (n+1) \theta \over \sin \theta}
+$$
+
+
+
+*Example* For the case of Chebyshev polynomials, we have 
+$$
+J = \begin{pmatrix} 
+0 & 1 \cr
+\half & 0 & \half \cr
+& \half & 0 & \half \cr
+&& \half & 0 & \ddots \cr
+&&&\ddots & \ddots
+\end{pmatrix} 
+$$
+Therefore, the Chebyshev coefficients of $x f(x)$ are given by
+$$
+J^\top \vc f = \begin{pmatrix} 
+0 & \half \cr
+1 & 0 & \half \cr
+& \half & 0 & \half \cr
+&& \half & 0 & \ddots \cr
+&&&\ddots & \ddots
+\end{pmatrix} \begin{pmatrix} f_0\\ f_1\\f_2\\f_3\\\vdots\end{pmatrix}
+$$
+In the case where $f$ is a degree $n-1$  polynomial, we can represent $J^\top$ as an $n+1 \times n$ matrix (this makes sense as $x f(x)$ is one more degree than $f$):
+
+f = Fun(exp, Chebyshev())
+n = ncoefficients(f) # number of coefficients
+@show n
+J = zeros(n,n+1)
+J[1,2] = 1
+for k=2:n
+    J[k,k-1] = J[k,k+1] = 1/2
+end
+J'
+
+cfs = J'*f.coefficients # coefficients of x*f
+xf = Fun(Chebyshev(), cfs)
+
+xf(0.1) - 0.1*f(0.1)
+
+
+**Example** We can construct $T_0(x),\ldots,T_{n-1}(x)$ via
+\begin{align*}
+    p_0(x) &= 1\\
+    p_1(x) &= x T_0(x) \\
+    T_2(x) &= 2x  T_0(x) -  T_0(x) \\    
+    T_3(x) &= 2x T_1(x) - T_1(x)
+    &\vdots
+\end{align*}
+Believe it or not, this is much faster than using $\cos k \acos x$:
+
+
+
+function recurrence_Chebyshev(n,x)
+    T = zeros(n)
+    T[1] = 1.0
+    T[2] = x*T[1]
+    for k = 2:n-1
+        T[k+1] = 2x*T[k] - T[k-1]
+    end
+    T
+end
+
+trig_Chebyshev(n,x) = [cos(k*acos(x)) for k=0:n-1]
+
+n = 10
+recurrence_Chebyshev(n, 0.1) - trig_Chebyshev(n,0.1) |>norm
+
+n = 10000
+@time recurrence_Chebyshev(n, 0.1) 
+@time trig_Chebyshev(n,0.1);
+
+
+
+*Example* For Chebyshev, we want to solve the system
+$$
+\underbrace{\begin{pmatrix}
+1 & -x & \half \\
+& 1 & -x & \half  \\
+& & \half & -x & \ddots  \\
+& &     & \half & \ddots & \half \\
+&&&&\ddots & -x \\
+&&&&& \half
+\end{pmatrix}}_{L_x^\top} \begin{pmatrix} \gamma_0 \\\vdots\\ \gamma_{n-1} \end{pmatrix}
+$$
+via
+
+\begin{align*}
+\gamma_{n-1} &= 2f_{n-1} \\
+\gamma_{n-2} &= 2f_{n-2} + 2x \gamma_{n-1} \\
+\gamma_{n-3} &= 2 f_{n-3} + 2x \gamma_{n-2} - \gamma_{n-1} \\
+& \vdots \\
+\gamma_1 &= f_1 + x \gamma_2 - \half \gamma_3 \\
+\gamma_0 &= f_0 + x \gamma_1 - \half \gamma_2
+\end{align*}
+
+then $f(x) = \gamma_0$.
+
+function clenshaw_Chebyshev(f,x)
+    n = length(f)
+    γ = zeros(n)
+    γ[n] = 2f[n]
+    γ[n-1] = 2f[n-1] +2x*f[n]
+    for k = n-2:-1:1
+        γ[k] = 2f[k] + 2x*γ[k+1] - γ[k+2]
+    end
+    γ[2] = f[2] + x*γ[3] - γ[4]/2
+    γ[1] = f[1] + x*γ[2] - γ[3]/2    
+    γ[1]
+end
+
+f = Fun(exp, Chebyshev())
+clenshaw_Chebyshev(f.coefficients, 0.1) - exp(0.1)
+
+With some high performance computing tweeks, this can be made more accurate: this is the algorithm used for evaluating functions in ApproxFun:
+
+f(0.1) - exp(0.1)
+
+
+
+## Approximation with Chebyshev polynomials
+
+
+
+
+*Example* Last lecture, we used the formula, derived via trigonometric manipulations, 
+$$
+T_1(x) = x T_0(x) \\
+T_{n+1}(x) = 2x T_n(x) - T_{n-1}(x)
+$$
+Rearranging, this becomes
+$$
+ x T_0(x) = T_1(x) \\
+x T_n(x)  =  {T_{n-1}(x) \over 2} + {T_{n+1}(x) \over 2}
+$$
+This tells us that we have the three-term recurrence with $a_n = 0$, $b_0 = 1$, $c_n = b_n = {1 \over 2}$ for $n > 0$.
+
+T = (n,x) -> cos(n*acos(x))
+x = 0.5
+n = 10
+@show x*T(0,x) - (T(1,x))
+@show x*T(n,x) - (T(n-1,x) + T(n+1,x))/2;
+
+
+Here, we demonstrate this with Chebyshev polynomials:
+```julia
+f = Fun(x -> 1 + x + x^2 + x^3, Chebyshev())
+f₀, f₁, f₂, f₃ = f.coefficients
+```
+```julia
+x = 0.1
+@show f₀*1 + f₁*x + f₂*cos(2acos(x)) + f₃*cos(3acos(x))
+@show 1 + x + x^2 + x^3;
+```
+
+
+plot(Fun(exp))
+plot!(Fun(t-> exp(cos(t)), -pi .. pi))
+
+x = Fun()
+ip = (f,g) -> sum(f*g/sqrt(1-x^2))
+
+T₂ = cos.(2 .* acos.(x))
+ip(T₂,f)/ip(T₂,T₂) # gives back f₂
+
+Of course, if $p_k$ are othernormal than we don't need the denominator.
+
+This can be extended to function approximation Provided the sum converges absolutely and uniformly in $x$, we can write
+$$
+f(x) = \sum_{k=0}^\infty f_k p_k(x).
+$$
+In practice, we can approximate smooth functions by a finite truncation:
+$$
+f(x) \approx f_n(x) = \sum_{k=0}^{n-1} f_k p_k(x)
+$$
+
+Here we see that $\E^x$ can be approximated by a Chebyshev approximation using 14 coefficients and is accurate to 16 digits:
+
+f = Fun(x -> exp(x), Chebyshev())
+@show f.coefficients
+@show ncoefficients(f)
+
+@show f(0.1) # equivalent to f.coefficients'*[cos(k*acos(x)) for k=0:ncoefficients(f)-1]
+@show exp(0.1);
+
+The accuracy of this approximation is typically dictated by the smoothness of $f$: the more times we can differentiate, the faster it converges. For analytic functions, it's dictated by the domain of analyticity, just like Laurent/Fourier series. In the case above, $\E^x$ is entire hence we get faster than exponential convergence.
+
+
+Chebyshev expansions work even when Taylor series do not. For example, the following function has poles at $\pm {\I \over 5}$, which means the radius of convergence for the Taylor series is $ |x| < {1 \over 5}$, but Chebyshev polynomials continue to work on $[-1,1]$:
+
+f = Fun( x -> 1/(25x^2 + 1), Chebyshev())
+@show ncoefficients(f)
+plot(f)
+
+This can be explained for Chebyshev expansion by noting that it is cosine expansion / Fourier expansion of an even function:
+$$
+f(x) = \sum_{k=0}^\infty f_k T_k(x) \Leftrightarrow f(\cos \theta) = \sum_{k=0}^\infty f_k \cos k \theta
+$$
+From Lecture 4 we saw that Fourier coefficients decay exponentially (thence the approximation converges exponentially fast) uf  $f\left({z + z^{-1} \over 2}\right)$ is analytic in an ellipse. In the case of $f(x) = {1 \over 25 x^2 + 1}$, we find that 
+$$
+f(z) = {4 z^2 \over 25 + 54 z^2 + 25 z^4}
+$$
+which has poles at 
+$
+\pm 0.8198040\I,\pm1.2198\I:
+$
+
+f = x -> 1/(25x^2 + 1)
+portrait(-3..3, -3..3, z -> f((z+1/z)/2))
+
+Hence we predict a rate of decay of about $1.2198^{-k}$:
+
+f = Fun( x -> 1/(25x^2 + 1), Chebyshev())
+plot(abs.(f.coefficients) .+ 1E-40; yscale=:log10, label="Chebyshev coefficients")
+plot!( 1.2198.^(-(0:ncoefficients(f))); label="R^(-k)")
+
