@@ -51,3 +51,4 @@ Examples of previous projects:
 20. [Orthogonal polynomials](notes/Lecture20.pdf)
 21. [Classical orthogonal polynomials](notes/Lecture21.pdf)
 22. [Orthogonal polynomials and differential equations](notes/Lecture22.pdf)
+23. [Orthogonal polynomials and singular integrals](notes/Lecture23.pdf)

@@ -1,6 +1,205 @@
+__M3M6: Applied Complex Analysis__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
 
 
-# Log transforms of weighted orthogonal polynomials
+# Lecture 23: Orthogonal polynomials and singular integrals
+
+
+This lecture we do the following:
+
+1. Cauchy transforms of weighted orthogonal polynomials
+    - Three-term recurrence and calculation
+    - Hilbert transform of weighted orthogonal polynomials
+    - Hilbert transform of weighted Chebyshev polynomials
+2. Log transform of weighted _classical_ orthogonal polynomials    
+
+
+## Cauchy transforms of orthogonal polynomials
+
+Given a family of orthogonal polynomials $p_k(x)$ with respect to the weight $w(x)$ on $(a,b)$, we always know it satisfies a three-term recurrence:
+$$
+\begin{align*}
+x p_0(x) &= a_0 p_0(x) + b_0 p_1(x) \\
+x p_k(x) &= c_k p_{k-1}(x) + a_k p_k(x) + b_k p_{k+1}(x)
+\end{align*}
+$$
+Consider now the Cauchy transform of the weighted orthogonal polynomial:
+$$
+C_k(z) := {\cal C}_{(a,b)}[p_k w](z) = {1 \over 2 \pi \I} \int_a^b {p_k(x) w(x) \over x -z} \dx
+$$
+
+
+**Theorem (Three-term recurrence Cauchy transform of weighted OPs)** 
+$C_k(z)$ satisfies the same recurrence relationship as $p_k(x)$ for $k=1,2,\ldots$:
+$$
+\begin{align*}
+z C_0(z) &= a_0 C_0(z) + b_0 C_1(z) - {1 \over 2 \pi \I} \int_a^b w(x) \dx \\
+z C_k(z) &= c_k C_{k-1}(z) + a_k C_k(z) + b_k C_{k+1}(z)
+\end{align*}
+$$
+**Proof**
+$$
+\begin{align*}
+z C_k(z) &= {1 \over 2 \pi \I} \int_a^b {z p_k(x) w(x) \over x -z} \dx  = {1 \over 2 \pi \I} \int_a^b {(z -x) p_k(x) w(x) \over x -z} \dx  +  \int_a^b {x p_k(x) w(x) \over x -z} \dx \\
+  &= -{1 \over 2 \pi \I} \int_a^b p_k(x) w(x)  \dx +  \int_a^b {(c_k p_{k-1}(x) + a_k p_k(x) + b_k p_{k+1}(x) w(x) \over x -z} \dx \\
+  &= -{1 \over 2 \pi \I} \int_a^b p_k(x) w(x)  \dx + c_k C_{k-1}(z) + a_k C_k(z) + b_k C_{k+1}(z)
+\end{align*}
+$$
+when $k > 0$, the integral term disappears.  
+■
+
+This gives a convenient way to calculate the Cauchy transforms: if we know $C_0(z) ={\cal C}w(z)$ and $\int_a^b w(x) \dx$, solve the lower triangular system:
+$$
+\begin{pmatrix}
+1 \\
+a_0-z & b_0 \\
+c_1 & a_1-z & b_1 \\
+&c_2 & a_2-z & b_2 \\
+&& c_3 & a_3-z &\ddots\\
+&&&\ddots & \ddots
+\end{pmatrix}\begin{pmatrix}C_0(z) \\C_1(z) \\C_2(z) \\C_3(z) \\ \vdots \end{pmatrix} = \begin{pmatrix}C_0(z) \\{1 \over 2 \pi \I} \int_a^b w(x) \dx \\0 \\0 \\ \vdots \end{pmatrix} 
+$$
+
+**Example (Chebyshev Cauchy transform)** 
+
+Consider the Chebyshev case $w(x) = {1 \over \sqrt{1-x^2}}$, which satisfies $\int_{-1}^1 w(x) \dx = {\pi}$. Recall that
+$$
+    C_0(z) ={\cal C}w(z) = { \I \over 2\sqrt{z-1}\sqrt{z+1}}
+$$
+Further, we have
+$$
+\begin{align*}
+x T_0(x) = T_1(x) \\
+x T_k(x) = {T_{k-1}(x) \over 2} + { T_{k+1}(x) \over 2} 
+\end{align*}
+$$
+hence
+$$
+\begin{align*}
+z C_0(z) = C_1(z) -  {1  \over 2 \I} \\
+z C_k(z) = {C_{k-1}(z) \over 2} +{C_{k+1}(z) \over 2} .
+\end{align*}
+$$
+In other words, we want to solve
+$$
+\begin{pmatrix}
+1 \\
+-z & 1 \\
+1/2 & -z & 1/2 \\
+&1/2 & -z & 1/2 \\
+&& 1/2 & -z &\ddots\\
+&&&\ddots & \ddots
+\end{pmatrix}\begin{pmatrix}C_0(z) \\C_1(z) \\C_2(z) \\C_3(z) \\ \vdots \end{pmatrix} = \begin{pmatrix} { \I \over 2\sqrt{z-1}\sqrt{z+1}} \\{1 \over 2 \I} \\0 \\0 \\ \vdots \end{pmatrix} 
+$$
+with forward substitution.
+
+
+## Hilbert transform of weighted orthogonal polynomials
+
+Now consider the Hilbert transform of weighted orthogonal polynomials:
+$$
+H_k(x) = \HH_{(a,b)}[p_k w](x) = {1 \over \pi} \int_a^b {p_k(t) w(t) \over x-t} \dt
+$$
+
+Just like Cauchy transforms, the Hilbert transforms have 
+
+**Corollary (Hilbert transform recurrence)**
+$$
+\begin{align*}
+x H_0(x) &=  a_0 H_0(x) + b_0 H_1(x) + {1 \over \pi} \int_a^b w(x) \dx\\
+x H_k(x) &=  c_k H_{k-1}(x) + a_k H_k(x) + b_k H_{k+1}(x) 
+\end{align*}
+$$
+
+**Proof**
+Recall
+$$
+\CC^+ f(x) + \CC^- f(x) = \I \HH f(x)
+$$
+Therefore, we have
+$$
+C_k^+(x) + C_k^-(x) = \I \HH[w p_k](x)
+$$
+hence we have
+$$
+\begin{align*}
+x H_0(x) &= -\I x (C_0^+(x) + C_0^-(x)) = - \I \left[a_0 (C_0^+(x) + C_0^-(x)) + b_0 (C_1^+(x) + C_1^-(x))    -{1 \over  \pi \I} \int_a^b w(x) \dx \right]\\
+            &=  a_0 H_0(x) + b_0 H_1(x) + {1 \over \pi} \int_a^b w(x) \dx
+\end{align*}
+$$
+Other $k$ follows by a similar argument.
+
+■
+
+
+
+### Example 1: weighted Chebyshev T
+For
+$$
+H_k(x) := \HH[T_k/\sqrt{1-x^2}](x) =  {1 \over \pi} \int_{-1}^1 {T_k(t) \over (x-t)\sqrt{1-t^2}} \dt
+$$
+The recurrence gives us
+$$
+\begin{align*}
+x H_0(x) &= H_1(x) + 1 \\
+x H_k(x) &= {H_{k-1}(x) \over 2} + {H_k(x) \over 2} \\
+\end{align*}
+$$
+In this case, we have $H_0(x) = \HH[w](x) =  0$. Therefore, we can rewrite this recurrence as
+$$
+\begin{align*}
+H_1(x)&= -1  \\
+x H_1(x) &= {H_2(x) \over 2} \\
+x H_k(x) &= {H_{k-1}(x) \over 2} + {H_{k+1}(x) \over 2} \\
+\end{align*}
+$$
+This is precisely the three-term recurrence satisfied by $-U_{k-1}$! We therefore have
+$$
+H_k(x) = -U_{k-1}(x)
+$$
+
+This gives a very easy way to compute Hilbert transforms: if
+$$
+f(x) = \sum_{k=0}^\infty f_k T_k(x)
+$$
+then
+$$
+\HH\left[{f \over \sqrt{1-\diamond^2}}\right](x) = -\sum_{k=0}^\infty f_{k+1} U_k(x)
+$$
+
+### Example 2: weighted Chebyshev U
+
+For
+$$
+H_k(x) := \HH[U_k \sqrt{1-x^2}](x) =  {1 \over \pi} \int_{-1}^1 {U_k(t) \sqrt{1-t^2} \over x-t} \dt
+$$
+The recurrence gives us
+$$
+\begin{align*}
+x H_0(x) &= H_1(x) + 1/2 \\
+x H_k(x) &= {H_{k-1}(x) \over 2} + {H_k(x) \over 2} \\
+\end{align*}
+$$
+In this case, we have $H_0(x) = \HH[w](x) =  x$. Therefore, we can rewrite this recurrence as
+$$
+\begin{align*}
+H_{-1}(x) := 1 \\ 
+ xH_{-1}(x)  &= H_0(x) \\
+x H_0(x) &= {H_{-1}(x) \over 2} + {H_1(x) \over 2} \\
+x H_k(x) &= {H_{k-1}(x) \over 2} + {H_{k+1}(x) \over 2} 
+\end{align*}
+$$
+This is precisely the three-term recurrence satisfied by $T_{k+1}$! We therefore have
+$$
+H_k(x) = T_{k+1}(x)
+$$
+
+
+
+## Log transforms of weighted orthogonal polynomials
 
 
 Now consider ${1 \over \pi} \int_a^b p_k(x) w(x) \log |z-x| \dx$, which we write in terms of the real part of
@@ -9,17 +208,18 @@ L_k(z) = L[p_k w](z) = {1 \over \pi } \int_a^b p_k(x) w(x) \log (z-x) \dx
 $$
 
 For $k > 0$ we have $\int_a^b p_k(x) w(x) dx = 0$ due to orthogonality, and hence we actually have no branch cut:
-
+```julia
+using ApproxFun, SingularIntegralEquations, LinearAlgebra, Plots, ComplexPhasePortrait
+x = Fun()
 T₅ = Fun(Chebyshev(), [zeros(2);1])
 w = 1/sqrt(1-x^2)
 L₅ = z->cauchyintegral(w*T₅, z)
 
 phaseplot(-3..3, -3..3, L₅)
+```
 
 
-
-
-#### Example: Weighted Chebyshev log transform
+## Weighted Chebyshev log transform
 
 For classical orthogonal polynomials we can go a step further and relate the indefinite integrals to other orthogonal polynomials.
 
@@ -41,11 +241,82 @@ $$
 $$
 
 
+As we saw above, Cauchy transforms of OPs satisfy simple recurrences, and this relationship renders log transforms equally calculable. 
+
+
+
+
+## Demonstration
+
+
+We first see how the Cauchy transform can be computed using forward recurrence if we know $C w(z)$.
+Here we consider the Chebyshev $T$ case:
+
+```julia
+x = Fun()
+w = 1/sqrt(1-x^2)
+z = 0.1+0.1im
+
+n = 10
+L = zeros(ComplexF64,n,n)
+L[1,1] = 1
+L[2,1] = -z
+L[2,2] = 1
+for k=3:n
+    L[k,k-1] = -z
+    L[k,k-2] = L[k,k] = 1/2
+end
+
+C = L \ [ im/(2sqrt(z-1)sqrt(z+1)); 1/(2im); zeros(n-2)]
+
+T₅ = Fun(Chebyshev(), [zeros(5);1])
+cauchy(T₅*w,z) , C[6]
+```
+
+**Warning** This fails for large $n$ or large $z$:
+```julia
+x = Fun()
+w = 1/sqrt(1-x^2)
+z = 5+6im
+
+n = 100
+L = zeros(ComplexF64,n,n)
+L[1,1] = 1
+L[2,1] = -z
+L[2,2] = 1
+for k=3:n
+    L[k,k-1] = -z
+    L[k,k-2] = L[k,k] = 1/2
+end
+
+C = L \ [ im/(2sqrt(z-1)sqrt(z+1)); 1/(2im); zeros(n-2)]
+
+T₂₀ = Fun(Chebyshev(), [zeros(20);1])
+
+C[21], cauchy(T₂₀*w, z)
+```
+Get around it by dropping the first row:
+```julia
+L[2:end,1:end-1]
+
+C = L[2:end,1:end-1]\ [1/(2im); zeros(n-2)]
+
+C[6]- cauchy(T₅*w, z)
+```
+We can also use this technique for computing Hiblert transforms:
+
+```julia
+x = 0.1
+
+T = Fun(Chebyshev(),[zeros(n);1])
+hilbert(w*T,x) , Fun(Ultraspherical(1), [zeros(n-1);1])(x)
+```
+And Log transforms:
+```julia
 T₅ = Fun(Chebyshev(), [zeros(5);1])
 U₄ = Fun(Ultraspherical(1), [zeros(4);1])
 x = Fun()
 L₅ = z->sum(T₅/sqrt(1-x^2) * log(z-x))/π
 
 L₅(z), 2im*cauchy(sqrt(1-x^2)*U₄,z)/5
-
-As we saw last lecture, Cauchy transforms of OPs satisfy simple recurrences, and this relationship renders log transforms equally calculable. 
+```
