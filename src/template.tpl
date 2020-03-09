@@ -37,6 +37,7 @@
 \def\qqand{\qquad\hbox{and}\qquad}
 \def\qqfor{\qquad\hbox{for}\qquad}
 \def\qqas{\qquad\hbox{as}\qquad}
+\def\half{ {1 \over 2} }
 \def\D{ {\rm d} }
 \def\I{ {\rm i} }
 \def\E{ {\rm e} }
