@@ -50,3 +50,4 @@ Examples of previous projects:
 19. [Inverting logarithmic singular integrals](notes/Lecture19.pdf)
 20. [Orthogonal polynomials](notes/Lecture20.pdf)
 21. [Classical orthogonal polynomials](notes/Lecture21.pdf)
+22. [Orthogonal polynomials and differential equations](notes/Lecture22.pdf)

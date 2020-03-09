@@ -8,44 +8,6 @@ s.olver@imperial.ac.uk
 
 # Lecture 22: Orthogonal polynomials and differential equations
 
-# M3M6: Methods of Mathematical Physics
-
-$$
-\def\dashint{{\int\!\!\!\!\!\!-\,}}
-\def\infdashint{\dashint_{\!\!\!-\infty}^{\,\infty}}
-\def\D{\,{\rm d}}
-\def\E{{\rm e}}
-\def\dx{\D x}
-\def\dt{\D t}
-\def\dz{\D z}
-\def\C{{\mathbb C}}
-\def\R{{\mathbb R}}
-\def\CC{{\cal C}}
-\def\HH{{\cal H}}
-\def\I{{\rm i}}
-\def\qqqquad{\qquad\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
-\def\qqwhere{\qquad\hbox{where}\qquad}
-\def\Res_#1{\underset{#1}{\rm Res}}\,
-\def\sech{{\rm sech}\,}
-\def\acos{\,{\rm acos}\,}
-\def\vc#1{{\mathbf #1}}
-\def\ip<#1,#2>{\left\langle#1,#2\right\rangle}
-\def\norm#1{\left\|#1\right\|}
-\def\half{{1 \over 2}}
-$$
-
-Dr. Sheehan Olver
-<br>
-s.olver@imperial.ac.uk
-
-<br>
-Website: https://github.com/dlfivefifty/M3M6LectureNotes
-
-
-# Lecture 16: Solving differential equations with orthogonal polynomials
-
-
 This lecture we do the following:
 
 1. Recurrence relationships for Chebyshev and ultrashperical polynomials
@@ -55,6 +17,7 @@ This lecture we do the following:
     - First order constant coefficients differential equations
     - Second order constant coefficient differential equations with boundary conditions
     - Non-constant coefficients
+3. Differential equations satisfied by orthogonal polynomails    
     
 
 
@@ -63,7 +26,8 @@ That is, we introduce recurrences related to ultraspherical polynomials. This al
 ## Recurrence relationships for Chebyshev and ultraspherical polynomials
 
 
-We have discussed general properties, but now we want to discuss some classical orthogonal polynomials, beginning with Chebyshev (first kind) $T_n(x)$, which is orthogonal w.r.t.
+We have discussed general properties, but now we want to discuss some classical orthogonal polynomials, 
+beginning with Chebyshev (first kind) $T_n(x)$, which is orthogonal w.r.t.
 $$1\over \sqrt{1-x^2}$$
 and ultraspherical $C_n^{(\lambda)}(x)$, which is orthogonal w.r.t.
 $$(1-x^2)^{\lambda - \half}$$
@@ -91,12 +55,19 @@ We will show that we can use this to find the recurrence for _all_ ultraspherica
 
 It turns out that the derivative of $T_n(x)$ is precisely a multiple of  $U_{n-1}(x)$, and similarly the derivative of $C_n^{(\lambda)}$ is a multiple of $C_{n-1}^{(\lambda+1)}$.
 
-**Proposition (Chebyshev derivative)** $$T_n'(x) = n U_{n-1}(x)$$
+**Proposition (Chebyshev derivative)** 
+$$
+T_n'(x) = n U_{n-1}(x)
+$$
 
 **Proof** 
 We first show that $T_n'(x)$ is othogonal w.r.t. $\sqrt{1-x^2}$ to all  polynomials of degree $m < n-1$, denoted $f_m$, using integration by parts:
 $$
-\ip<T_n',f_m>_{\rm U} = \int_{-1}^1 T_n'(x) f_m(x) \sqrt{1-x^2} \dx = -\int_{-1}^1 T_n(x) (f_m'(x)(1-x^2) + xf_m) {1  \over \sqrt{1-x^2}} \dx  = - \ip<T_n, f_m'(1-x^2) + x f_m >_{\rm T}  = 0
+\begin{align*}
+\ip<T_n',f_m>_{\rm U} &= \int_{-1}^1 T_n'(x) f_m(x) \sqrt{1-x^2} \dx \ccr
+= -\int_{-1}^1 T_n(x) (f_m'(x)(1-x^2) + xf_m) {1  \over \sqrt{1-x^2}} \dx  \ccr
+= - \ip<T_n, f_m'(1-x^2) + x f_m >_{\rm T}  = 0
+\end{align*}
 $$
 since $f_m'(1-x^2) + f_m $ is degree $m-1 +2 = m+1 < n$.
 
@@ -104,7 +75,7 @@ The constant works out since
 $$
 T_n'(x) = {\D \over \dx} (2^{n-1} x^n)  + O(x^{n-2}) = n 2^{n-1} x^{n-1} + O(x^{n-2})
 $$
-⬛️
+■
 
 The exact same proof shows the following:
 
@@ -136,7 +107,8 @@ f'(x) = (U_0(x),U_1(x),\ldots)\begin{pmatrix}
 $$
 
 _Demonstration_ Here we see that applying a matrix to a vector of coefficients successfully calculates the derivative:
-
+```julia
+using ApproxFun, Plots, LinearAlgebra
 f = Fun(x -> cos(x^2), Chebyshev())   # f is expanded in Chebyshev coefficients
 n = ncoefficients(f)   # This is the number of coefficients
 D = zeros(n-1,n)
@@ -144,40 +116,41 @@ for k=1:n-1
     D[k,k+1] = k
 end
 D
-
+```
 Here `D*f.coefficients` gives the vector of coefficients corresponding to the derivative, but now the coefficients are in the $U_n(x)$ basis, that is, `Ultraspherical(1)`:
-
+```julia
 fp = Fun(Ultraspherical(1), D*f.coefficients)
-
 fp(0.1)
-
+```
 Indeed, it matches the "true" derivative:
-
-f'(0.1)
-
--2*0.1*sin(0.1^2)
+```julia
+f'(0.1),-2*0.1*sin(0.1^2)
+```
 
 Note that in ApproxFun.jl we can construct these operators rather nicely:
-
+```julia
 D = Derivative()
 (D*f)(0.1)
-
+```
 Here we see that we can write produce the ∞-dimensional version as follows:
-
+```julia
 D : Chebyshev() → Ultraspherical(1) 
-
+```
 ### Conversion
 
 
 
-We can convert between any two polynomial bases using a lower triangular operator, because their span's are equivalent. In the case of Chebyshev and ultraspherical polynomials, they have the added property that they are banded.
+We can convert between any two polynomial bases using a lower triangular operator, because their span's are equivalent. 
+In the case of Chebyshev and ultraspherical polynomials, they have the added property that they are banded.
 
 **Proposition (Chebyshev T-to-U conversion)** 
+$$
 \begin{align*}
  T_0(x) &= U_0(x) \\
  T_1(x) &= {U_1(x) \over 2} \\
  T_n(x) &= {U_n(x) \over 2} - {U_{n-2}(x) \over 2}
 \end{align*}
+$$
 
 **Proof** 
 
@@ -187,13 +160,15 @@ $$
 $$
 
 To actually determine the entries, we use the trigonometric formulae. Recall for $x = (z + z^{-1})/2$, $z = \E^{\I \theta}$, we have
+$$
 \begin{align*}
 T_n(x) &= \cos n \theta = {z^{-n} + z^n \over 2}\\
 U_n(x) &= {\sin (n+1) \theta \over \sin \theta} = {z^{n+1} - z^{-n-1} \over z - z^{-1}} = z^{-n} + z^{2-n} + \cdots +  \cdots + z^{n-2} + z^n 
 \end{align*}
+$$
 The result follows immediately.
 
-⬛️
+■
 
 **Corollary (Ultrapherical λ-to-(λ+1) conversion)**
 $$
@@ -201,21 +176,24 @@ C_n^{(\lambda)}(x) = {\lambda \over n+ \lambda} (C_n^{(\lambda+1)}(x) - C_{n-2}^
 $$
 
 **Proof** This follows from differentiating the previous result. For example:
+$$
 \begin{align*}
  {\D\over \dx} T_0(x) &= {\D\over \dx} U_0(x) \\
  {\D\over \dx} T_1(x) &= {\D\over \dx} {U_1(x) \over 2} \\
 {\D\over \dx} T_n(x) &= {\D\over \dx} \left({U_n(x) \over 2} - {U_{n-2} \over 2} \right)
 \end{align*}
+$$
 becomes
+$$
 \begin{align*}
     0 &= 0\\
     U_0(x) &= C_1^{(2)}(x) \\
    n U_{n-1}(x) &= C_{n-1}^{(2)}(x)  - C_{n-3}^{(2)}(x)
 \end{align*}
-
+$$
 Differentiating this repeatedly completes the proof.
 
-⬛️
+■
 
 
 Note we can write this in matrix form, for example, we have
@@ -223,63 +201,72 @@ $$
 \underbrace{\begin{pmatrix}1 \cr
                     0 & \half\cr
                        -\half & 0 & \half \cr
-                           &\ddots &\ddots & \ddots\end{pmatrix} }_{S_0^\top} \begin{pmatrix} 
+                           &\ddots &\ddots & \ddots\end{pmatrix} }_{(R_T^U)^\top} \begin{pmatrix} 
                            U_0(x) \\ U_1(x) \\ U_2(x) \\ \vdots \end{pmatrix}  =  \begin{pmatrix} T_0(x) \\ T_1(x) \\ T_2(x) \\ \vdots \end{pmatrix}
 $$
 
 therefore,
 $$
-f(x) =  (T_0(x),T_1(x),\ldots) \begin{pmatrix} f_0\\f_1\\\vdots \end{pmatrix} =  (U_0(x),U_1(x),\ldots) S_0 \begin{pmatrix} f_0\\f_1\\\vdots \end{pmatrix}
+f(x) =  (T_0(x),T_1(x),\ldots) \begin{pmatrix} f_0\\f_1\\\vdots \end{pmatrix} =  (U_0(x),U_1(x),\ldots) R_T^U \begin{pmatrix} f_0\\f_1\\\vdots \end{pmatrix}
 $$
 
 Again, we can construct this nicely in ApproxFun:
-
-S₀ = I : Chebyshev() → Ultraspherical(1)
+```julia
+R_TU = I : Chebyshev() → Ultraspherical(1)
 
 f = Fun(exp, Chebyshev())
-g = S₀*f
+g = R_TU*f
 
-g(0.1) - exp(0.1)
-
+g(0.1) , exp(0.1)
+```
 ### Ultraspherical Three-term recurrence 
 
 **Theorem (three-term recurrence for Chebyshev U)** 
+$$
 \begin{align*}
 x U_0(x) &= {U_1(x) \over 2} \\
 x U_n(x) &= {U_{n-1}(x) \over 2} + {U_{n+1}(x) \over 2}
 \end{align*}
+$$
 
 **Proof**
 Differentiating
+$$
 \begin{align*}
  x T_0(x) &= T_1(x) \\
 x T_n(x)  &=  {T_{n-1}(x) \over 2} + {T_{n+1}(x) \over 2}
 \end{align*}
+$$
 we get
+$$
 \begin{align*}
   T_0(x) &= U_0(x) \\
  T_n(x) + n x U_{n-1}(x)  &=  {(n-1) U_{n-2}(x) \over 2} + {(n+1) U_n(x) \over 2}
 \end{align*}
+$$
 substituting in the conversion $T_n(x) = (U_n(x) - U_{n-2}(x))/2$ we get
+$$
 \begin{align*}
   T_0(x) &= U_0(x) \\
  n x U_{n-1}(x)  &=  {(n-1) U_{n-2}(x) \over 2} + {(n+1) U_n(x) \over 2} - (U_n(x) - U_{n-2}(x))/2 = {n U_{n-2}(x) \over 2} + {n U_n(x) \over 2}
 \end{align*}
-
-⬛️
+$$
+■
 
 Differentiating this theorem again and applying the conversion we get the following
 
-**Corollary (three-term recurrence for ultrashperical)** 
+**Corollary (three-term recurrence for ultrashperical)**
+$$
 \begin{align*}
 x C_0^{(\lambda)}(x) &= {1 \over 2\lambda } C_1^{(\lambda)}(x) \\
  x C_n^{(\lambda)}(x) &=  {n+2\lambda-1 \over 2(n+\lambda)} C_{n-1}^{(\lambda)}(x) + {n+1 \over 2(n+\lambda)} C_{n+1}^{(\lambda)}(x) 
 \end{align*}
-
+$$
 
 Here's an example of the Jacobi operator (which is the transpose of the multiplciation by $x$ operator):
-
+```julia
 Multiplication(Fun(), Ultraspherical(2))'
+```
 
 ## Application: solving differential equations
 
@@ -298,10 +285,12 @@ to solve ordinary differential equations.
 ### First order, constant coefficient differential equations
 
 Consider the simplest ODE:
+$$
 \begin{align*}
 u(0) &= 0 \\
 u'(x) - u(x) &= 0 
 \end{align*}
+$$
 and suppose  represent $u(x)$ in its Chebyshev expansion, with to be determined coefficents. In other words, we want to calculate coefficients $u_k$ such that
 $$
 u(x) = \sum_{k=0}^\infty u_k T_k(x) = (T_0(x), T_1(x), \ldots) \begin{pmatrix} u_0 \\ u_1 \\ \vdots \end{pmatrix}
@@ -313,7 +302,8 @@ $$
 u(0) = (T_0(0), T_1(0), \ldots) \begin{pmatrix} u_0\\u_1\\\vdots \end{pmatrix} = (1,0,-1,0,1,\ldots)  \begin{pmatrix} u_0\\u_1\\\vdots \end{pmatrix} 
 $$
 We also have 
-$$u'(x) = (U_0(x),U_1(x),\ldots) \begin{pmatrix}
+$$
+u'(x) = (U_0(x),U_1(x),\ldots) \begin{pmatrix}
 0 & 1 \cr 
 && 2 \cr
 &&& 3 \cr
@@ -321,7 +311,8 @@ $$u'(x) = (U_0(x),U_1(x),\ldots) \begin{pmatrix}
 \end{pmatrix}\begin{pmatrix} u_0\\u_1\\\vdots \end{pmatrix} 
 $$
 To represent $u'(x) - u(x)$, we need to make sure the bases are compatible. In other words, we want to express $u(x)$ in it's $U_k(x)$ basis using the conversion operator $S_0$:
-$$u(x) = (U_0(x),U_1(x),\ldots) \begin{pmatrix}
+$$
+u(x) = (U_0(x),U_1(x),\ldots) \begin{pmatrix}
     1 &0 & -\half \cr 
 & \half & 0 & -\half \cr
 &&\ddots & \ddots & \ddots
@@ -351,50 +342,52 @@ $$
 $$
 
 How to solve this system is outside the scope of this course (though a simple approach is to truncate the infinite system to finite systems). We can however do this in ApproxFun:
-
+```julia
 B  = Evaluation(0.0) : Chebyshev()
 D  = Derivative() : Chebyshev() → Ultraspherical(1)
-S₀ = I : Chebyshev() → Ultraspherical(1)
+R_TU = I : Chebyshev() → Ultraspherical(1)
 L = [B; 
-     D - S₀]
-
+     D - R_TU]
+```
 We can solve this system as follows:
-
+```julia
 u = L \ [1; 0]
 plot(u)
-
+```
 It matches the "true" result:
-
-u(0.1) - exp(0.1)
-
+```julia
+u(0.1) , exp(0.1)
+```
 Note we can incorporate right-hand sides as well, for example, to solve $u'(x) - u(x) = f(x)$, by expanding $f$ in its Chebyshev U series.
 
 ### Second-order constanst coefficient equations
 
 This approach extends to second-order constant-coefficient equations by using ultraspherical polynomials.  Consider
+$$
 \begin{align*}
 u(-1) &= 1\\
 u(1) &= 0\\
 u''(x) + u'(x)  + u(x) &= 0
 \end{align*}
+$$
 Evaluation works as in the first-order case. To handle second-derivatives, we need $C^{(2)}$ polynomials:
-
+```julia
 D₀ = Derivative() : Chebyshev() → Ultraspherical(1)
 D₁ = Derivative() : Ultraspherical(1) → Ultraspherical(2)
 D₁*D₀  # 2 zeros not printed in (1,1) and (1,2) entry
-
+```
 For the identity operator, we use two conversion operators:
-
-S₀ = I : Chebyshev() → Ultraspherical(1)
-S₁ = I : Ultraspherical(1) → Ultraspherical(2)
-S₁*S₀
-
+```julia
+R_TU = I : Chebyshev() → Ultraspherical(1)
+R_U2 = I : Ultraspherical(1) → Ultraspherical(2)
+R_T2 = R_U2*R_TU
+```
 And for the first derivative, we use a derivative and then a conversion:
-
-S₁*D₀  # or could have been D₁*S₀
-
+```julia
+R_U2*D₀  # or could have been D₁*S₀
+```
 Putting everything together we get:
-
+```julia
 B₋₁ = Evaluation(-1) : Chebyshev()
 B₁ = Evaluation(1) : Chebyshev()
 # u(-1) 
@@ -403,86 +396,93 @@ B₁ = Evaluation(1) : Chebyshev()
 
 L = [B₋₁; 
      B₁; 
-     D₁*D₀ + S₁*D₀ + S₁*S₀]
+     D₁*D₀ + R_U2*D₀ + R_U2*R_TU]
 
 u = L \ [1.0,0.0,0.0]
 plot(u)
+```
 
 ### Variable coefficients
 
 Consider the Airy ODE 
+$$
 \begin{align*}
 u(-1) &= 1\\
 u(1) &= 0\\
 u''(x) - xu(x) &= 0
 \end{align*}
-
+$$
 to handle, this, we need only use the Jacobi operator to represent multiplication by $x$:
-
+```julia
 x = Fun()
-Jᵗ = Multiplication(x) : Chebyshev() → Chebyshev()  # transpose of the Jacobi operator
-
+X = Multiplication(x) : Chebyshev() → Chebyshev()  # transpose of the Jacobi operator
+```
 We set op ther system as follows:
-
+```julia
 L = [B₋₁;   # u(-1)
      B₁ ;   # u(1)
-     D₁*D₀ - S₁*S₀*Jᵗ]   # u'' - x*u
+     D₁*D₀ - R_U2*R_TU*X]   # u'' - x*u
 
 u = L \ [1.0;0.0;0.0]
 plot(u; legend=false)
-
+```
 If we introduce a small parameter, that is, solve
+$$
 \begin{align*}
 u(-1) &= 1\\
 u(1) &= 0\\
 \epsilon u''(x) - xu(x) &= 0
 \end{align*}
+$$
 we can see pretty hard to compute solutions:
-
+```julia
 ε = 1E-6
 L = [B₋₁; 
      B₁ ; 
-     ε*D₁*D₀ - S₁*S₀*Jᵗ]
+     ε*D₁*D₀ - R_U2*R_TU*X]
 
 u = L \ [1.0;0.0;0.0]
 plot(u; legend=false)
-
+```
 Because of the banded structure, this can be solved fast:
-
+```julia
 ε = 1E-10
 L = [B₋₁; 
      B₁ ; 
-     ε*D₁*D₀ - S₁*S₀*Jᵗ]
-
+     ε*D₁*D₀ - R_U2*R_TU*X]
 
 @time u = L \ [1.0;0.0;0.0]
 @show ncoefficients(u);
-
+```
 To handle other variable coefficients, first consider a polynomial $p(x)$. If Multiplication by $x$ is represented by multiplying the coefficients by $J^\top$, then multiplication by $p$ is represented by $p(J^\top)$:
-
-M = -I + Jᵗ + (Jᵗ)^2  # represents -1+x+x^2
+```julia
+M = -I + X + (X)^2  # represents -1+x+x^2
 
 ε = 1E-6
 L = [B₋₁; 
      B₁ ; 
-     ε*D₁*D₀ - S₁*S₀*M]
+     ε*D₁*D₀ - R_U2*R_TU*M]
 
 @time u = L \ [1.0;0.0;0.0]
 
 @show ε*u''(0.1) - (-1+0.1+0.1^2)*u(0.1)
 plot(u)
+```
 
 For other smooth functions, we first approximate in a polynomial basis,  and without loss of generality we use Chebyshev T basis. For example, consider 
+$$
 \begin{align*}
 u(-1) &= 1\\
 u(1) &= 0\\
 \epsilon u''(x) - \E^x u(x) &= 0
 \end{align*}
+$$
 where
 $$
 \E^x  \approx p(x) = \sum_{k=0}^{m-1} p_k T_k(x)
 $$
 Evaluating at a point $x$, recall Clenshaw's algorithm:
+$$
 \begin{align*}
 \gamma_{n-1} &= 2p_{n-1} \\
 \gamma_{n-2} &= 2p_{n-2} + 2x \gamma_{n-1} \\
@@ -491,7 +491,9 @@ Evaluating at a point $x$, recall Clenshaw's algorithm:
 \gamma_1 &= p_1 + x \gamma_2 - \half \gamma_3 \\
 p(x) = \gamma_0 &= p_0 + x \gamma_1 - \half \gamma_2
 \end{align*}
-If multiplication by $x$ becomes $J^\top$, then multiplication by $p(x)$ becomes $p(J^\top)$, and hence we calculate:\
+$$
+If multiplication by $x$ becomes $J^\top$, then multiplication by $p(x)$ becomes $p(J^\top)$, and hence we calculate:
+$$
 \begin{align*}
 \Gamma_{n-1} &= 2p_{n-1}I \\
 \Gamma_{n-2} &= 2p_{n-2}I + 2J^\top \Gamma_{n-1} \\
@@ -500,61 +502,25 @@ If multiplication by $x$ becomes $J^\top$, then multiplication by $p(x)$ becomes
 \Gamma_1 &= p_1I + J^\top \Gamma_2 - \half \Gamma_3 \\
 p(J^\top) = \Gamma_0 &= p_0 + x \Gamma_1 - \half \Gamma_2
 \end{align*}
+$$
 
 Here is an example:
-
+```julia
 p = Fun(exp, Chebyshev()) # polynomial approximation to exp(x)
 M = Multiplication(p) : Chebyshev() # constructed using Clenshaw:
-
-ApproxFun.bandwidths(M) # still banded
 
 ε = 1E-6
 L = [B₋₁; 
      B₁ ; 
-     ε*D₁*D₀ + S₁*S₀*M]
+     ε*D₁*D₀ + R_U2*R_TU*M]
 
 @time u = L \ [1.0;0.0;0.0]
 
 @show ε*u''(0.1) + exp(0.1)*u(0.1)
 plot(u)
+```
 
-# M3M6: Methods of Mathematical Physics
-
-$$
-\def\dashint{{\int\!\!\!\!\!\!-\,}}
-\def\infdashint{\dashint_{\!\!\!-\infty}^{\,\infty}}
-\def\D{\,{\rm d}}
-\def\E{{\rm e}}
-\def\dx{\D x}
-\def\dt{\D t}
-\def\dz{\D z}
-\def\C{{\mathbb C}}
-\def\R{{\mathbb R}}
-\def\CC{{\cal C}}
-\def\HH{{\cal H}}
-\def\I{{\rm i}}
-\def\qqqquad{\qquad\qquad}
-\def\qqand{\qquad\hbox{for}\qquad}
-\def\qqfor{\qquad\hbox{for}\qquad}
-\def\qqwhere{\qquad\hbox{where}\qquad}
-\def\Res_#1{\underset{#1}{\rm Res}}\,
-\def\sech{{\rm sech}\,}
-\def\acos{\,{\rm acos}\,}
-\def\vc#1{{\mathbf #1}}
-\def\ip<#1,#2>{\left\langle#1,#2\right\rangle}
-\def\norm#1{\left\|#1\right\|}
-\def\half{{1 \over 2}}
-$$
-
-Dr. Sheehan Olver
-<br>
-s.olver@imperial.ac.uk
-
-<br>
-Website: https://github.com/dlfivefifty/M3M6LectureNotes
-
-
-# Lecture 17: Differential equations satisfied by orthogonal polynomials
+# Differential equations satisfied by orthogonal polynomials
 
 
 This lecture we do the following:
@@ -564,11 +530,11 @@ This lecture we do the following:
     - Weighted differentiation for ultraspherical polynomials
     - Differential equation for ultraspherical polynomials
 2. Application: Eigenstates of Schrödinger operators with quadratic potentials
-2. Rodriguez formulae
     
 
 
-The three classical weights are (Hermite) $w(x) = \E^{-x^2}$, (Laguerre) $w_\alpha(x) = x^\alpha \E^{-x}$ and (Jacobi) $w_{\alpha,\beta}(x) = (1-x)^\alpha (1+x)^\beta$.  Note all weights form a simple hierarchy: when differentiated, they give a linear polynomial times the previous weight in the hierarchy.  For Hermite,
+The three classical weights are (Hermite) $w(x) = \E^{-x^2}$, (Laguerre) $w_\alpha(x) = x^\alpha \E^{-x}$ and (Jacobi) $w_{\alpha,\beta}(x) = (1-x)^\alpha (1+x)^\beta$.  
+Note all weights form a simple hierarchy: when differentiated, they give a linear polynomial times the previous weight in the hierarchy.  For Hermite,
 $$
 {\D \over \dx} w(x) = -2x w(x)
 $$
@@ -600,10 +566,15 @@ $$
 
 **Proof** Simple integration by parts argument:
 $$
-\ip<L f,g>_w = \int_a^b {\D \over \dx}\left[ q(x) {\D u\over \dx}\right]  g(x)\dx =  -\int_a^b q(x) {\D u\over \dx}    {\D g\over \dx} \dx =  \int_a^b   u(x)  {\D \over \dx}  q(x) {\D g\over \dx} \dx =  \int_a^b   u(x)  {1 \over w(x)} {\D \over \dx}\left[q(x) {\D g\over \dx}\right] w(x) \dx = \ip<f, Lg>_w
+\begin{align*}
+\ip<L f,g>_w &= \int_a^b {\D \over \dx}\left[ q(x) {\D u\over \dx}\right]  g(x)\dx \ccr
+=  -\int_a^b q(x) {\D u\over \dx}    {\D g\over \dx} \dx =  \int_a^b   u(x)  {\D \over \dx}  q(x) {\D g\over \dx} \dx \ccr
+= 
+ \int_a^b   u(x)  {1 \over w(x)} {\D \over \dx}\left[q(x) {\D g\over \dx}\right] w(x) \dx = \ip<f, Lg>_w
+ \end{align*}
 $$
 
-⬛️
+■
 
 We claim that the classical orthogonal polynomials are eigenfunctions of a Sturm–Liouville problem, that is, in each case there exists a $q(x)$ so that 
 $$
@@ -615,18 +586,21 @@ where $\lambda_n$ is the (real) eigenvalue. We will derive this for the ultrasph
 ### Weighted differentiation for ultraspherical polynomials
 
 We have already seen that Chebyshev and ultraspherical polynomials have simple expressions for derivatives where we decrement the degree and increment the parameter:
+$$
 \begin{align*}
-{\D \over \dx } T_n(x) = n U_{n-1}(x) = n C_{n-1}^{(1)}(x) \\
+{\D \over \dx } T_n(x) = n U_{n-1}(x) = n C_{n-1}^{(1)}(x) \ccr
 {\D \over \dx } C_n^{(\lambda)}(x) = 2 \lambda C_{n-1}^{(\lambda+1)}(x)
 \end{align*}
+$$
 In this section, we see that differentiating the weighted polynomials actually decrements the parameter and increments the degree:
 
 **Proposition (weighted differentiation)**
+$$
 \begin{align*}
-{\D \over \dx }[\sqrt{1-x^2} U_n(x)] = - {n+1 \over \sqrt{1-x^2}} T_{n+1}(x) \\
+{\D \over \dx }[\sqrt{1-x^2} U_n(x)] = - {n+1 \over \sqrt{1-x^2}} T_{n+1}(x) \ccr
 {\D \over \dx }[(1-x^2)^{\lambda-\half} C_n^{(\lambda)}(x)] = -{(n+1) (n+2 \lambda-1) \over 2 (\lambda-1) }  (1-x^2)^{\lambda - {3 \over 2}} C_{n+1}^{(\lambda-1)}(x)
 \end{align*}
-
+$$
 **Proof** We show the first result by showing that the left-hand side is orthogonal to all  polynomials of degree less than $n+1$ by integration by parts:
 $$
 \ip< \sqrt{1-x^2} {\D \over \dx }[\sqrt{1-x^2} U_n(x)], p_m(x)>_{\rm T} = -\int_{-1}^1 \sqrt{1-x^2} U_n(x) p_m' \dx =0
@@ -641,7 +615,7 @@ $$
 $$
 
 The other ultraspherical polynomial follow similarly.
-⬛️
+■
 
 
 ### Eigenvalue equation for Ultraspherical polynomials
@@ -668,131 +642,3 @@ $$
 (1-x^2) {\D^2 C_n^{(\lambda)} \over \dx^2} - (2\lambda+1) x {\D C_n^{(\lambda)} \over \dx}  = -{n (n+2 \lambda) \over 2\lambda}C_n^{(\lambda)}(x)
 $$
 
-## Rodriguez formula
-
-Because of the special structure of our weights, we have special Rodriguez formulae of the form
-$$
- p_n(x) = {1 \over \kappa_n w(x)} {\D^n \over \dx^n} w(x) F(x)^n
-$$
-where $w(x)$ is the weight and $F(x) = (1-x^2)$ (Jacobi), $x$ (Laguerre) or $1$ (Hermite) and $\kappa_n$ is a normalization constant.
-
-**Proposition (Hermite Rodriguez)** 
-$$
-H_n(x)= (-1)^n \E^{x^2}  {\D^n \over \dx^n} \E^{-x^2}
-$$
-
-**Proof**
-We first show that it's a degree $n$ polynomial. This proceeds by induction:
-$$
- H_0(x) = \E^{x^2} {\D^0 \over \dx^0}\E^{-x^2} = 1
-$$
-$$
- H_{n+1}(x) = -\E^{x^2}{\D \over \dx}\left[\E^{-x^2} H_{n}(x)\right] =   2x H_{n}(x) + H_n'(x)
-$$
-and  then we have
-$$
- {\D^n \over \dx^n}[p_m(x) \E^{-x^2}]=  {\D^{n-1} \over \dx^{n-1}}  (p_m'(x)-2x p_m(x))  \E^{-x^2}
-$$
-Orthogonality follows from integration by parts:
-$$
-\ip<H_n, p_m>_{\rm H} = (-1)^n \int  {\D^n  \E^{-x^2} \over \dx^n} p_m \dx = \int  \E^{-x^2} {\D^n p_m \over \dx^n} \dx = 0 
-$$
-if $m < n$.
-
-Now we just need to show we have the right constant. But we have 
-$$
- {\D^n \over \dx^n}[\E^{-x^2}] =  {\D^{n-1} \over \dx^{n-1}}[-2x \E^{-x^2}] = {\D^{n-2} \over \dx^{n-2}}[(4x^2 + O(x)) \E^{-x^2}] = \cdots = (-1)^n 2^n x^n
- $$
- 
-⬛️
-
-Note this tells us the Hermite recurrence: Here we have the simple expressions
-$$
-H_n'(x) = 2n H_{n-1}(x) \qqand {\D \over \dx}[\E^{-x^2} H_n(x)] = -\E^{-x^2} H_{n+1}(x)
-$$
-These follow from the same arguments as before since $w'(x) = -2x w(x)$. But using the Rodriguez formula, we get
-
-$$
-2n H_{n-1}(x)  = H_{n}'(x) = (-1)^{n} 2 x  \E^{x^2}  {\D^{n} \over \dx^{n}} \E^{-x^2}  + (-1)^n \E^{x^2}  {\D^{n+1} \over \dx^{n+1}} \E^{-x^2} = 2x H_n(x) - H_{n+1}(x)
-$$
-which means
-$$
-x H_n(x) = nH_{n-1}(x) +{H_{n+1}(x) \over 2}
-$$
-
-
-## Application:  Eigenstates of Schrödinger operators with quadratic potentials
-
-Using the derivative formulae tells us a Sturm–Liouville operator for Hermite polynomials:
-$$
-\E^{x^2} {\D \over \dx} \E^{-x^2} {\D H_n \over \dx} = 2n \E^{x^2} {\D \over \dx} \E^{-x^2} H_{n-1}(x) = -2nH_n(x)
-$$
-or rewritten, this gives us
-$$
-{\D^2 H_n \over \dx^2} -2x {\D H_n \over \dx} = -2nH_n(x)
-$$
-
-
-W therefore have
-$$
-{\D^2 \over \dx^2}[\E^{-{x^2 \over 2}} H_n(x)] = \E^{-{x^2 \over 2}} (H_n''(x)  -2x H_n'(x) + (x^2-1) H_n(x)) = \E^{-{x^2 \over 2}} (x^2-1-2n) H_n(x)
-$$
-In other words, for the Hermite function $\psi_n(x)$ we have
-$$
-{\D^2 \psi_n \over \dx^2} -x^2 \psi_n = -(2n+1) \psi_n
-$$
-and therefore $\psi_n$ are the eigenfunctions.
-
-Wait, we want to normalize 😩.  In Schrödinger equations the square of the wave $\psi(x)^2$ represents a probability distribution, which should integrate to 1. Here's a trick: we know that 
-$$
-x \begin{pmatrix} H_0(x) \\ H_1(x) \\ H_2(x) \\ \vdots \end{pmatrix} = \underbrace{\begin{pmatrix} 0 & {1 \over 2} \\ 
-1 & 0 & \half \\
-& 2 & 0 & \half \\
-&& 3 & 0 & \ddots \\
-&&& \ddots & \ddots
-\end{pmatrix}}_J\begin{pmatrix} H_0(x) \\ H_1(x) \\ H_2(x) \\ \vdots \end{pmatrix}
-$$
-We want to conjugate by a diagonal matrix so that
-$$
-\begin{pmatrix}1 \\ & d_1 \\ &&d_2 \\&&&\ddots \end{pmatrix}  J \begin{pmatrix}1 \\ & d_1^{-1} \\ &&d_2^{-1} \\&&&\ddots \end{pmatrix} = \begin{pmatrix} 0 & {1 \over 2d_1} \\ 
-d_1 & 0 & {d_1 \over 2 d_2} \\
-& {2d_2 \over d_1} & 0 & {d_2 \over 2 d_3} \\
-&& {3d_3 \over d_2} & 0 & \ddots \\
-&&& \ddots & \ddots
-\end{pmatrix}
-$$
-becomes symmetric. This becomes a sequence of equations:
-\begin{align*}
-d_1 &= {1 \over 2 d_1} \Rightarrow d_1^2 = {1 \over 2} \\
-2d_2d_1^{-1} &= {d_1 \over 2 d_2} \Rightarrow d_2^2 = {d_1^2 \over 4} = {1 \over 8} = {1 \over 2^2 2!} \\
-3d_3d_2^{-1} &= {d_2 \over 2 d_3} \Rightarrow d_3^2 = {d_2^2 \over 3\times 2} = {1 \over 2^3 3!} \\
-&\vdots \\
-d_n^2 = {1 \over 2^n n!} 
-\end{align*}
-
-Thus by Lecture 16 the norm of $d_n H_n(x)$ is constant. If we also normalize using
-$$
-    \int_{-\infty}^\infty \E^{-x^2} \dx = \sqrt{\pi}
-$$
-we get the normalized eigenfunctions
-$$
-    \psi_n(x) = {H_n(x)\E^{-x^2/2}  \over \sqrt{\sqrt{\pi} 2^n n!} }
-$$
-
-p = plot()
-for n = 0:5
-    H = Fun(Hermite(), [zeros(n);1])
-    ψ = Fun(x -> H(x)exp(-x^2/2), -10.0 .. 10.0)/sqrt(sqrt(π)*2^n*factorial(1.0n))
-    plot!(ψ; label="n = $n")
-end
-p
-
-It's convention to shift them by the eigenvalue:
-
-p = plot(pad(Fun(x -> x^2, -10 .. 10), 100); ylims=(0,25))
-for n = 0:10
-    H = Fun(Hermite(), [zeros(n);1])
-    ψ = Fun(x -> H(x)exp(-x^2/2), -10.0 .. 10.0)/sqrt(sqrt(π)*2^n*factorial(1.0n))
-    plot!(ψ + 2n+1; label="n = $n")
-end
-p

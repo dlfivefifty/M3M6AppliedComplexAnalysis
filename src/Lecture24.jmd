@@ -52,3 +52,133 @@ for k=0:6
     plot!(xx, H_k.(xx); label="H_$k")
 end
 p
+
+
+## Rodriguez formula
+
+Because of the special structure of our weights, we have special Rodriguez formulae of the form
+$$
+ p_n(x) = {1 \over \kappa_n w(x)} {\D^n \over \dx^n} w(x) F(x)^n
+$$
+where $w(x)$ is the weight and $F(x) = (1-x^2)$ (Jacobi), $x$ (Laguerre) or $1$ (Hermite) and $\kappa_n$ is a normalization constant.
+
+**Proposition (Hermite Rodriguez)** 
+$$
+H_n(x)= (-1)^n \E^{x^2}  {\D^n \over \dx^n} \E^{-x^2}
+$$
+
+**Proof**
+We first show that it's a degree $n$ polynomial. This proceeds by induction:
+$$
+ H_0(x) = \E^{x^2} {\D^0 \over \dx^0}\E^{-x^2} = 1
+$$
+$$
+ H_{n+1}(x) = -\E^{x^2}{\D \over \dx}\left[\E^{-x^2} H_{n}(x)\right] =   2x H_{n}(x) + H_n'(x)
+$$
+and  then we have
+$$
+ {\D^n \over \dx^n}[p_m(x) \E^{-x^2}]=  {\D^{n-1} \over \dx^{n-1}}  (p_m'(x)-2x p_m(x))  \E^{-x^2}
+$$
+Orthogonality follows from integration by parts:
+$$
+\ip<H_n, p_m>_{\rm H} = (-1)^n \int  {\D^n  \E^{-x^2} \over \dx^n} p_m \dx = \int  \E^{-x^2} {\D^n p_m \over \dx^n} \dx = 0 
+$$
+if $m < n$.
+
+Now we just need to show we have the right constant. But we have 
+$$
+ {\D^n \over \dx^n}[\E^{-x^2}] =  {\D^{n-1} \over \dx^{n-1}}[-2x \E^{-x^2}] = {\D^{n-2} \over \dx^{n-2}}[(4x^2 + O(x)) \E^{-x^2}] = \cdots = (-1)^n 2^n x^n
+ $$
+ 
+⬛️
+
+Note this tells us the Hermite recurrence: Here we have the simple expressions
+$$
+H_n'(x) = 2n H_{n-1}(x) \qqand {\D \over \dx}[\E^{-x^2} H_n(x)] = -\E^{-x^2} H_{n+1}(x)
+$$
+These follow from the same arguments as before since $w'(x) = -2x w(x)$. But using the Rodriguez formula, we get
+
+$$
+2n H_{n-1}(x)  = H_{n}'(x) = (-1)^{n} 2 x  \E^{x^2}  {\D^{n} \over \dx^{n}} \E^{-x^2}  + (-1)^n \E^{x^2}  {\D^{n+1} \over \dx^{n+1}} \E^{-x^2} = 2x H_n(x) - H_{n+1}(x)
+$$
+which means
+$$
+x H_n(x) = nH_{n-1}(x) +{H_{n+1}(x) \over 2}
+$$
+
+
+## Application:  Eigenstates of Schrödinger operators with quadratic potentials
+
+Using the derivative formulae tells us a Sturm–Liouville operator for Hermite polynomials:
+$$
+\E^{x^2} {\D \over \dx} \E^{-x^2} {\D H_n \over \dx} = 2n \E^{x^2} {\D \over \dx} \E^{-x^2} H_{n-1}(x) = -2nH_n(x)
+$$
+or rewritten, this gives us
+$$
+{\D^2 H_n \over \dx^2} -2x {\D H_n \over \dx} = -2nH_n(x)
+$$
+
+
+W therefore have
+$$
+{\D^2 \over \dx^2}[\E^{-{x^2 \over 2}} H_n(x)] = \E^{-{x^2 \over 2}} (H_n''(x)  -2x H_n'(x) + (x^2-1) H_n(x)) = \E^{-{x^2 \over 2}} (x^2-1-2n) H_n(x)
+$$
+In other words, for the Hermite function $\psi_n(x)$ we have
+$$
+{\D^2 \psi_n \over \dx^2} -x^2 \psi_n = -(2n+1) \psi_n
+$$
+and therefore $\psi_n$ are the eigenfunctions.
+
+Wait, we want to normalize 😩.  In Schrödinger equations the square of the wave $\psi(x)^2$ represents a probability distribution, which should integrate to 1. Here's a trick: we know that 
+$$
+x \begin{pmatrix} H_0(x) \\ H_1(x) \\ H_2(x) \\ \vdots \end{pmatrix} = \underbrace{\begin{pmatrix} 0 & {1 \over 2} \\ 
+1 & 0 & \half \\
+& 2 & 0 & \half \\
+&& 3 & 0 & \ddots \\
+&&& \ddots & \ddots
+\end{pmatrix}}_J\begin{pmatrix} H_0(x) \\ H_1(x) \\ H_2(x) \\ \vdots \end{pmatrix}
+$$
+We want to conjugate by a diagonal matrix so that
+$$
+\begin{pmatrix}1 \\ & d_1 \\ &&d_2 \\&&&\ddots \end{pmatrix}  J \begin{pmatrix}1 \\ & d_1^{-1} \\ &&d_2^{-1} \\&&&\ddots \end{pmatrix} = \begin{pmatrix} 0 & {1 \over 2d_1} \\ 
+d_1 & 0 & {d_1 \over 2 d_2} \\
+& {2d_2 \over d_1} & 0 & {d_2 \over 2 d_3} \\
+&& {3d_3 \over d_2} & 0 & \ddots \\
+&&& \ddots & \ddots
+\end{pmatrix}
+$$
+becomes symmetric. This becomes a sequence of equations:
+\begin{align*}
+d_1 &= {1 \over 2 d_1} \Rightarrow d_1^2 = {1 \over 2} \\
+2d_2d_1^{-1} &= {d_1 \over 2 d_2} \Rightarrow d_2^2 = {d_1^2 \over 4} = {1 \over 8} = {1 \over 2^2 2!} \\
+3d_3d_2^{-1} &= {d_2 \over 2 d_3} \Rightarrow d_3^2 = {d_2^2 \over 3\times 2} = {1 \over 2^3 3!} \\
+&\vdots \\
+d_n^2 = {1 \over 2^n n!} 
+\end{align*}
+
+Thus by Lecture 16 the norm of $d_n H_n(x)$ is constant. If we also normalize using
+$$
+    \int_{-\infty}^\infty \E^{-x^2} \dx = \sqrt{\pi}
+$$
+we get the normalized eigenfunctions
+$$
+    \psi_n(x) = {H_n(x)\E^{-x^2/2}  \over \sqrt{\sqrt{\pi} 2^n n!} }
+$$
+
+p = plot()
+for n = 0:5
+    H = Fun(Hermite(), [zeros(n);1])
+    ψ = Fun(x -> H(x)exp(-x^2/2), -10.0 .. 10.0)/sqrt(sqrt(π)*2^n*factorial(1.0n))
+    plot!(ψ; label="n = $n")
+end
+p
+
+It's convention to shift them by the eigenvalue:
+
+p = plot(pad(Fun(x -> x^2, -10 .. 10), 100); ylims=(0,25))
+for n = 0:10
+    H = Fun(Hermite(), [zeros(n);1])
+    ψ = Fun(x -> H(x)exp(-x^2/2), -10.0 .. 10.0)/sqrt(sqrt(π)*2^n*factorial(1.0n))
+    plot!(ψ + 2n+1; label="n = $n")
+end
+p
