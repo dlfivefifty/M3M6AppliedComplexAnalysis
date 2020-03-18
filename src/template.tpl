@@ -55,6 +55,7 @@
 \def\sech{ {\rm sech}\, }
 \def\acos{ {\rm acos}\, }
 \def\atan{ {\rm atan}\, }
+\def\Ei{ {\rm Ei}\, }
 \def\upepsilon{\varepsilon}
 
 

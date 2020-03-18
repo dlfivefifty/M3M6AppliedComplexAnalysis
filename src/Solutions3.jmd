@@ -1,0 +1,336 @@
+__M3M6: Applied Complex Analysis__
+
+Dr. Sheehan Olver
+s.olver@imperial.ac.uk
+
+# Solution Sheet 3
+
+
+## Problem 1.1 
+
+We actually start by showing the second properties of Problem 1.2, for all $\alpha$:
+$$
+\begin{align*}
+{\D \over \dx} \br[x^\alpha \E^{-x} L_n^{(\alpha)}(x)] &= {1 \over n!}  {\D^{n+1} \over \dx^{n+1}}\br[x^{\alpha+n}\E^{-x}] \ccr
+= (n+1)x^{\alpha-1}\E^{-x}  {x^{1-\alpha} \E^{x} \over (n+1)!}{ \D^{n+1} \over \dx^{n+1}}\br[x^{\alpha+n}\E^{-x}] \ccr
+= (n+1) x^{\alpha-1}\E^{-x} L_{n+1}^{(\alpha-1)}(x).
+\end{align*}
+$$
+Expanding out the derivative we see
+$$
+x^{\alpha-1} \E^{-x}\pr({(\alpha -x)L_n^{(\alpha)}(x) + (L_n^{(\alpha)})'(x)}) = (n+1) x^{\alpha-1}\E^{-x} L_{n+1}^{(\alpha-1)}(x)
+$$
+or in other words
+$$
+(\alpha -x)L_n^{(\alpha)}(x) + (L_n^{(\alpha)})'(x) = (n+1) L_{n+1}^{(\alpha-1)}(x)
+$$
+By induction with the fact $L_0^{(\alpha)}(x) = 0$, we therefore get 
+$$
+L_n^{(\alpha)}(x) = {(\alpha+1 -x)L_{n-1}^{(\alpha+1)}(x) + (L_n^{(\alpha+1)})'(x) \over n}
+$$
+is a degree $n$ polynomial. We further have that the leading coefficient is
+$$
+\begin{align*}
+L_n^{(\alpha)}(x) &= -{x \over n} L_{n-1}^{(\alpha+1)}(x) +O(x^{n-1}) =   {x^2 \over n(n-1)} L_{n-2}^{(\alpha+2)}(x) +O(x^{n-1}) = \cdots \ccr
+= {(-1)^n x^n \over n!} L_0^{(\alpha+n)}(x) +O(x^{n-1}) \\
+&= {(-1)^n x^n \over n!} +O(x^{n-1})
+\end{align*}
+$$
+
+We now show orthogonality with lower degree polynomials using integration by parts:
+$$
+\int_0^\infty L_n^{(\alpha)}(x) p_m(x) x^\alpha \E^{-x} \dx = 
+\int_0^\infty  {1 \over n!} {\D^n \over \dx^n}\br[x^{\alpha+n}\E^{-x}]  p_m(x)  \dx = (-1)^n \int_0^\infty  {1 \over n!} \br[x^{\alpha+n}\E^{-x}]  p_m^{(n)}(x)  \dx = 0
+$$
+since $p_m^{(n)}(x) = 0$.
+Note we use the fact that
+$$
+{\D^k \over \dx^k}\br[x^{\alpha+n}\E^{-x}]  = O(x^{\alpha+n-k})
+$$
+hence vanishes at zero to ignore the boundary terms in integration by parts.
+
+
+
+## Problem 1.2 
+
+We showed the second property as part of 1.1. For the first part, it is clear that we have the correct constant. Now we show orthogonality with all degree $m < n-1$ polynomials (using the fact that $x^{\alpha+1} \E^{-x}$ is zero at $x = 0$):
+$$
+\int_0^\infty {\D L_n^{(\alpha)}(x) \over \dx} p_m(x) x^{\alpha+1} \E^{-x} \dx = -\int_0^\infty L_n^{(\alpha)}(x) (x p_m'(x) + (\alpha+1) p_m - x p_m) x^{\alpha} \E^{-x} \dx = 0
+$$
+since $(x p_m'(x) + (\alpha+1) p_m - x p_m) $ is degree $m+1 < n$.
+
+For the third part, use the product rule on the last derivative:
+$$
+\begin{align*}
+(n+1) L_{n+1}^{(\alpha)}(x) &= {x^{-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}} {\D \over \dx} \br[x^{\alpha+n+1} \E^{-x}] \\
+  &= {x^{-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}}  \br[(\alpha+n+1)x^{\alpha+n} \E^{-x}-x^{\alpha+n+1} \E^{-x}]  \\
+    &= (\alpha+n+1)L_n^{(\alpha)}(x) -   xL_n^{(\alpha+1)}(x)
+\end{align*}
+$$
+For the last result, we apply the product rule $n$ times:
+$$
+\begin{align*}
+L_{n}^{(\alpha+1)}(x) &= {x^{-1-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}} {\D \over \dx} \br[x x^{\alpha+n} \E^{-x}] \\
+&= {x^{-1-\alpha}\E^x \over n!} {\D^{n-1} \over \dx^{n-1}} \br[ x^{\alpha+n} \E^{-x}]  + {x^{-1-\alpha}\E^x \over n!} {\D^{n-1} \over \dx^{n-1}} x {\D \over \dx} \br[ x^{\alpha+n} \E^{-x}]  \\
+&= {2 \over n}L_{n-1}^{(\alpha+1)}(x)   + {x^{-1-\alpha}\E^x \over n!} {\D^{n-2} \over \dx^{n-2}} x {\D^2 \over \dx^2} \br[ x^{\alpha+n} \E^{-x}]  \\
+&= {3 \over n}L_{n-1}^{(\alpha+1)}(x)   + {x^{-1-\alpha}\E^x \over n!} {\D^{n-3} \over \dx^{n-3}} x {\D^3 \over \dx^3} \br[ x^{\alpha+n} \E^{-x}]  \\
+&\vdots\\
+&={n \over n}L_{n-1}^{(\alpha+1)}(x)   + {x^{-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}}  \br[ x^{\alpha+n} \E^{-x}] \\
+&=L_{n-1}^{(\alpha+1)}(x) + L_n^{(\alpha)}(x)
+\end{align*}
+$$
+
+
+
+## Problem 1.3 
+
+Note that relationship 3 above did not depend on $\alpha >-1$.  We therefore have from 1.2, comibing property (3) and (4),
+$$
+\begin{align*}
+x L_n^{(\alpha)}(x) &= -(n+1)L_{n+1}^{(\alpha-1)}(x) +(n+\alpha)L_n^{(\alpha-1)}(x) \\
+  &= -(n+1)L_{n+1}^{(\alpha)}(x) + (n+1)L_{n}^{(\alpha)}(x) +(n+\alpha)L_{n}^{(\alpha)}(x) - (n+\alpha)L_{n-1}^{(\alpha)}(x) \\
+  &= - (n+\alpha)L_{n-1}^{(\alpha)}(x) + (2n+\alpha+1) L_n^{(\alpha)}(x) -(n+1)L_{n+1}^{(\alpha)}(x)
+\end{align*}
+$$
+
+The Jacobi operator therefore has the form
+$$
+x \begin{pmatrix} L_0^{(\alpha)}(x) \\
+            L_1^{(\alpha)}(x) \\
+                \vdots
+                \end{pmatrix} = \begin{pmatrix} \alpha+1 &-1 \\
+                                                -1-\alpha & \alpha+3 & -2 \\
+                                                   & -2-\alpha & \alpha+5 &-3 \\                  &       & -3-\alpha & \alpha+7 &-4 \\
+                                                      &&   & -4-\alpha & \alpha+9 &\ddots \\
+                                                      &&&&\ddots & \ddots
+                                                    \end{pmatrix} \begin{pmatrix} L_0^{(\alpha)}(x) \\
+            L_1^{(\alpha)}(x) \\
+                \vdots
+                \end{pmatrix}
+$$
+
+
+## Problem 2.1
+
+Note that
+$$
+{\D \over \dx} \E^{-x/2} u(x) =  \E^{-x/2} (-{u(x) \over 2} +u'(x)) 
+$$
+Thus 
+$$
+{\D \over \dx} \E^{-x/2} u(x)  = \E^{-x/2} (u'(x) -{u(x) \over 2} - x u(x))
+$$
+
+
+We have the derivative operator from $L_k(x)$ to $L_k^{(1)}(x)$ as:
+$$
+D = \begin{pmatrix}
+0 & -1 \\
+  &&-1 \\
+  &&&\ddots
+\end{pmatrix}
+$$
+and the Multiplication operator for $\alpha = 0$ (from Problem 1.3)
+$$
+J^\top = \begin{pmatrix} 1 &-1\\
+                        -1 & 3 &-2\\
+                            &\ddots & \ddots & \ddots
+                            \end{pmatrix}
+$$
+and the conversion operator (from Problem 1.2 property 4)
+$$
+S = \begin{pmatrix}
+        1 & -1 \\ & 1 & -1 \\&&\ddots & \ddots
+\end{pmatrix}        
+$$
+We thus have multiplication by $x$ from basis to the other as
+$$
+S J^\top = \begin{pmatrix}
+2 & -4 & 2 \\
+-1 & 5 & -7 & 3 \\
+& -2 & 8 & -10 & 4\\
+&&\ddots&\ddots&\ddots&\ddots
+\end{pmatrix}
+$$
+Putting everything together, we get the operator
+```julia
+using ApproxFun, SingularIntegralEquations, Plots, LinearAlgebra, SpecialFunctions
+import ApproxFunOrthogonalPolynomials: Recurrence
+
+D = Derivative() :  Laguerre(0) → Laguerre(1)
+S = I : Laguerre(0) → Laguerre(1)
+
+Jt = Recurrence(Laguerre(0))
+
+D - S/2 -S*Jt
+```
+
+## Problem 2.2
+
+We have
+$$
+\begin{align*}
+{\E^x \over x^\alpha} {\D \over \dx} \br[x^{\alpha+1} \E^{-x} {\D L_n^{(\alpha)} \over \dx}] &= -{\E^x \over x^\alpha} {\D \over \dx} \br[x^{\alpha+1} \E^{-x} { L_{n-1}^{(\alpha+1)} \over \dx}] \\
+&= -n L_{n}^{(\alpha)}(x) 
+\end{align*}
+$$
+Therefore $\lambda_n = -n$. This can be expanded in the form:
+$$
+x {\D^2 L_n^{(\alpha)} \over \dx^2} + (\alpha+1 - x) {\D L_n^{(\alpha)} \over \dx} = -n L_n^{(\alpha)}(x)
+$$
+
+## Problem 3.1
+
+Define $C_k^{(\alpha)}(z) = \CC[L_k^{(\alpha)} \diamond^\alpha \E^{-\diamond}](z)$ and recall that 
+$$
+\begin{align*}
+C_1(z)  &= {{1 \over 2 \pi \I} \int_0^\infty \E^{-x} \dx + (z-a_0) C_0(z) \over b_0} = -{1 \over 2 \pi \I}  - (z-1) C_0(z)    \\
+&= {(z-1) \E^{-z} \Ei z -1 \over 2 \pi \I} 
+\end{align*}
+$$
+
+Here we double check the formula, noting that
+$L_1(x) = \E^x {\D \over \dx} x \E^{-x} = 1 - x$:
+```julia
+const ei₋₁ = let ζ = Fun(-100 .. -1)
+    sum(exp(ζ)/ζ)
+end
+function ei(z) 
+    ζ = Fun(Segment(-1 , z))
+    ei₋₁ + sum(exp(ζ)/ζ)
+end
+
+x = Fun(0..10)
+w = exp(-x)
+z = 1+im
+cauchy((1-x)*w, z),((z-1)*exp(-z)*ei(z)-1)/(2π*im)
+```
+
+We now use these to determine the results with $\alpha = 1$. Note that:
+$$
+C_0^{(1)}(z) = \CC[\diamond \E^{-\diamond}](z) =C_0(z) - C_1(z) = { \E^{-z} \Ei z - (z-1) \E^{-z} \Ei z +1 \over 2 \pi \I} 
+$$
+```julia
+cauchy(x*w, z),(-exp(-z)*ei(z)-(z-1)*exp(-z)*ei(z)+1)/(2π*im)
+```
+
+Therefore, we have
+$$
+\begin{align*}
+C_1^{(1)}(z) &= {{1 \over 2 \pi \I} \int_0^\infty x \E^{-x} \dx + (z-a_0^{(1)}) C_0^{(1)}(z) \over b_0^{(1)}} \\
+&=  {{1 \over 2 \pi \I}  + (z-2) C_0^{(1)}(z) \over -1}\\
+&=  {1  + (z-2) (\E^{-z} \Ei z - (z-1) \E^{-z} \Ei z +1) \over -2 \pi \I}
+\end{align*}
+$$
+
+Let's check the result using
+$$
+L_1^{(1)}(x) = x^{-1} \E^x {\D \over \dx} x^2 \E^{-x} = 2 - x
+$$
+```julia
+cauchy((2-x)*x*w, z),(1+(z-2)*(-exp(-z)*ei(z)-(z-1)*exp(-z)*ei(z)+1))/(-2π*im)
+```
+
+## Problem 3.2
+
+We have 
+$$
+\int_x^\infty L_2(x) \E^{-x} \dx = {1 \over 2} x \E^{-x} L_1^{(1)}(x) \E^{-x}
+$$
+Thus from lectures we have
+$$
+{1 \over 2 \pi\I} \int_0^\infty L_2(x) \E^{-x} \log(z-x) \dx = {1 \over 2}\CC[ \diamond \E^{-\diamond} L_1^{(1)}](z)
+$$
+and therefore
+$$
+{1 \over \pi} \int_0^\infty L_2(x) \E^{-x} \log|z-x| \dx  = -\Im \CC[ \diamond \E^{-\diamond} L_1^{(1)}](z) = \Re{1  + (z-2) (\E^{-z} \Ei z - (z-1) \E^{-z} \Ei z +1) \over -2 \pi }
+$$
+Let's check the result:
+```julia
+x = Fun(0 .. 100)
+w = exp(-x)
+z = 2+im
+
+-sum(1/2*(2 - 4x + x^2)*w*log(abs(z-x)))/π,imag(sum(1/2*(2 - 4x + x^2)*w*log(z-x))/(π*im))
+```
+```julia
+-imag(cauchy((2-x)*x*w,z)),real((1+(z-2)*(-exp(-z)*ei(z)-(z-1)*exp(-z)*ei(z)+1))/(-2π))
+```
+
+### Problem 4.1
+
+Consider integration contours $\gamma_{+x}$ and $\gamma_{-x}$ that avoid $0$ above and below:
+```julia
+x = -2.0
+r = 0.1
+γ₊ₓ = Segment(-2.0 , -r) ∪ Arc(0.,r, (π,0)) ∪ Segment(r , 100)
+γ₋ₓ = Segment(-2.0 , -r) ∪ Arc(0.,r, (-π,0)) ∪ Segment(r , 100)
+scatter([x],[0.0];label="x = $x")
+plot!(γ₊ₓ ; xlims=(-5,5), ylims=(-1,1), label="gamma_+")
+plot!(γ₋ₓ; xlims=(-5,5), ylims=(-1,1), label="gamma_-")
+```
+So that
+$$
+\Gamma_\pm(\alpha, x) = \int_{\gamma_{\pm x}} \zeta^{\alpha-1} \E^{-\zeta} \D \zeta
+$$
+Note that
+$$
+\int_x^{-r} (\zeta_+^{\alpha - 1} - \zeta_-^{\alpha -1}) \E^{-\zeta} \D\zeta = 0
+$$
+since $\zeta_+^{\alpha-1} = \E^{\pi \I (\alpha-1)}|\zeta|^{\alpha-1} = \E^{2 \I \pi \alpha} \zeta_-^{\alpha-1}$.
+Furthermore, the integrals over the arcs tend to zero as $r \rightarrow 0$:
+$$
+|\I r^\alpha \int_0^\pi \E^{- r \E^{\I \theta}} \E^{\I \theta \alpha} \D \theta  | \leq r^\alpha \pi \E^r  \rightarrow 0
+$$
+and similarly on the lower arc. Thus we have
+$$
+\begin{align*}
+\Gamma_+(\alpha, x)-\E^{2 \I \pi \alpha} \Gamma_-(\alpha, x) &= \lim_{r \rightarrow 0 } \left(\int_{\gamma_{+x}} - \E^{2 \I \pi \alpha} \int_{\gamma_{-x}}\right) \zeta^{\alpha-1} \E^{-\zeta} \D \zeta \ccr
+ = (1 - \E^{2 \I \pi \alpha})\int_0^\infty x^{\alpha-1} \E^{-x} \dx = (1 - \E^{2 \I \pi \alpha})\Gamma(\alpha)
+\end{align*}
+$$
+
+## Problem 4.2
+
+Note that, for $0 < \alpha < 1$,
+$$
+    \psi(z) = z^{-\alpha} \E^z \Gamma(\alpha, z)
+$$
+has the following properties:
+1. $\psi(z)$ decays as $z \rightarrow \infty$, via integration by parts:
+$$
+    z^{-\alpha} \E^z \int_z^\infty \zeta^{\alpha-1} \E^{-\zeta} \D \zeta =
+    z^{-1} \E^z + z^{-\alpha} \int_z^\infty \zeta^{\alpha-2} \E^{z-\zeta} \D \zeta
+$$
+and we have assuming $z$ is bounded away from the negative real axis:
+$$
+\int_z^\infty \zeta^{\alpha-2} \E^{z-\zeta} \D \zeta| \leq \int_z^\infty |\zeta|^{\alpha-2} \D \zeta = \int_0^\infty |x+z|^{\alpha-2} \D x  < \infty
+$$
+(otherwise one would use a deformed contour). 
+2. We have the subtractive jump:
+$$
+\begin{align*}
+\psi_+(x) - \psi_-(x) &= \E^x(x_+^{-\alpha} \Gamma_+(\alpha, x) -  \Gamma_-(\alpha, x)) \ccr
+= \E^x |x|^\alpha (\E^{-\I \pi \alpha} \Gamma_+(\alpha, z) - \E^{\I \pi \alpha} \Gamma_-(\alpha,x)) \ccr
+ = \E^x |x|^\alpha \E^{-\I \pi \alpha} (1-\E^{2 \I \pi \alpha})
+\end{align*}
+$$
+
+We use these properties to verify that
+$$
+\CC[\diamond^\alpha \E^{-\diamond}](z) = {1 \over \Gamma(-\alpha)} {(-z)^\alpha \E^{-z} \Gamma(-\alpha, - z) \over
+  \E^{-\I\pi\alpha} - \E^{\I\pi\alpha}}
+$$
+via Plemelj.
+```julia
+x = Fun(0 .. 20.0)
+α = -0.1
+z = 2.0+im
+cauchy(x^α*exp(-x), z)
+
+Γ = (α,z) -> let ζ = z + Fun(0 .. 500.0)
+    linesum(ζ^(α-1)*exp(-ζ))
+end
+
+-(-z)^α*exp(-z)Γ(-α,-z)/(gamma(-α)*(exp(im*π*α)-exp(-im*π*α)))
+```
