@@ -1,64 +1,24 @@
+__M3M6: Applied Complex Analysis__
+
+Dr. Sheehan Olver
+
+s.olver@imperial.ac.uk
+
+
 
 # Lecture 24: Hermite polynomials
 
-## Approximation with Hermite polynomials
+This lecture we overview features of Hermite polynomials, some of which also 
+apply to Jacobi polynomials.  This includes
 
-
-This is often the case with Hermite polynomials: on the real line polynomial approximation is unnatural unless
- the function approximated is a polynomial as otherwise the behaviour at ∞ is inconsistent, so what we really want is weighted approximation. 
- Thus we can either use
-$$
-f(x) = \E^{-x^2}\sum_{k=0}^\infty f_k H_k(x)
-$$
-or
-$$
-f(x) = \E^{-x^2/2}\sum_{k=0}^\infty f_k H_k(x)
-$$
-Depending on your problem, getting this wrong can be disasterous:
-
-f = Fun(x -> 1+x +x^2, Hermite())
-f(0.10)
-
-# nonsense trying to approximating sech(x) by a degree 50 polynomial:
-f = Fun(x -> sech(x), Hermite(), 51)
-xx = -8:0.01:8
-plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
-plot!(xx, f.(xx); label="f")
-
-# weighted by works sqrt(w(x)) = exp(-x^2/2)
-f = Fun(x -> sech(x), GaussWeight(Hermite(),1/2),101)
-
-plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
-plot!(xx, f.(xx); label="f")
-
-# weighted by w(x) = exp(-x^2) breaks again
-f = Fun(x -> sech(x), GaussWeight(Hermite()),101)
-
-plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
-plot(xx, f.(xx); label="f")
-
-Note that correctly weighted Hermite, that is, with $\sqrt{w(x)} = \E^{-x^2/2}$ look "nice":
-
-p = plot()
-for k=0:6
-    H_k = Fun(GaussWeight(Hermite(),1/2),[zeros(k);1])
-    plot!(xx, H_k.(xx); label="H_$k")
-end
-p
-
-Compare this to weighting by $w(x) = \E^{-x^2}$:
-
-p = plot()
-for k=0:6
-    H_k = Fun(GaussWeight(Hermite()),[zeros(k);1])
-    plot!(xx, H_k.(xx); label="H_$k")
-end
-p
+1. Rodriguez formula
+2. Approximation with Hermite polynomials
+3. Eigenstates of Schrödinger equations with quadratic well
 
 
 ## Rodriguez formula
 
-Because of the special structure of our weights, we have special Rodriguez formulae of the form
+Because of the special structure of classical orthogonal weights, we have special Rodriguez formulae of the form
 $$
  p_n(x) = {1 \over \kappa_n w(x)} {\D^n \over \dx^n} w(x) F(x)^n
 $$
@@ -90,9 +50,9 @@ if $m < n$.
 Now we just need to show we have the right constant. But we have 
 $$
  {\D^n \over \dx^n}[\E^{-x^2}] =  {\D^{n-1} \over \dx^{n-1}}[-2x \E^{-x^2}] = {\D^{n-2} \over \dx^{n-2}}[(4x^2 + O(x)) \E^{-x^2}] = \cdots = (-1)^n 2^n x^n
- $$
+$$
  
-⬛️
+■
 
 Note this tells us the Hermite recurrence: Here we have the simple expressions
 $$
@@ -109,6 +69,74 @@ x H_n(x) = nH_{n-1}(x) +{H_{n+1}(x) \over 2}
 $$
 
 
+
+## Approximation with Hermite polynomials
+
+
+Hermite polynomials are typically used with the weight for approximation of functions: on the real line polynomial approximation is unnatural unless
+ the function approximated is a polynomial as otherwise the behaviour at ∞ is inconsistent (polynomials blow up).
+ Thus we can either use
+$$
+f(x) = \E^{-x^2}\sum_{k=0}^\infty f_k H_k(x)
+$$
+or
+$$
+f(x) = \E^{-x^2/2}\sum_{k=0}^\infty f_k H_k(x)
+$$
+
+** Demonstration **
+
+Depending on your problem, getting this wrong can be disasterous. For example, while we can certainly
+approximate polynomials with Hermite expansions:
+```julia
+using ApproxFun, Plots
+f = Fun(x -> 1+x +x^2, Hermite())
+f(0.10)
+```
+We get nonsense when trying to approximating $\sech(x)$ by a degree 50 polynomial:
+```julia
+f = Fun(x -> sech(x), Hermite(), 51)
+xx = -8:0.01:8
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot!(xx, f.(xx); label="f")
+```
+
+Incorporating the weight $\sqrt{w(x)} = \E^{-x^2/2}$ works:
+```julia
+f = Fun(x -> sech(x), GaussWeight(Hermite(),1/2),101)
+
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot!(xx, f.(xx); label="f")
+```
+Weighted by w(x) = exp(-x^2) breaks again:
+```julia
+f = Fun(x -> sech(x), GaussWeight(Hermite()),101)
+
+plot(xx, sech.(xx); ylims=(-10,10), label="sech x")
+plot(xx, f.(xx); label="f")
+```
+Note that correctly weighted Hermite, that is, with $\sqrt{w(x)} = \E^{-x^2/2}$ look "nice":
+```julia
+p = plot()
+for k=0:6
+    H_k = Fun(GaussWeight(Hermite(),1/2),[zeros(k);1])
+    plot!(xx, H_k.(xx); label="H_$k")
+end
+p
+```
+
+Compare this to weighting by $w(x) = \E^{-x^2}$:
+```julia
+p = plot()
+for k=0:6
+    H_k = Fun(GaussWeight(Hermite()),[zeros(k);1])
+    plot!(xx, H_k.(xx); label="H_$k")
+end
+p
+```
+
+
+
 ## Application:  Eigenstates of Schrödinger operators with quadratic potentials
 
 Using the derivative formulae tells us a Sturm–Liouville operator for Hermite polynomials:
@@ -121,7 +149,7 @@ $$
 $$
 
 
-W therefore have
+We therefore have
 $$
 {\D^2 \over \dx^2}[\E^{-{x^2 \over 2}} H_n(x)] = \E^{-{x^2 \over 2}} (H_n''(x)  -2x H_n'(x) + (x^2-1) H_n(x)) = \E^{-{x^2 \over 2}} (x^2-1-2n) H_n(x)
 $$
@@ -131,7 +159,7 @@ $$
 $$
 and therefore $\psi_n$ are the eigenfunctions.
 
-Wait, we want to normalize 😩.  In Schrödinger equations the square of the wave $\psi(x)^2$ represents a probability distribution, which should integrate to 1. Here's a trick: we know that 
+We want to normalize.  In Schrödinger equations the square of the wave $\psi(x)^2$ represents a probability distribution, which should integrate to 1. Here's a trick: we know that 
 $$
 x \begin{pmatrix} H_0(x) \\ H_1(x) \\ H_2(x) \\ \vdots \end{pmatrix} = \underbrace{\begin{pmatrix} 0 & {1 \over 2} \\ 
 1 & 0 & \half \\
@@ -158,7 +186,7 @@ d_1 &= {1 \over 2 d_1} \Rightarrow d_1^2 = {1 \over 2} \\
 d_n^2 = {1 \over 2^n n!} 
 \end{align*}
 
-Thus by Lecture 16 the norm of $d_n H_n(x)$ is constant. If we also normalize using
+Thus the norm of $d_n H_n(x)$ is constant. If we also normalize using
 $$
     \int_{-\infty}^\infty \E^{-x^2} \dx = \sqrt{\pi}
 $$
@@ -166,7 +194,7 @@ we get the normalized eigenfunctions
 $$
     \psi_n(x) = {H_n(x)\E^{-x^2/2}  \over \sqrt{\sqrt{\pi} 2^n n!} }
 $$
-
+```julia
 p = plot()
 for n = 0:5
     H = Fun(Hermite(), [zeros(n);1])
@@ -174,9 +202,9 @@ for n = 0:5
     plot!(ψ; label="n = $n")
 end
 p
-
+```
 It's convention to shift them by the eigenvalue:
-
+```julia
 p = plot(pad(Fun(x -> x^2, -10 .. 10), 100); ylims=(0,25))
 for n = 0:10
     H = Fun(Hermite(), [zeros(n);1])
@@ -184,3 +212,4 @@ for n = 0:10
     plot!(ψ + 2n+1; label="n = $n")
 end
 p
+```
