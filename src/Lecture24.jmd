@@ -32,10 +32,10 @@ $$
 **Proof**
 We first show that it's a degree $n$ polynomial. This proceeds by induction:
 $$
- H_0(x) = \E^{x^2} {\D^0 \over \dx^0}\E^{-x^2} = 1
-$$
-$$
- H_{n+1}(x) = -\E^{x^2}{\D \over \dx}\left[\E^{-x^2} H_{n}(x)\right] =   2x H_{n}(x) + H_n'(x)
+\begin{align*}
+ H_0(x) &= \E^{x^2} {\D^0 \over \dx^0}\E^{-x^2} = 1 \\
+ H_{n+1}(x) &= -\E^{x^2}{\D \over \dx}\left[\E^{-x^2} H_{n}(x)\right] =   2x H_{n}(x) + H_n'(x)
+\end{align*}
 $$
 and  then we have
 $$

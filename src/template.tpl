@@ -141,6 +141,8 @@
 \def\addtab#1={#1\;&=}
 \def\ccr{\\\addtab}
 
+\def\questionequals{= \!\!\!\!\!\!{\scriptstyle ? \atop }\,\,\,}
+
 \begin{document}
 
 {{{ :body }}}
