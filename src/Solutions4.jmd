@@ -1,0 +1,497 @@
+## Problem 3
+
+### Problem 3.1 
+
+To be analytic at all we need decay at either $\pm \infty$, this has neither so is not defined.
+
+### Problem 3.2
+
+It has exponential decay in the right-half plane, therefore
+$$
+\E^{\gamma x} f(x) = {\E^{\gamma x } \over 1 + \E^x}
+$$
+has exponential decay at both $\pm \infty$, provided $0 < \gamma < 1$. Therefore, we can take the strip $0 < \Im s < 1$.  (Note in each case the contour for the inverse Fourier transform can be any contour in the domain of analyticity.)
+
+We can verify this by exact computation using Residue calculus: for $0 < \Im s < 1$, we can integrate over a rectangle to get:
+$$
+\left(\int_{-R}^R + \int_R^{2\I \pi + R} +  \int_{2 \I \pi + R}^{2\I \pi - R} + \int_{2 \I \pi - R}^{-R} \right) {\E^{-\I s x} \over 1 + \E^x} \dx = 2 \pi \I \Res_{z = \I \pi } {\E^{-\I s z} \over 1 + \E^z} = 
+- 2 \pi \I \E^{\pi s}
+$$
+Note that 
+$$
+{\E^{-\I s (R + \I t)} \over 1 + \E^{R + \I t}} = 
+{\E^{-\I R \Re s + R \Im s  + t} \over 1 + \E^{R + \I t}} \rightarrow 0
+$$
+and
+$$
+{\E^{-\I s (-R + \I t)} \over 1 + \E^{R + \I t}} = 
+{\E^{\I R \Re s - R \Im s + t} \over 1 + \E^{R + \I t}} \rightarrow 0
+$$
+uniformly in $t$ as $R \rightarrow \infty$, hence we deduce that
+$$
+\left(\int_{-\infty}^\infty  +  \int_{2 \I \pi + \infty}^{2\I \pi - \infty}\right) {\E^{-\I s x} \over 1 + \E^x} \dx  = 
+- 2 \pi \I \E^{\pi s}
+$$
+Now note that
+$$
+\int_{2 \I \pi + \infty}^{2\I \pi - \infty} {\E^{-\I s t} \over 1 + \E^t} \dt  = \int_{\infty}^{-\infty} {\E^{-\I s (x+2 \I \pi)} \over 1 + \E^x} \dx = -\E^{2 \pi s} \int_{-\infty}^\infty  {\E^{-\I s x} \over 1 + \E^x} \dx 
+$$
+Therefore, we have
+$$
+\int_{-\infty}^\infty  {\E^{-\I s x} \over 1 + \E^x} \dx  = - 2 \I \pi {\E^{\pi s} \over 1 -\E^{2 \pi s}} = \I \pi {\rm csch}\, \pi x
+$$
+which has poles at $0$ and $\I$:
+
+phaseplot(-3..3, -10..10, z -> 1/(1+exp(z))) #integrand
+
+phaseplot(-3..3, -3..3, z -> im*π*csch(π*z)) # transform
+
+### Problem 3.3 
+
+Here $\E^{\gamma x } f(x) = \E^{(\gamma+2) x}$ has decay at $+\infty$ proved $\gamma < -2$, hence we have the strip $\Im s < -2$.
+
+Indeed, its Fourier transform is 
+$$
+-{\I \over 2 \I +s}
+$$
+by integration by parts.
+
+### Problem 3.4 
+
+Here it's $\Im s > 0$: unlike 1.1, we now have decay at $x \rightarrow \infty$ since $f_{\rm L}(x)$ is identically zero.
+
+It's Fourier transform is determinable by integration-by-parts:
+$$
+\hat f(s) = \int_{-\infty}^0 x \E^{-\I s x} \dx = {1 \over \I s} \int_{-\infty}^0\E^{-\I s x} \dx = {1 \over s^2}
+$$
+
+### Problem 3.5
+
+The Fourier transforms are given above.
+
+### Problem 3.6
+
+$$\int_{-\infty}^\infty \delta(x) \E^{\I s x} \dx = 1$$
+
+It's actually an entire function, but non-decaying. This is hinting at the relationship between smoothness of a function and decay of its Fourier transform, and vice-versa: since $\delta(x)$ "decays" to all orders, we expect its Fourier transform to be entire, but since its n ot smooth at all, we expect no decay, so on a formal level we can predict the analyticity properties.
+
+## Problem 4
+
+### Problem 4.1
+
+Note that
+$$
+K(z) =  {3\over 2} \E^{-|x|} \Rightarrow \hat K(s) = {3 \over 1+s^2}
+$$
+Provided $-1 < \Im s < 1$, and 
+$$
+\widehat f_{\rm R}(s) = -{\I \over s} - {\alpha \over s^2}
+$$
+for $\Im s < 0$.  Define
+$$
+h(s) = - \widehat f_{\rm R}(s) = {\I \over s} + {\alpha \over s^2}
+$$
+
+α = 0.3
+x = Fun(0..100)
+f = 1  + α*x
+h = s -> (im/s + α/s^2)
+
+γ = -0.5  # we take the Fourier transform on R + im*γ
+s = -0.5 + im*γ
+
+-sum(f*exp(-im*s*x)) - h(s)
+
+
+Transforming the equation, we have
+$$
+\Phi_+(s) - (1 + \hat K(s)) \Phi_-(s)  = {\I \over s} + {\alpha \over s^2}
+$$
+where
+$$
+1 + \hat K(s) = {4 + s^2 \over 1 + s^2} = {(s-2 \I) (s+2 \I) \over (s+\I)(s-\I)}
+$$
+This is very close to the the example we did in lectures, so we already know the homogenous solution:
+$$
+\kappa(z) =  \begin{cases} {z + 2\I  \over z + \I}  & \Im z > \gamma \\
+                            {z - \I  \over z - 2\I} & \Im z < \gamma
+                            \end{cases}
+                            $$
+which is valid for $-1 < \Im s < 0$.
+
+
+
+
+g = s -> (4+s^2)/(1+s^2)
+
+κ = z -> imag(z) > γ ? (z+im*2)/(z+im) :
+                       (z-im)/(z-im*2)
+
+
+phaseplot(-3..3, -3..3, κ)
+
+s = 0.1 + γ*im 
+κ₊ = κ(s + eps()*im)
+κ₋ = κ(s - eps()*im)
+
+κ₊ - κ₋*g(s)
+
+
+
+We thus get the RH problem
+$$
+Y_+(s) - Y_-(s) = h(s)/\kappa_+(s) =  ({\I \over s} + {\alpha \over s^2})  {s + \I  \over s + 2 \I}
+$$
+We see this has poles at $0$ and $-2 \I$, so using partial fraction expansion we get
+$$
+({\I \over s} + {\alpha \over s^2})  {s + \I  \over s + \sqrt{3} \I} = 
+{\alpha \over 2 s^2}- {\I (\alpha-2) \over 4 s}  +{\I (2+\alpha) \over 4 (s+2 \I)}
+$$
+Therefore, splitting the poles between those above and below $\gamma$, we have
+$$
+Y(z) = \begin{cases} 
+ {\I (2+\alpha) \over 4 (z+2 \I)} & \Im z > \gamma \\
+-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z} & \Im z < \gamma
+\end{cases}
+$$
+
+
+s = 0.1 + γ*im 
+Y = z -> imag(z) > γ ? im*(2+α)/(4*(z+2im)) :
+                     - α/(2z^2) + im*(α-2)/(4z)
+
+
+Y₊ = Y(s + eps()*im)
+Y₋ = Y(s - eps()*im)
+
+Y₊ - Y₋  - h(s)/κ₊
+
+We therefore have 
+
+$$
+\Phi(z)  = \kappa(z) Y(z) = \begin{cases} 
+ {\I (2+\alpha) \over 4 (z+ \I)}  & \Im z > \gamma \\
+(-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I} & \Im z < \gamma
+\end{cases}
+$$
+
+Φ = z -> imag(z) > γ ? im*(2+α)/(4*(z+im)) :
+                      (-α/(2z^2) + im*(α-2)/(4z))*(z-im)/(z-2im)
+Φ₊ = Φ(s+eps()im) 
+Φ₋ = Φ(s-eps()im) 
+
+Φ₊ - Φ₋*g(s) - h(s)
+
+Finally, we recover the solution by inverting 
+$\Phi_-$, using Residue calculus in the upper half plane: for $x > 0$ we have
+\begin{align*}
+u(x) &= {1 \over 2 \pi} \int_{-\infty+ \I \gamma}^{\infty + \I \gamma} (-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I}  \E^{\I z x}  \dz \\
+&= \I (\Res_{z = 0} + \Res_{z = 2\I}) (-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I}  \E^{\I z x} = {1+x \alpha \over 4} - {\alpha+1 \over 4} \E^{-2 x}
+\end{align*}
+
+Did it work? yes:
+
+t = Fun(0 .. 50)
+
+u = (1+t*α)/4 - (α-1)/4*exp(-2t)
+
+x = 0.1
+
+u(x) + 3/2*sum(exp(-abs(t-x))*u) , f(x)
+
+### Problem 4.2
+
+Setting up the problem as above, we arrive at a degenerate RH problem:
+$$
+\Phi_+(s) - g(s) \Phi_-(s) = h(s)
+$$
+where 
+$$g(s) = \widehat K(s) = {2\alpha \over \alpha^2 +s^2}= {2 \alpha \over (s-\I \alpha)(s+\I \alpha)} $$
+and
+$$ 
+h(s) = {\I \over s} + {\alpha \over s^2} = \I {s -\I \alpha \over s^2}
+$$
+
+Suppose we allow $\kappa_-(s) \sim s$ to have growth, then we can write
+$$
+\kappa(z) = \begin{cases} {1 \over z+\I \alpha }& \Im z > \gamma \\
+                        {z-\I \alpha \over 2 \alpha} & \Im z < \gamma
+\end{cases}
+$$
+so that 
+$$
+\kappa_+(s) = \kappa_-(s) g(s)
+$$
+
+
+α = 0.3
+
+
+g = s -> (2α)/(α^2+s^2)
+h = s -> (im/s + α/s^2)
+
+κ = z -> imag(z) > γ ? 1/(z + im*α) :
+                       (z-im*α)/(2α)
+
+
+phaseplot(-3..3, -3..3, κ)
+
+s = 0.1 + γ*im 
+κ₊ = κ(s + eps()*im)
+κ₋ = κ(s - eps()*im)
+
+κ₊ - κ₋*g(s)
+
+Then we have 
+$$h(s)/\kappa_+(s) =  \I {s^2 + \alpha^2 \over s^2} = \I + \I {\alpha^2 \over s^2}
+$$
+and then we can write
+$$
+Y(z) = \begin{cases}
+\I & \Im z > \gamma \\
+-{\I \alpha^2 \over z^2} & \Im z < \gamma
+\end{cases}
+$$
+
+
+
+s = 0.1 + γ*im 
+Y = z -> imag(z) > γ ? im :
+                     -im*α^2/s^2
+
+
+Y₊ = Y(s + eps()*im)
+Y₋ = Y(s - eps()*im)
+
+Y₊ - Y₋  - h(s)/κ₊
+
+Putting things together, we get
+$$
+\Phi(z) = \kappa(z) Y(z) = \begin{cases} {\I \over z+\I \alpha }& \Im z > \gamma \\
+                        -\I {\alpha^2 \over z^2} {z-\I \alpha \over 2 \alpha} & \Im z < \gamma
+\end{cases}
+$$
+
+Φ = z -> imag(z) > γ ? im/(z + im*α)  :
+                     -im*α^2/z^2* (z-im*α)/(2α)
+Φ₊ = Φ(s+eps()im) 
+Φ₋ = Φ(s-eps()im) 
+
+Φ₊ - Φ₋*g(s) - h(s)
+
+We now invert the Fourier transform of $\Phi_-(s)$ using Jordan's lemma:
+$$
+u(x) = {1 \over 2 \pi} \int_{-\infty + \I \gamma}^{\infty + \I \gamma} \Phi_-(s) \E^{\I s x} \D s = {\alpha \over 2}\Res_{z = 0} {z- \I \alpha \over z^2} \E^{\I z x}  = {\alpha \over 2} (1+x \alpha)
+$$
+
+t = Fun(0 .. 200)
+
+u = α*(1+t*α)/2
+
+x = 0.1
+
+sum(exp(-α*abs(t-x))*u)  - (1 + α*x)
+
+## 4.3
+
+1. From the same logic as 2.2, we know we need to solve
+$$
+\Phi_+(s) - g(s) \Phi_-(s) = h(s)
+$$
+where
+$$
+g(s) = 1 - {2 \lambda \over s^2 + 1} = {s^2 +1-2 \lambda \over s^2 + 1} = {(s- \I\gamma)(s+\I \gamma) \over (s+\I)(s-\I)}
+$$
+and 
+$$
+h(s) = {1 \over s^2}
+$$
+where $-1 < \Im s  < 0$, let's say $\Im s  = \delta$ because I annoyingly used $\gamma$ in the statement of the problem. 
+Writing $s = t + \I \delta$, we see that
+$$
+g(s) =  {t^2 +2 \I \delta t -\delta^2 +\gamma^2 \over s^2 + 1}
+$$
+By ensuring its real part is positive, this has trivial winding number provided $\gamma^2 = 1 - 2\lambda > 0$, which is true for $0 < \lambda < {1 \over 2}$, and restricting the contour $s$ lives on to be $- {\gamma} < \delta < 0$. Factorizing the kernel we get
+$$
+\kappa(z) = \begin{cases}
+    {z+\I  \gamma \over z + \I} & \Im z > \delta\\
+    {z-\I  \over z-\I  \gamma} & \Im z < \delta 
+    \end{cases}
+$$
+Thus we want to solve
+$$
+Y_+(s) - Y_-(s) = h(s) \kappa_+(s)^{-1} = {s + \I \over s + \I  \gamma} { 1 \over s^2} = {1 \over \gamma s^2} - {\I ( \gamma - 1) \over \gamma^2 s} + {\I \over \gamma^2 }{  \gamma - 1 \over s+ \I  \gamma}
+$$
+Which has solution, (since $\delta > - \gamma$), 
+$$
+Y(z) = \begin{cases}
+   {\I \over \gamma^2 }{  \gamma - 1 \over s+ \I \gamma} & \Im z > \delta\\
+ {\I ( \gamma - 1) \over \gamma^2 z} - {1 \over \gamma z^2} & \Im z < \delta 
+    \end{cases}
+$$
+We thus get
+$$
+\Phi_-(z) = ({\I ( \gamma - 1) \over \gamma^2 z} - {1 \over \gamma z^2})     {z-\I  \over z-\I  \gamma} 
+$$
+and Jordan's lemma gives us
+$$
+u(x) = {x \over \gamma^2} - \E^{-x \gamma}(\gamma-1)/\gamma^2
+$$
+
+t = Fun(0 .. 200)
+λ = 0.1
+γ = sqrt(1-2λ)
+
+u = t/γ^2 - exp(-t*γ)*(γ-1)/γ^2
+
+x = 0.1
+
+u(x) - λ*sum(exp(-abs(t-x))*u) - x
+
+Oddly, this is definitely a solution, but not in the form the question asked for. To get the other solution, consider now the bad winding number case of $-1 < \delta < - \gamma$. Motivated by 2.2, what if we allow $\kappa$ to have different behaviour? Consider
+$$
+\kappa(z) = \begin{cases}
+    {1 \over z + \I} & \Im z > \delta\\
+    {(z-\I)  \over (z-\I  \gamma) (z+\I  \gamma)} & \Im z < \delta 
+    \end{cases}
+$$
+Chosen so that both $\kappa_+$ and $\kappa_+^{-1}$ are analytic. 
+
+Thus we want to solve
+$$
+Y_+(s) - Y_-(s) = h(s) \kappa_+(s)^{-1} =  { s + \I \over s^2} = {1 \over s} + {\I \over s^2}
+$$
+but now we only need $Y_+(s) = O(1)$ and $Y_-(s) = O(1)$. Here is where the non-uniqueness comes in, as we can add an arbitrary constant:
+$$
+Y(z) = \begin{cases}
+                      A            & \Im z > 0 \\
+   A -   {1 \over z} - {\I \over z^2} & \Im z < 0
+\end{cases}
+$$
+Thus we have
+$$
+\Phi_-(z) = Y_-(z) \kappa_-(z) = -(  A +    {1 \over z} +  {\I \over z^2} ){(z-\I)  \over (z-\I  \gamma) (z+\I  \gamma)} 
+$$
+Using Jordan's lemma, and now since $\delta < - \gamma$, we get
+\begin{align*}
+u(x) &= \I (\Res_{z = 0} + \Res_{z = \I \gamma} + \Res_{z = - \I \gamma})  \Phi_-(z) \E^{\I x z} \\
+&= {x \over \gamma^2} - \E^{-x \gamma}( {\gamma^2-1 \over 2 \gamma^3} + {\gamma-1 \over 2\gamma^3}   A) - \E^{x \gamma} ({1-\gamma^2 \over 2 \gamma^3} + {\gamma+1 \over 2\gamma^3}   A)\\
+&=  {x \over \gamma^2} + {\E^{x \gamma} - \E^{-x \gamma} \over 2} {\gamma-\gamma^{-1} \over 2 \gamma^2}  - {A \over \gamma^3} ( {\E^{x \gamma} - \E^{-x \gamma} \over 2} +  \gamma {\E^{x \gamma} + \E^{-x \gamma} \over 2} )
+\end{align*}
+Redefining $A$ and using the definition of $\sinh$ and $\cosh$ gives the form in the assignment.
+
+What's the moral of the story? 
+
+1. Different choices of contours can give different solutions
+2. When the winding number is non-trivial, the solution may not be unique
+
+### 4.4
+
+
+1. Integrating by parts we have
+\begin{align*}
+\widehat{u_\rR'}(s) &= \I s \widehat{u_\rR}(s) - u(0) = \I s \widehat{u_\rR}(s) \\
+\widehat{u_\rR''}(s) &= \I s \widehat{u_\rR'}(s) - u'(0)  = -s^2 \widehat{u_\rR}(s) - u'(0)
+\end{align*}
+2.  Our integral equation when cast on the whole real line is:
+$$
+u_\rR''(x) - {72 \over 5} \int_{-\infty}^\infty \E^{-5 |x-t|} u_\rR(t)\dt = 1_\rR(x) + p_\rL(x)
+$$
+where 
+$$
+p(x) = {72 \over 5} \int_{-\infty}^\infty \E^{-5 |x-t|} u_\rR(t)\dt =  {72 \over 5} \int_0^\infty \E^{-5 |x-t|} u_\rR(t)\dt.
+$$
+Note that, for $-5 <\Im s < 5$,
+$$
+\hat K(s) = {10 \over s^2 + 25}
+$$
+provided $s$ is in the lower half plane,
+$$
+\widehat{1_\rR}(s) = \int_0^\infty \E^{-\I s x} \dx = {1 \over \I s}
+$$
+Thus our integral equation in frequency space is 
+\begin{align*}
+-\alpha - s^2 \widehat{u_\rR}(s) -  {72 \over 5} \widehat K(s) \widehat{u_\rR}(s) &=\widehat{p_\rL}(x) +  \widehat{1_\rR}(s)\\
+\Phi_+(s) - (s^2 +   {144 \over s^2+25}) \Phi_-(s) &= \alpha + {1 \over \I s}\\
+\Phi_+(s) -  {(s^2 + 9) (s^2+16) \over s^2+25} \Phi_-(s) &= \alpha + {1 \over \I s}
+\end{align*}
+where $s \in \R +\I \gamma$ for any $-5 < \gamma < 0$.
+3. We can factorize this to construct $g(s)$ as 
+$$
+g(s) = \kappa_+(s) \kappa_-(s)^{-1} = {(s +3 \I) (s+4 \I) \over s+5 \I} {(s -3 \I) (s-4 \I) \over s-5 \I}
+$$
+
+κ = z -> imag(z) > γ ? 
+        (z+3im)*(z+4im)/(z+5im) :
+        (z-5im)/((z-3im)*(z-4im)) 
+
+γ  = -1.0
+s = 0.1+γ*im
+g = s -> (s^2+9)*(s^2+16)/(s^2+25)
+
+κ(s+eps()im) - g(s)κ(s-eps()im)
+
+Writing $\Phi(z) = \kappa(z) Y(z)$ we get the subtractive RH problem
+$$
+Y_+(s) - Y_-(s) = {h(s) \over \kappa_+(s)} =  (\alpha + {1 \over \I s}) {s + 5 \I \over (s + 3 \I)(s + 4 \I)}
+$$
+We use partial fraction expansion to write
+$$
+{h(s) \over \kappa_+(s)} = -{\alpha + 1/4 \over s+4 \I} + {2/3 + 2 \alpha \over s+3 \I} - {5 \over 12 s}
+$$
+Therefore we have
+$$
+Y(z) = \begin{cases} 
+-{\alpha + 1/4 \over s+4 \I} + {2/3 + 2 \alpha \over s+3 \I} & 2 \\
+        {5 \over 12 s} &1
+\end{cases}
+$$
+and hence
+$$
+\Phi(z) =      \begin{cases}
+{(z+3\I)(z+4\I) \over z+5\I} (-{α+1/4 \over z+4\I} + (2/3 + 2α)/(z+3\I)) & \Im z > \gamma \\
+        {z-5\I \over (z-3\I)(z-4\I)} {5 \over 12z}& \Im z < \gamma
+        \end{cases}
+$$
+
+We can now invert the Fourier transform of 
+$$
+\Phi_-(s) =         {s-5\I \over (s-3\I)(s-4\I)} {5 \over 12s}
+$$
+This actually decays so fast that we don't need Jordan's lemma to justify here. This has three poles above our contour, so we sum over each residue to get
+$$
+u(x) = \I (\Res_{z = 0} +\Res_{z = 3 \I } +\Res_{z = 4\I} )      \E^{\I z x }   {z-5\I \over (z-3\I)(z-4\I)} {5 \over 12z} =  -{25 \over 144} - {5 \E^{-4 x}  \over 48} + {5 \E^{-3 x} \over 18}
+$$
+
+Here's we check the solution:
+
+t = Fun(0 .. 200)
+
+u = -25/144 - 5exp(-4t)/48 + 5exp(-3t)/18
+
+x = 1.1
+u''(x) - 72/5*sum(exp(-5abs(x-t))*u)
+
+Here we check the jump of $Y$:
+
+α = u'(0)
+
+h = s -> α + 1/(im*s)
+
+Y = z -> imag(z) > γ ? 
+       (-(α+1/4)/(z+4im) + (2/3 + 2α)/(z+3im)) :
+         5/(12z)
+
+Y(s+eps()im) - Y(s-eps()im) - h(s)/κ(s + eps()im)
+
+Here we check the jump of $\Phi$:
+
+γ  = -1.0
+
+
+Φ = z -> imag(z) > γ ? 
+        (z+3im)*(z+4im)/(z+5im) * (-(α+1/4)/(z+4im) + (2/3 + 2α)/(z+3im)) :
+        (z-5im)/((z-3im)*(z-4im)) * 5/(12z)
+
+
+Φ(s + eps()*im) - g(s)*Φ(s - eps()*im) - h(s)

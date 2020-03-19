@@ -54,6 +54,7 @@
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
 \def\acos{ {\rm acos}\, }
+\def\asin{ {\rm asin}\, }
 \def\atan{ {\rm atan}\, }
 \def\Ei{ {\rm Ei}\, }
 \def\upepsilon{\varepsilon}

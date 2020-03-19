@@ -138,6 +138,7 @@
 \def\Res_#1{\underset{#1}{\rm Res}\,}
 \def\sech{ {\rm sech}\, }
 \def\acos{ {\rm acos}\, }
+\def\asin{ {\rm asin}\, }
 \def\atan{ {\rm atan}\, }
 \def\Ei{ {\rm Ei}\, }
 \def\upepsilon{\varepsilon}
@@ -236,7 +237,448 @@ Dr. Sheehan Olver s.olver@imperial.ac.uk
 
 \section{Solution Sheet 3}
 \subsection{Problem 1.1}
-We actually start by showing the second properties of Problem 1.2, for all $\alpha$:
+Since $\int_{-1}^1 x \dx = 0$, we have no logarithmic growth at infinity.  Thus by the formula relating log to Cauchy transforms we find for
+
+\[
+F(x) = \int_x^1 t \dt = {1 - x^2 \over 2}
+\]
+that
+
+\[
+\int_{-1}^1 \log|z-x| x \dx = \Re\pr({-2 \I \pi C F(z)})
+\]
+So we just have to work out the Cauchy transform. Try as an ansatz
+
+\[
+{1 - z^2 \over 2} {\log(z-1) - \log(z+1) \over 2 \pi \I}
+\]
+We only need to remove the growth at infinity. We do so via:
+
+\[
+\log(z-1) - \log(z+1)  = -{2 \over z} + O(z^{-3})
+\]
+telling us
+
+\[
+C F(z) = {1 - z^2 \over 2} {\log(z-1) - \log(z+1)  \over 2 \pi \I} + {z \over 2 \pi \I}
+\]
+and
+
+\[
+\int_{-1}^1 \log|z-x| x \dx = \Re \left({1 - z^2 \over 2} (\log(z-1) - \log(z+1)) - z \right)
+\]
+\emph{Verification}
+
+We can confirm the formula:
+
+
+\begin{lstlisting}
+(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SingularIntegralEquations}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{QuadGK}@*)(*@\HLJLp{,}@*) (*@\HLJLn{LinearAlgebra}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SpecialFunctions}@*)
+(*@\HLJLk{import}@*) (*@\HLJLn{ApproxFunOrthogonalPolynomials}@*)(*@\HLJLoB{:}@*) (*@\HLJLn{Recurrence}@*)
+
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{hilbert}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{hilbert}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)
+
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
+(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{logkernel}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{,}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{real}@*)(*@\HLJLp{((}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.2679858257813376, -0.26798582578133745)
+\end{lstlisting}
+
+
+\subsection{Problem 1.2}
+From the hint and the fact that $\asin 1 = \pi/2$ we have
+
+\[
+F(x) = {\pi \over 4}- {x \sqrt{1-x^2} + \asin x \over 2} =
+    -{\acos x + x \sqrt{1-x^2} \over 2}
+\]
+and  (for $f(x) = \sqrt{1-x^2}$)
+
+\[
+\int_{-1}^1 f(x) \D x = F(-1) = {\pi \over 2}
+\]
+Thus we need to dermine the Cauchy transform of $F(x)$.  Using the usual techniques of subtracting out the growth at  infinity
+
+\[
+\CC[x \sqrt{1-x^2}](z) = {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 2 \I} 
+\]
+Using the hint allows us to related the Cauchy transform of $\asin x$ to that of $\acos x$. Recall from lectures
+
+\[
+\CC \acos(z) = {\log(\sqrt{z-1} + \sqrt{z+1}) \over \I} - {\log(z+1) \over 2 \I} + \I \log 2 
+\]
+Thus we have 
+
+\[
+\CC F(z) = -{\log(\sqrt{z-1} + \sqrt{z+1}) \over 2\I} + {\log(z+1) \over 4 \I} - \I {\log 2 \over 2} 
+  - {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 4 \I} 
+\]
+And
+
+\[
+M f(z) = {\log(z+1) \over 2} - 2 \I \CC F(z) = \log(\sqrt{z-1} + \sqrt{z+1})- \log 2 - {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 2} 
+\]
+taking the real part and multiplying by \ensuremath{\pi} gives the answer.
+
+\emph{Verification}
+
+
+\begin{lstlisting}
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{logkernel}@*)(*@\HLJLp{(}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*)(*@\HLJLp{),}@*) (*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{real}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{+}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{-}@*) (*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(0.556055856991731, 0.556055856991731)
+\end{lstlisting}
+
+
+\subsection{Problem 1.3}
+We want to solve
+
+\[
+\int_{-1}^1 \log |x-t| u(t) \dt = {1 \over x^2 + 1}
+\]
+differentiating and multiplying though by $1/\pi$ we have
+
+\[
+{1 \over \pi} \dashint_{-1}^1 {u(t) \over x-t} \D t = -{2 x \over \pi (1+x^2)^2}
+\]
+This is an inverse Hilbert problem so we know
+
+\[
+u(x) = -{1 \over \sqrt{1-x^2} } H[\sqrt{1-t^2} f(t)](x)  + {C \over \sqrt{1-x^2}}
+\]
+for 
+
+\[
+f(x) =  -{2 x \over \pi (1+x^2)^2}.
+\]
+We determine the Cauchy transform of $\sqrt{1-x^2} f(x)$ using the usual methods:  start with the ansatz
+
+\[
+\phi(z) = -{\sqrt{z-1} \sqrt{z+1} \over 2 \I} {2 z \over \pi (1+z^2)^2}
+\]
+This decays at infinity so we just need to remove the poleas at $\pm \I$. Here we determine:
+
+\[
+\phi(z) = -{\sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (z-\I)^2}  + {\I \over 8  (z-\I)} + O(1) \right)
+\]
+and
+
+\[
+\phi(z) = -{\sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (z+\I)^2}  + {\I \over 8  (z+\I)} + O(1) \right)
+\]
+Telling us that
+
+
+\begin{align*}
+C[\sqrt{1-t^2} f(t)](z) &=  -{\sqrt{z-1} \sqrt{z+1} \over 2 \I} {2 z \over \pi (1+z^2)^2} +  {\sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (z-\I)^2}  + {\I \over 8  (z-\I)} \right) \\
+&\qquad+  {\sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (z+\I)^2}  + {\I \over 8  (z+\I)} \right)
+\end{align*}
+Thus we have
+
+
+\begin{align*}
+H[\sqrt{1-t^2} f](x) &= -\I (C^+ + C^-)[\sqrt{1-t^2} f](x) \ccr
+= -  {2\I \sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (x-\I)^2}  + {2\I \over 8  (x-\I)} \right) \\
+&\qquad-  {2\I \sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (x+\I)^2}  + {\I \over 8  (x+\I)} \right)
+\end{align*}
+In other words, for
+
+\[
+\tilde u(x) = {2\I \sqrt{\I -1 } \sqrt{\I + 1} \over \pi \sqrt{1-x^2}} \left(-{1  \over 4 (x-\I)^2}  + {2\I \over 8  (x-\I)} \right) -  {2\I \sqrt{-\I -1 } \sqrt{1-\I } \over \pi \sqrt{1-x^2}} \left({1  \over 4 (x+\I)^2}  + {\I \over 8  (x+\I)} \right)
+\]
+we have
+
+\[
+u(x) =  \tilde u(x) + {C \over \sqrt{1-x^2}}.
+\]
+To find $C$ we impose the condition that
+
+\[
+\int_{-1}^1 \log|t| u(t) \dt = 1
+\]
+We thus need to determine $C$. Recall that
+
+\[
+{1 \over \pi} \int_{-1}^1 {\log(z-x) \over \sqrt{1-x^2}} \dx = 2 \log(\sqrt{z-1}+\sqrt{z+1}) - 2 \log 2
+\]
+Thus for $x \in [-1,1]$ we have
+
+\[
+{1 \over \pi} \int_{-1}^1 {\log|x-t| \over \sqrt{1-t^2}} \dt = 2 \Re(\log(\I \sqrt{1-x}+\sqrt{x+1}) - 2 \log 2)
+\]
+or in particular 
+
+\[
+{1 \over \pi} \int_{-1}^1 {\log|x| \over \sqrt{1-x^2}} \dx = \log(1/2)
+\]
+Thus we want to solve
+
+\[
+\int_{-1}^1 \log|t| \tilde u(t) \dt + C {\log(1/2) \over \pi} = 1
+\]
+i.e.
+
+\[
+C = (1 - \int_{-1}^1 \log|t| \tilde u(t) \dt)  {1 \over  \pi \log(1/2)}
+\]
+\emph{Check derivation}
+
+Let's check the derivation. First we can calculate $u$ numerically:
+
+
+\begin{lstlisting}
+(*@\HLJLn{L}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{SingularIntegral}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{:}@*) (*@\HLJLnf{JacobiWeight}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.5}@*)(*@\HLJLp{,}@*)(*@\HLJLnf{Chebyshev}@*)(*@\HLJLp{())}@*)
+
+(*@\HLJLn{x}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Fun}@*)(*@\HLJLp{()}@*)
+(*@\HLJLn{g}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{u}@*) (*@\HLJLoB{=}@*) (*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{L}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{{\textbackslash}}@*) (*@\HLJLn{g}@*)
+
+(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{logkernel}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{g}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(0.9900990099009912, 0.9900990099009914)
+\end{lstlisting}
+
+
+Differentiating it satisfies $H u = g'/(\pi)$:
+
+
+\begin{lstlisting}
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLn{g}@*)(*@\HLJLoB{{\textquotesingle}}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLoB{-}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{*}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{+}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.062407584782646346, -0.062407584782646346, -0.062407584782627326)
+\end{lstlisting}
+
+
+The Cauchy transform also works:
+
+
+\begin{lstlisting}
+(*@\HLJLn{f}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{g}@*)(*@\HLJLoB{{\textquotesingle}/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{z}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)
+(*@\HLJLn{\ensuremath{\psi}}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLni{2}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) 
+                (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{8}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)))}@*) (*@\HLJLoB{+}@*) 
+                (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{8}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)))}@*)
+
+(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{f}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{\ensuremath{\psi}}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.009150867763797383 + 0.00183788790278171im, -0.009150867763797393 + 0.0
+018378879027817im)
+\end{lstlisting}
+
+
+Therefore the Hilbert transform is given by:
+
+
+\begin{lstlisting}
+(*@\HLJLn{Hf}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*)(*@\HLJLoB{->}@*) (*@\HLJLoB{-}@*) (*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{8}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)))}@*) (*@\HLJLoB{-}@*) 
+            (*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{*}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{8}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)))}@*)
+
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{f}@*)(*@\HLJLp{)(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{Hf}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(0.21402480802677823, 0.21402480802676035 + 0.0im)
+\end{lstlisting}
+
+
+We thus have an expression for $u$, we are just missing the constant:
+
+
+\begin{lstlisting}
+(*@\HLJLn{ũ}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{Hf}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{C}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{u}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLnf{Hf}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.0}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{u}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\approx}}@*) (*@\HLJLnf{ũ}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{C}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+true
+\end{lstlisting}
+
+
+We can find $C$ interms of the relevant integral, which we call $D$:
+
+
+\begin{lstlisting}
+(*@\HLJLn{D}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{quadgk}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{==}@*) (*@\HLJLni{0}@*) (*@\HLJLoB{?}@*) (*@\HLJLnfB{0.0}@*) (*@\HLJLoB{:}@*) (*@\HLJLnf{ũ}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{abs}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{)),}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)[}@*)(*@\HLJLni{1}@*)(*@\HLJLp{]}@*)
+(*@\HLJLn{C}@*)(*@\HLJLp{,}@*) (*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{D}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*)(*@\HLJLp{))}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.3247204711377926 + 0.0im, -0.32472047136213555 + 0.0im)
+\end{lstlisting}
+
+
+\subsection{Problem 2}
+\subsubsection{Problem 2.1}
+From Lecture 19 we know that we want to solve
+
+\begin{itemize}
+\item[1. ] \[
+v_{xx} + v_{yy} =0
+\]
+for $z \notin [-1,1] \cup \I$
+
+
+\item[2. ] \[
+v(z) \sim \log|z|
+\]
+as $z \rightarrow \infty$
+
+
+\item[3. ] \[
+v(z) \sim \log|z-\I|
+\]
+as $z \rightarrow \I$
+
+
+\item[4. ] \[
+v(x,0) = D
+\]
+for some unknown constant $D$ on $[-1,1]$. 
+
+\end{itemize}
+\subsubsection{Problem 2.2}
+We write
+
+\[
+v(x,y) = \int_{-1}^1 u(t) \log|z-t| \dt + \log|z-\I|
+\]
+The behaviour at infinity requires that $\int_{-1}^1 u(t) \dt = 0$. We further have the singular integral equation
+
+\[
+  \int_{-1}^1 u(t) \log|x-t| \dt = C - \log|x-\I|
+\]
+which follows from $D = v(x,0)$
+
+We can actually solve this numerically:
+
+
+\begin{lstlisting}
+(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{SingularIntegral}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{{\textbackslash}}@*) (*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{abs}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{u}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{w}@*) (*@\HLJLoB{-}@*) (*@\HLJLnf{sum}@*)(*@\HLJLp{(}@*)(*@\HLJLn{w}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{))}@*) (*@\HLJLcs{{\#}}@*) (*@\HLJLcs{ensure}@*) (*@\HLJLcs{integrates}@*) (*@\HLJLcs{to}@*) (*@\HLJLcs{zero}@*)
+(*@\HLJLn{v}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{\ensuremath{\pi}}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{logkernel}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u}@*)(*@\HLJLp{,}@*) (*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLnf{log}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{abs}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)
+(*@\HLJLn{D}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{v}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLn{xx}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{yy}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLni{4}@*)(*@\HLJLoB{:}@*)(*@\HLJLnfB{0.011}@*)(*@\HLJLoB{:}@*)(*@\HLJLni{4}@*)
+(*@\HLJLn{V}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{v}@*)(*@\HLJLoB{.}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLoB{{\textquotesingle}}@*) (*@\HLJLoB{.+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{yy}@*)(*@\HLJLp{)}@*)
+
+(*@\HLJLnf{contour}@*)(*@\HLJLp{(}@*)(*@\HLJLn{xx}@*)(*@\HLJLp{,}@*) (*@\HLJLn{yy}@*)(*@\HLJLp{,}@*) (*@\HLJLn{V}@*)(*@\HLJLp{;}@*) (*@\HLJLn{nlevels}@*)(*@\HLJLoB{=}@*)(*@\HLJLni{50}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{domain}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{);}@*) (*@\HLJLn{color}@*)(*@\HLJLoB{=:}@*)(*@\HLJLn{black}@*)(*@\HLJLp{,}@*) (*@\HLJLn{legend}@*)(*@\HLJLoB{=}@*)(*@\HLJLkc{false}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\includegraphics[width=\linewidth]{figures/Solutions3_9_1.pdf}
+
+\paragraph{Problem 2.3}
+As usual for logarithmic singular integral equations we want to solve
+
+\[
+{1 \over \pi} \dashint_{-1}^1 {u(t)  \over x-t} \dt = {f'(x)  \over \pi}
+\]
+we need to be a bit careful differentiating $f$:
+
+\[
+{\D \over \dx} \log|x-\I| = {\D \over \dx} \log\sqrt{x^2 + 1} = { x \over x^2 + 1}
+\]
+Now we do our usual game and solve for $u$ using the inverse Hilbert transform formula. That is, first calculate
+
+\[
+C[\sqrt{1-x^2} {x \over x^2+1}](z) = {z \sqrt{z-1} \sqrt{z+1} \over 2\I (z^2+1)} - {1 \over 2 \I} + {\I \sqrt{\I - 1} \sqrt{\I+1} \over 4 (z-\I)} +  {\I \sqrt{-\I - 1} \sqrt{-\I+1} \over 4 (z+\I)}
+\]
+Therefore, we know that
+
+\[
+u(x) =  {\sqrt{\I - 1} \sqrt{\I+1} \over 2 \pi (x-\I)\sqrt{1-x^2}} +  {\sqrt{-\I - 1} \sqrt{-\I+1} \over 2 \pi (x+\I) \sqrt{1-x^2}} + {C \over \sqrt{1-x^2}}
+\]
+We can show (e.g. by finding its Cauchy transform and lookin at the asymptotic behaviour) that
+
+\[
+\int_{-1}^1\left[ {\sqrt{\I - 1} \sqrt{\I+1} \over 2 \pi (x-\I)\sqrt{1-x^2}} +  {\sqrt{-\I - 1} \sqrt{-\I+1} \over 2 \pi (x+\I) \sqrt{1-x^2}} \right] = -1
+\]
+Combined with the fact that
+
+\[
+\int_{-1}^1 {1 \over \sqrt{1-x^2}} = \pi
+\]
+we find that $C = 1/\pi$.
+
+\emph{Verification} Let's check our work. First we see that the Hilbert transform of $u$ does  indeed satisfy the specified equation (using the numerical \texttt{u} as calculated above):
+
+
+\begin{lstlisting}
+(*@\HLJLn{fp}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{x}@*) (*@\HLJLoB{->}@*) (*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{u}@*)(*@\HLJLp{,}@*) (*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{fp}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.03151583031523278, -0.031515830315226805)
+\end{lstlisting}
+
+
+And the Cauchy transform of $\sqrt{1-x^2} f'(x)$ satisfies the derived formula:
+
+
+\begin{lstlisting}
+(*@\HLJLn{Cf}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{->}@*) (*@\HLJLn{z}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{-}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{+}@*)
+         (*@\HLJLn{im}@*)(*@\HLJLoB{*}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{4}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{))}@*)
+(*@\HLJLoB{-}@*)(*@\HLJLnf{cauchy}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{fp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{),}@*) (*@\HLJLn{z}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{Cf}@*)(*@\HLJLp{(}@*)(*@\HLJLn{z}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(0.02014804460385935 - 0.004468734515943387im, 0.02014804460385937 - 0.0044
+68734515943457im)
+\end{lstlisting}
+
+
+Therefore we can invert to the Hilbert transform for $f'$:
+
+
+\begin{lstlisting}
+(*@\HLJLn{w}@*) (*@\HLJLoB{=}@*) (*@\HLJLoB{-}@*)(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{fp}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLp{))}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+(*@\HLJLn{w2}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{))}@*) (*@\HLJLoB{+}@*)
+         (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{im}@*)(*@\HLJLoB{+}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLp{(}@*)(*@\HLJLni{2}@*)(*@\HLJLp{(}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{+}@*)(*@\HLJLn{im}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{*}@*) (*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLn{x}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{))}@*)
+(*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{w}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{H}@*)(*@\HLJLp{(}@*)(*@\HLJLn{w2}@*)(*@\HLJLp{,}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{fp}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.09900990099009971, -0.09900990099010008 - 0.0im, -0.09900990099009901)
+\end{lstlisting}
+
+
+And we have recovered $u$ up to $C/\sqrt{1-x^2}$:
+
+
+\begin{lstlisting}
+(*@\HLJLn{C}@*) (*@\HLJLoB{=}@*) (*@\HLJLni{1}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*)
+
+(*@\HLJLnf{u}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*) (*@\HLJLp{,}@*) (*@\HLJLnf{w2}@*)(*@\HLJLp{(}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLp{)}@*)(*@\HLJLoB{/}@*)(*@\HLJLn{\ensuremath{\pi}}@*) (*@\HLJLoB{+}@*) (*@\HLJLn{C}@*)(*@\HLJLoB{/}@*)(*@\HLJLnf{sqrt}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{-}@*)(*@\HLJLnfB{0.1}@*)(*@\HLJLoB{{\textasciicircum}}@*)(*@\HLJLni{2}@*)(*@\HLJLp{)}@*)
+\end{lstlisting}
+
+\begin{lstlisting}
+(-0.1280330340643996, -0.12803303406431615 + 0.0im)
+\end{lstlisting}
+
+
+\subsection{Problem 3.1}
+We actually start by showing the second properties of Problem 3.2, for all $\alpha$:
 
 
 \begin{align*}
@@ -280,8 +722,8 @@ since $p_m^{(n)}(x) = 0$. Note we use the fact that
 \]
 hence vanishes at zero to ignore the boundary terms in integration by parts.
 
-\subsection{Problem 1.2}
-We showed the second property as part of 1.1. For the first part, it is clear that we have the correct constant. Now we show orthogonality with all degree $m < n-1$ polynomials (using the fact that $x^{\alpha+1} \E^{-x}$ is zero at $x = 0$):
+\subsection{Problem 3.2}
+We showed the second property as part of 3.1. For the first part, it is clear that we have the correct constant. Now we show orthogonality with all degree $m < n-1$ polynomials (using the fact that $x^{\alpha+1} \E^{-x}$ is zero at $x = 0$):
 
 \[
 \int_0^\infty {\D L_n^{(\alpha)}(x) \over \dx} p_m(x) x^{\alpha+1} \E^{-x} \dx = -\int_0^\infty L_n^{(\alpha)}(x) (x p_m'(x) + (\alpha+1) p_m - x p_m) x^{\alpha} \E^{-x} \dx = 0
@@ -308,8 +750,8 @@ L_{n}^{(\alpha+1)}(x) &= {x^{-1-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}} {\D
 &={n \over n}L_{n-1}^{(\alpha+1)}(x)   + {x^{-\alpha}\E^x \over n!} {\D^{n} \over \dx^{n}}  \br[ x^{\alpha+n} \E^{-x}] \\
 &=L_{n-1}^{(\alpha+1)}(x) + L_n^{(\alpha)}(x)
 \end{align*}
-\subsection{Problem 1.3}
-Note that relationship 3 above did not depend on $\alpha >-1$.  We therefore have from 1.2, comibing property (3) and (4),
+\subsection{Problem 3.3}
+Note that relationship 3 above did not depend on $\alpha >-1$.  We therefore have from 3.2, comibing property (3) and (4),
 
 
 \begin{align*}
@@ -333,7 +775,7 @@ x \begin{pmatrix} L_0^{(\alpha)}(x) \\
                 \vdots
                 \end{pmatrix}
 \]
-\subsection{Problem 2.1}
+\subsection{Problem 4.1}
 Note that
 
 \[
@@ -353,7 +795,7 @@ D = \begin{pmatrix}
   &&&\ddots
 \end{pmatrix}
 \]
-and the Multiplication operator for $\alpha = 0$ (from Problem 1.3)
+and the Multiplication operator for $\alpha = 0$ (from Problem 3.3)
 
 \[
 J^\top = \begin{pmatrix} 1 &-1\\
@@ -361,7 +803,7 @@ J^\top = \begin{pmatrix} 1 &-1\\
                             &\ddots & \ddots & \ddots
                             \end{pmatrix}
 \]
-and the conversion operator (from Problem 1.2 property 4)
+and the conversion operator (from Problem 3.2 property 4)
 
 \[
 S = \begin{pmatrix}
@@ -382,48 +824,41 @@ Putting everything together, we get the operator
 
 
 \begin{lstlisting}
-(*@\HLJLk{using}@*) (*@\HLJLn{ApproxFun}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SingularIntegralEquations}@*)(*@\HLJLp{,}@*) (*@\HLJLn{Plots}@*)(*@\HLJLp{,}@*) (*@\HLJLn{LinearAlgebra}@*)(*@\HLJLp{,}@*) (*@\HLJLn{SpecialFunctions}@*)
-(*@\HLJLk{import}@*) (*@\HLJLn{ApproxFunOrthogonalPolynomials}@*)(*@\HLJLoB{:}@*) (*@\HLJLn{Recurrence}@*)
-
 (*@\HLJLn{D}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Derivative}@*)(*@\HLJLp{()}@*) (*@\HLJLoB{:}@*)  (*@\HLJLnf{Laguerre}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\to}}@*) (*@\HLJLnf{Laguerre}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
 (*@\HLJLn{S}@*) (*@\HLJLoB{=}@*) (*@\HLJLn{I}@*) (*@\HLJLoB{:}@*) (*@\HLJLnf{Laguerre}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{)}@*) (*@\HLJLoB{\ensuremath{\to}}@*) (*@\HLJLnf{Laguerre}@*)(*@\HLJLp{(}@*)(*@\HLJLni{1}@*)(*@\HLJLp{)}@*)
 
 (*@\HLJLn{Jt}@*) (*@\HLJLoB{=}@*) (*@\HLJLnf{Recurrence}@*)(*@\HLJLp{(}@*)(*@\HLJLnf{Laguerre}@*)(*@\HLJLp{(}@*)(*@\HLJLni{0}@*)(*@\HLJLp{))}@*)
 
-(*@\HLJLn{D}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{S}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{-}@*)(*@\HLJLn{S}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{Jt}@*)
+(*@\HLJLp{(}@*)(*@\HLJLn{D}@*) (*@\HLJLoB{-}@*) (*@\HLJLn{S}@*)(*@\HLJLoB{/}@*)(*@\HLJLni{2}@*) (*@\HLJLoB{-}@*)(*@\HLJLn{S}@*)(*@\HLJLoB{*}@*)(*@\HLJLn{Jt}@*)(*@\HLJLp{)[}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLni{10}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLoB{:}@*)(*@\HLJLni{10}@*)(*@\HLJLp{]}@*)
 \end{lstlisting}
 
 \begin{lstlisting}
-PlusOperator : ApproxFunOrthogonalPolynomials.Laguerre(*@{{\{}}@*)Int64,ApproxFunOrtho
-gonalPolynomials.Ray(*@{{\{}}@*)false,Float64(*@{{\}}}@*)(*@{{\}}}@*)(0, 【0.0,(*@\ensuremath{\infty}@*)❫) (*@\ensuremath{\to}@*) ApproxFunOrthogonalPolyn
-omials.Laguerre(*@{{\{}}@*)Int64,ApproxFunOrthogonalPolynomials.Ray(*@{{\{}}@*)false,Float64(*@{{\}}}@*)(*@{{\}}}@*)(1,
- 【0.0,(*@\ensuremath{\infty}@*)❫)
- -2.5 + 0.0im   3.5 + 0.0im  -2.0 + 0.0im  (*@\ensuremath{\dots}@*)         (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-  1.0 + 0.0im  -5.5 + 0.0im   6.5 + 0.0im            (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)        2.0 + 0.0im  -8.5 + 0.0im            (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)        3.0 + 0.0im            (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)                 (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\dots}@*)         (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)           -8.0 + 0.0im         (*@\ensuremath{\cdot}@*)      
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)           24.5 + 0.0im   -9.0 + 0.0im 
- (*@\ensuremath{\cdot}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)          -26.5 + 0.0im   27.5 + 0.0im 
- (*@\ensuremath{\ddots}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)            9.0 + 0.0im  -29.5 + 0.0im 
- (*@\ensuremath{\ddots}@*)
-       (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)             (*@\ensuremath{\cdot}@*)       (*@\ensuremath{\dots}@*)         (*@\ensuremath{\cdot}@*)              (*@\ensuremath{\ddots}@*)      
- (*@\ensuremath{\ddots}@*)
+10(*@\ensuremath{\times}@*)10 BandedMatrices.BandedMatrix(*@{{\{}}@*)Complex(*@{{\{}}@*)Float64(*@{{\}}}@*),Array(*@{{\{}}@*)Complex(*@{{\{}}@*)Float64(*@{{\}}}@*),2
+(*@{{\}}}@*),Base.OneTo(*@{{\{}}@*)Int64(*@{{\}}}@*)(*@{{\}}}@*):
+ -2.5+0.0im   3.5+0.0im  -2.0+0.0im        (*@\ensuremath{\cdot}@*)      (*@\ensuremath{\dots}@*)        (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+  1.0+0.0im  -5.5+0.0im   6.5+0.0im   -3.0+0.0im           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)       2.0+0.0im  -8.5+0.0im    9.5+0.0im           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)       3.0+0.0im  -11.5+0.0im           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)        4.0+0.0im           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)      (*@\ensuremath{\dots}@*)        (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)          -8.0+0.0im        (*@\ensuremath{\cdot}@*)  
+  
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)          24.5+0.0im   -9.0+0.0
+im
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)         -26.5+0.0im   27.5+0.0
+im
+      (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)           (*@\ensuremath{\cdot}@*)            (*@\ensuremath{\cdot}@*)           9.0+0.0im  -29.5+0.0
+im
 \end{lstlisting}
 
 
-\subsection{Problem 2.2}
+\subsection{Problem 4.2}
 We have
 
 
@@ -436,7 +871,7 @@ Therefore $\lambda_n = -n$. This can be expanded in the form:
 \[
 x {\D^2 L_n^{(\alpha)} \over \dx^2} + (\alpha+1 - x) {\D L_n^{(\alpha)} \over \dx} = -n L_n^{(\alpha)}(x)
 \]
-\subsection{Problem 3.1}
+\subsection{Problem 5.1}
 Define $C_k^{(\alpha)}(z) = \CC[L_k^{(\alpha)} \diamond^\alpha \E^{-\diamond}](z)$ and recall that 
 
 
@@ -463,8 +898,8 @@ Here we double check the formula, noting that $L_1(x) = \E^x {\D \over \dx} x \E
 \end{lstlisting}
 
 \begin{lstlisting}
-(0.018684644298457898 + 0.04836133565334999im, 0.018683923002628996 + 0.048
-368487990893105im)
+(0.018684644298457904 + 0.04836133565335002im, 0.01868392300262891 + 0.0483
+6848799089318im)
 \end{lstlisting}
 
 
@@ -479,8 +914,8 @@ C_0^{(1)}(z) = \CC[\diamond \E^{-\diamond}](z) =C_0(z) - C_1(z) = { \E^{-z} \Ei 
 \end{lstlisting}
 
 \begin{lstlisting}
-(0.09210173751684986 - 0.0296766913548921im, 0.09210253209837324 - 0.029684
-56498826411im)
+(0.09210173751684987 - 0.029676691354892096im, 0.09210253209837325 - 0.0296
+8456498826427im)
 \end{lstlisting}
 
 
@@ -503,12 +938,12 @@ L_1^{(1)}(x) = x^{-1} \E^x {\D \over \dx} x^2 \E^{-x} = 2 - x
 \end{lstlisting}
 
 \begin{lstlisting}
-(0.0624250461619579 + 0.03729703236453841im, 0.06241796711010913 + 0.037367
-846005258im)
+(0.06242504616195792 + 0.037297032364538574im, 0.06241796711010899 + 0.0373
+6784600525782im)
 \end{lstlisting}
 
 
-\subsection{Problem 3.2}
+\subsection{Problem 5.2}
 We have 
 
 \[
@@ -536,7 +971,7 @@ Let's check the result:
 \end{lstlisting}
 
 \begin{lstlisting}
-(-0.06972323453771544, -0.06972323453771496)
+(-0.06972323453971352, -0.06972323453971373)
 \end{lstlisting}
 
 
@@ -545,11 +980,11 @@ Let's check the result:
 \end{lstlisting}
 
 \begin{lstlisting}
-(-0.0697232345406222, -0.06972323454061682)
+(-0.06972323454064278, -0.06972323454061675)
 \end{lstlisting}
 
 
-\subsubsection{Problem 4.1}
+\subsubsection{Problem 6.1}
 Consider integration contours $\gamma_{+x}$ and $\gamma_{-x}$ that avoid $0$ above and below:
 
 
@@ -563,7 +998,7 @@ Consider integration contours $\gamma_{+x}$ and $\gamma_{-x}$ that avoid $0$ abo
 (*@\HLJLnf{plot!}@*)(*@\HLJLp{(}@*)(*@\HLJLn{\ensuremath{\gamma}\ensuremath{\_-}\ensuremath{\_x}}@*)(*@\HLJLp{;}@*) (*@\HLJLn{xlims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{5}@*)(*@\HLJLp{,}@*)(*@\HLJLni{5}@*)(*@\HLJLp{),}@*) (*@\HLJLn{ylims}@*)(*@\HLJLoB{=}@*)(*@\HLJLp{(}@*)(*@\HLJLoB{-}@*)(*@\HLJLni{1}@*)(*@\HLJLp{,}@*)(*@\HLJLni{1}@*)(*@\HLJLp{),}@*) (*@\HLJLn{label}@*)(*@\HLJLoB{=}@*)(*@\HLJLs{"{}gamma{\_}-"{}}@*)(*@\HLJLp{)}@*)
 \end{lstlisting}
 
-\includegraphics[width=\linewidth]{figures/Solutions3_7_1.pdf}
+\includegraphics[width=\linewidth]{figures/Solutions3_20_1.pdf}
 
 So that
 
@@ -587,7 +1022,7 @@ and similarly on the lower arc. Thus we have
 \Gamma_+(\alpha, x)-\E^{2 \I \pi \alpha} \Gamma_-(\alpha, x) &= \lim_{r \rightarrow 0 } \left(\int_{\gamma_{+x}} - \E^{2 \I \pi \alpha} \int_{\gamma_{-x}}\right) \zeta^{\alpha-1} \E^{-\zeta} \D \zeta \ccr
  = (1 - \E^{2 \I \pi \alpha})\int_0^\infty x^{\alpha-1} \E^{-x} \dx = (1 - \E^{2 \I \pi \alpha})\Gamma(\alpha)
 \end{align*}
-\subsection{Problem 4.2}
+\subsection{Problem 6.2}
 Note that, for $0 < \alpha < 1$,
 
 \[
@@ -646,7 +1081,7 @@ via Plemelj.
 \end{lstlisting}
 
 \begin{lstlisting}
-0.07199876331505142 + 0.05850612396048861im
+0.0719987633150514 + 0.05850612396048858im
 \end{lstlisting}
 
 

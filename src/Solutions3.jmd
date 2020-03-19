@@ -1,3 +1,4 @@
+
 __M3M6: Applied Complex Analysis__
 
 Dr. Sheehan Olver
@@ -5,10 +6,330 @@ s.olver@imperial.ac.uk
 
 # Solution Sheet 3
 
+## Problem 1.1
 
-## Problem 1.1 
+Since $\int_{-1}^1 x \dx = 0$, we have no logarithmic growth at infinity. 
+Thus by the formula relating log to Cauchy transforms we find for
+$$
+F(x) = \int_x^1 t \dt = {1 - x^2 \over 2}
+$$
+that
+$$
+\int_{-1}^1 \log|z-x| x \dx = \Re\pr({-2 \I \pi C F(z)})
+$$
 
-We actually start by showing the second properties of Problem 1.2, for all $\alpha$:
+So we just have to work out the Cauchy transform. Try as an ansatz
+$$
+{1 - z^2 \over 2} {\log(z-1) - \log(z+1) \over 2 \pi \I}
+$$
+We only need to remove the growth at infinity. We do so via:
+$$
+\log(z-1) - \log(z+1)  = -{2 \over z} + O(z^{-3})
+$$
+telling us
+$$
+C F(z) = {1 - z^2 \over 2} {\log(z-1) - \log(z+1)  \over 2 \pi \I} + {z \over 2 \pi \I}
+$$
+and
+$$
+\int_{-1}^1 \log|z-x| x \dx = \Re \left({1 - z^2 \over 2} (\log(z-1) - \log(z+1)) - z \right)
+$$
+
+_Verification_
+
+We can confirm the formula:
+```julia
+using ApproxFun, SingularIntegralEquations, Plots, QuadGK, LinearAlgebra, SpecialFunctions
+import ApproxFunOrthogonalPolynomials: Recurrence
+
+H(f,x) = -hilbert(f,x)
+H(f) = -hilbert(f)
+
+z = 2+im
+
+x = Fun()
+π*logkernel(x,z) , real((1-z^2)/2 * (log(z-1)-log(z+1)) - z)
+```
+
+## Problem 1.2
+
+From the hint and the fact that $\asin 1 = \pi/2$ we have
+$$
+F(x) = {\pi \over 4}- {x \sqrt{1-x^2} + \asin x \over 2} =
+    -{\acos x + x \sqrt{1-x^2} \over 2}
+$$
+and  (for $f(x) = \sqrt{1-x^2}$)
+$$
+\int_{-1}^1 f(x) \D x = F(-1) = {\pi \over 2}
+$$
+Thus we need to dermine the Cauchy transform of $F(x)$. 
+Using the usual techniques of subtracting out the growth at 
+infinity
+$$
+\CC[x \sqrt{1-x^2}](z) = {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 2 \I} 
+$$
+Using the hint allows us to related the Cauchy transform of $\asin x$
+to that of $\acos x$. Recall from lectures
+$$
+\CC \acos(z) = {\log(\sqrt{z-1} + \sqrt{z+1}) \over \I} - {\log(z+1) \over 2 \I} + \I \log 2 
+$$
+Thus we have 
+$$
+\CC F(z) = -{\log(\sqrt{z-1} + \sqrt{z+1}) \over 2\I} + {\log(z+1) \over 4 \I} - \I {\log 2 \over 2} 
+  - {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 4 \I} 
+$$
+And
+$$
+M f(z) = {\log(z+1) \over 2} - 2 \I \CC F(z) = \log(\sqrt{z-1} + \sqrt{z+1})- \log 2 - {z  \sqrt{z-1} \sqrt{z+1} - z^2 +1/2 \over 2} 
+$$
+taking the real part and multiplying by π gives the answer.
+
+_Verification_
+
+```julia
+x = Fun()
+f = sqrt(1-x^2)
+
+z = 1+im
+π*logkernel(f, z), π*real(log(sqrt(z-1)+sqrt(z+1))-log(2) - (z*sqrt(z-1)sqrt(z+1)-z^2+1/2)/2)
+```
+
+
+## Problem 1.3
+
+We want to solve
+$$
+\int_{-1}^1 \log |x-t| u(t) \dt = {1 \over x^2 + 1}
+$$
+differentiating and multiplying though by $1/\pi$ we have
+$$
+{1 \over \pi} \dashint_{-1}^1 {u(t) \over x-t} \D t = -{2 x \over \pi (1+x^2)^2}
+$$
+
+This is an inverse Hilbert problem so we know
+$$
+u(x) = -{1 \over \sqrt{1-x^2} } H[\sqrt{1-t^2} f(t)](x)  + {C \over \sqrt{1-x^2}}
+$$
+for 
+$$
+f(x) =  -{2 x \over \pi (1+x^2)^2}.
+$$
+
+We determine the Cauchy transform of $\sqrt{1-x^2} f(x)$ using the usual methods: 
+start with the ansatz
+$$
+\phi(z) = -{\sqrt{z-1} \sqrt{z+1} \over 2 \I} {2 z \over \pi (1+z^2)^2}
+$$
+This decays at infinity so we just need to remove the poleas at $\pm \I$. Here we determine:
+$$
+\phi(z) = -{\sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (z-\I)^2}  + {\I \over 8  (z-\I)} + O(1) \right)
+$$
+and
+$$
+\phi(z) = -{\sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (z+\I)^2}  + {\I \over 8  (z+\I)} + O(1) \right)
+$$
+Telling us that
+$$
+\begin{align*}
+C[\sqrt{1-t^2} f(t)](z) &=  -{\sqrt{z-1} \sqrt{z+1} \over 2 \I} {2 z \over \pi (1+z^2)^2} +  {\sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (z-\I)^2}  + {\I \over 8  (z-\I)} \right) \\
+&\qquad+  {\sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (z+\I)^2}  + {\I \over 8  (z+\I)} \right)
+\end{align*}
+$$
+Thus we have
+$$
+\begin{align*}
+H[\sqrt{1-t^2} f](x) &= -\I (C^+ + C^-)[\sqrt{1-t^2} f](x) \ccr
+= -  {2\I \sqrt{\I -1 } \sqrt{\I + 1} \over \pi} \left(-{1  \over 4 (x-\I)^2}  + {2\I \over 8  (x-\I)} \right) \\
+&\qquad-  {2\I \sqrt{-\I -1 } \sqrt{1-\I } \over \pi} \left({1  \over 4 (x+\I)^2}  + {\I \over 8  (x+\I)} \right)
+\end{align*}
+$$
+
+In other words, for
+$$
+\tilde u(x) = {2\I \sqrt{\I -1 } \sqrt{\I + 1} \over \pi \sqrt{1-x^2}} \left(-{1  \over 4 (x-\I)^2}  + {2\I \over 8  (x-\I)} \right) -  {2\I \sqrt{-\I -1 } \sqrt{1-\I } \over \pi \sqrt{1-x^2}} \left({1  \over 4 (x+\I)^2}  + {\I \over 8  (x+\I)} \right)
+$$
+we have
+$$
+u(x) =  \tilde u(x) + {C \over \sqrt{1-x^2}}.
+$$
+
+
+To find $C$ we impose the condition that
+$$
+\int_{-1}^1 \log|t| u(t) \dt = 1
+$$
+We thus need to determine $C$. Recall that
+$$
+{1 \over \pi} \int_{-1}^1 {\log(z-x) \over \sqrt{1-x^2}} \dx = 2 \log(\sqrt{z-1}+\sqrt{z+1}) - 2 \log 2
+$$
+Thus for $x \in [-1,1]$ we have
+$$
+{1 \over \pi} \int_{-1}^1 {\log|x-t| \over \sqrt{1-t^2}} \dt = 2 \Re(\log(\I \sqrt{1-x}+\sqrt{x+1}) - 2 \log 2)
+$$
+or in particular 
+$$
+{1 \over \pi} \int_{-1}^1 {\log|x| \over \sqrt{1-x^2}} \dx = \log(1/2)
+$$
+Thus we want to solve
+$$
+\int_{-1}^1 \log|t| \tilde u(t) \dt + C {\log(1/2) \over \pi} = 1
+$$
+i.e.
+$$
+C = (1 - \int_{-1}^1 \log|t| \tilde u(t) \dt)  {1 \over  \pi \log(1/2)}
+$$
+
+
+
+_Check derivation_
+
+Let's check the derivation. First we can calculate $u$ numerically:
+```julia
+L = SingularIntegral(0) : JacobiWeight(-0.5,-0.5,Chebyshev())
+
+x = Fun()
+g = 1/(x^2+1)
+u = (π*L) \ g
+
+π*logkernel(u, 0.1) , g(0.1)
+```
+
+Differentiating it satisfies $H u = g'/(\pi)$:
+```julia
+H(u,0.1) , g'(0.1)/(π) , -(2*0.1)/(π*(1+0.1^2)^2)
+```
+The Cauchy transform also works:
+```julia
+f = g'/(π)
+
+z = 1+im
+ψ = z -> -sqrt(z-1)sqrt(z+1)/(2im) * 2z/(π*(1+z^2)^2) + 
+                sqrt(im-1)sqrt(im+1)/π * (-1/(4*(z-im)^2) + im/(8(z-im))) + 
+                sqrt(-im-1)sqrt(1-im)/π * (1/(4*(z+im)^2) + im/(8(z+im)))
+
+cauchy(sqrt(1-x^2)*f, z) , ψ(z)
+```
+
+Therefore the Hilbert transform is given by:
+```julia
+Hf = x-> - 2im*sqrt(im-1)sqrt(im+1)/π * (-1/(4*(x-im)^2) + im/(8(x-im))) - 
+            2im*sqrt(-im-1)sqrt(1-im)/π * (1/(4*(x+im)^2) + im/(8(x+im)))
+
+H(sqrt(1-x^2)*f)(0.1) , Hf(0.1)
+```
+
+We thus have an expression for $u$, we are just missing the constant:
+```julia
+ũ = x -> -Hf(x)/sqrt(1-x^2)
+
+C = u(0.0) + Hf(0.0)
+u(0.1) ≈ ũ(0.1) + C/sqrt(1-0.1^2)
+```
+We can find $C$ interms of the relevant integral, which we call $D$:
+```julia
+D = quadgk(x -> x == 0 ? 0.0 : ũ(x)*log(abs(x)),-1,1)[1]
+C, (1-D)/(π*log(1/2))
+```
+
+
+## Problem 2
+
+### Problem 2.1
+
+From Lecture 19 we know that we want to solve
+
+1. $v_{xx} + v_{yy} =0$ for $z \notin [-1,1] \cup \I$
+2. $v(z) \sim \log|z|$ as $z \rightarrow \infty$
+3. $v(z) \sim \log|z-\I|$ as $z \rightarrow \I$
+3. $v(x,0) = D$ for some unknown constant $D$ on $[-1,1]$. 
+
+### Problem 2.2
+
+
+We write
+$$
+v(x,y) = \int_{-1}^1 u(t) \log|z-t| \dt + \log|z-\I|
+$$
+The behaviour at infinity requires that $\int_{-1}^1 u(t) \dt = 0$. We further have the singular integral equation
+$$
+  \int_{-1}^1 u(t) \log|x-t| \dt = C - \log|x-\I|
+$$
+which follows from $D = v(x,0)$
+
+We can actually solve this numerically:
+```julia
+w = SingularIntegral(0) \ (-log(abs(x-im))/π)
+u = w - sum(w)/(π*sqrt(1-x^2)) # ensure integrates to zero
+v = z -> π*logkernel(u, z) + log(abs(z-im))
+D = v(0)
+
+xx = yy = -4:0.011:4
+V = v.(xx' .+ im*yy)
+
+contour(xx, yy, V; nlevels=50)
+plot!(domain(x); color=:black, legend=false)
+```
+
+#### Problem 2.3
+
+As usual for logarithmic singular integral equations we want to solve
+$$
+{1 \over \pi} \dashint_{-1}^1 {u(t)  \over x-t} \dt = {f'(x)  \over \pi}
+$$
+we need to be a bit careful differentiating $f$:
+$$
+{\D \over \dx} \log|x-\I| = {\D \over \dx} \log\sqrt{x^2 + 1} = { x \over x^2 + 1}
+$$
+Now we do our usual game and solve for $u$ using the inverse Hilbert transform formula. That is, first calculate
+$$
+C[\sqrt{1-x^2} {x \over x^2+1}](z) = {z \sqrt{z-1} \sqrt{z+1} \over 2\I (z^2+1)} - {1 \over 2 \I} + {\I \sqrt{\I - 1} \sqrt{\I+1} \over 4 (z-\I)} +  {\I \sqrt{-\I - 1} \sqrt{-\I+1} \over 4 (z+\I)}
+$$
+Therefore, we know that
+$$
+u(x) =  {\sqrt{\I - 1} \sqrt{\I+1} \over 2 \pi (x-\I)\sqrt{1-x^2}} +  {\sqrt{-\I - 1} \sqrt{-\I+1} \over 2 \pi (x+\I) \sqrt{1-x^2}} + {C \over \sqrt{1-x^2}}
+$$
+We can show (e.g. by finding its Cauchy transform and lookin at the asymptotic behaviour) that
+$$
+\int_{-1}^1\left[ {\sqrt{\I - 1} \sqrt{\I+1} \over 2 \pi (x-\I)\sqrt{1-x^2}} +  {\sqrt{-\I - 1} \sqrt{-\I+1} \over 2 \pi (x+\I) \sqrt{1-x^2}} \right] = -1
+$$
+Combined with the fact that
+$$
+\int_{-1}^1 {1 \over \sqrt{1-x^2}} = \pi
+$$
+we find that $C = 1/\pi$.
+
+_Verification_ Let's check our work. First we see that the Hilbert transform of $u$ does 
+indeed satisfy the specified equation (using the numerical `u` as calculated above):
+```julia
+fp = x -> -x/(x^2+1)
+H(u, 0.1) , fp(0.1)/π
+```
+
+And the Cauchy transform of $\sqrt{1-x^2} f'(x)$ satisfies the derived formula:
+```julia
+Cf = z -> z * sqrt(z-1)sqrt(z+1)/(2im*(z^2+1)) - 1/(2im) + im*sqrt(im-1)sqrt(im+1)/(4(z-im)) +
+         im*sqrt(-im-1)sqrt(-im+1)/(4(z+im))
+-cauchy(sqrt(1-x^2)fp(x), z) , Cf(z)
+```
+
+Therefore we can invert to the Hilbert transform for $f'$:
+```julia
+w = -H(sqrt(1-x^2)fp(x))/sqrt(1-x^2)
+w2 = sqrt(im-1)sqrt(im+1)/(2(x-im) * sqrt(1-x^2)) +
+         sqrt(-im-1)sqrt(-im+1)/(2(x+im) * sqrt(1-x^2))
+H(w,0.1) , H(w2,0.1) , fp(0.1)
+```
+And we have recovered $u$ up to $C/\sqrt{1-x^2}$:
+```julia
+C = 1/π
+
+u(0.1) , w2(0.1)/π + C/sqrt(1-0.1^2)
+```
+
+
+## Problem 3.1 
+
+We actually start by showing the second properties of Problem 3.2, for all $\alpha$:
 $$
 \begin{align*}
 {\D \over \dx} \br[x^\alpha \E^{-x} L_n^{(\alpha)}(x)] &= {1 \over n!}  {\D^{n+1} \over \dx^{n+1}}\br[x^{\alpha+n}\E^{-x}] \ccr
@@ -51,9 +372,9 @@ hence vanishes at zero to ignore the boundary terms in integration by parts.
 
 
 
-## Problem 1.2 
+## Problem 3.2 
 
-We showed the second property as part of 1.1. For the first part, it is clear that we have the correct constant. Now we show orthogonality with all degree $m < n-1$ polynomials (using the fact that $x^{\alpha+1} \E^{-x}$ is zero at $x = 0$):
+We showed the second property as part of 3.1. For the first part, it is clear that we have the correct constant. Now we show orthogonality with all degree $m < n-1$ polynomials (using the fact that $x^{\alpha+1} \E^{-x}$ is zero at $x = 0$):
 $$
 \int_0^\infty {\D L_n^{(\alpha)}(x) \over \dx} p_m(x) x^{\alpha+1} \E^{-x} \dx = -\int_0^\infty L_n^{(\alpha)}(x) (x p_m'(x) + (\alpha+1) p_m - x p_m) x^{\alpha} \E^{-x} \dx = 0
 $$
@@ -82,9 +403,9 @@ $$
 
 
 
-## Problem 1.3 
+## Problem 3.3 
 
-Note that relationship 3 above did not depend on $\alpha >-1$.  We therefore have from 1.2, comibing property (3) and (4),
+Note that relationship 3 above did not depend on $\alpha >-1$.  We therefore have from 3.2, comibing property (3) and (4),
 $$
 \begin{align*}
 x L_n^{(\alpha)}(x) &= -(n+1)L_{n+1}^{(\alpha-1)}(x) +(n+\alpha)L_n^{(\alpha-1)}(x) \\
@@ -110,7 +431,7 @@ x \begin{pmatrix} L_0^{(\alpha)}(x) \\
 $$
 
 
-## Problem 2.1
+## Problem 4.1
 
 Note that
 $$
@@ -130,14 +451,14 @@ D = \begin{pmatrix}
   &&&\ddots
 \end{pmatrix}
 $$
-and the Multiplication operator for $\alpha = 0$ (from Problem 1.3)
+and the Multiplication operator for $\alpha = 0$ (from Problem 3.3)
 $$
 J^\top = \begin{pmatrix} 1 &-1\\
                         -1 & 3 &-2\\
                             &\ddots & \ddots & \ddots
                             \end{pmatrix}
 $$
-and the conversion operator (from Problem 1.2 property 4)
+and the conversion operator (from Problem 3.2 property 4)
 $$
 S = \begin{pmatrix}
         1 & -1 \\ & 1 & -1 \\&&\ddots & \ddots
@@ -154,18 +475,15 @@ S J^\top = \begin{pmatrix}
 $$
 Putting everything together, we get the operator
 ```julia
-using ApproxFun, SingularIntegralEquations, Plots, LinearAlgebra, SpecialFunctions
-import ApproxFunOrthogonalPolynomials: Recurrence
-
 D = Derivative() :  Laguerre(0) → Laguerre(1)
 S = I : Laguerre(0) → Laguerre(1)
 
 Jt = Recurrence(Laguerre(0))
 
-D - S/2 -S*Jt
+(D - S/2 -S*Jt)[1:10,1:10]
 ```
 
-## Problem 2.2
+## Problem 4.2
 
 We have
 $$
@@ -179,7 +497,7 @@ $$
 x {\D^2 L_n^{(\alpha)} \over \dx^2} + (\alpha+1 - x) {\D L_n^{(\alpha)} \over \dx} = -n L_n^{(\alpha)}(x)
 $$
 
-## Problem 3.1
+## Problem 5.1
 
 Define $C_k^{(\alpha)}(z) = \CC[L_k^{(\alpha)} \diamond^\alpha \E^{-\diamond}](z)$ and recall that 
 $$
@@ -231,7 +549,7 @@ $$
 cauchy((2-x)*x*w, z),(1+(z-2)*(-exp(-z)*ei(z)-(z-1)*exp(-z)*ei(z)+1))/(-2π*im)
 ```
 
-## Problem 3.2
+## Problem 5.2
 
 We have 
 $$
@@ -257,7 +575,7 @@ z = 2+im
 -imag(cauchy((2-x)*x*w,z)),real((1+(z-2)*(-exp(-z)*ei(z)-(z-1)*exp(-z)*ei(z)+1))/(-2π))
 ```
 
-### Problem 4.1
+### Problem 6.1
 
 Consider integration contours $\gamma_{+x}$ and $\gamma_{-x}$ that avoid $0$ above and below:
 ```julia
@@ -290,7 +608,7 @@ $$
 \end{align*}
 $$
 
-## Problem 4.2
+## Problem 6.2
 
 Note that, for $0 < \alpha < 1$,
 $$
