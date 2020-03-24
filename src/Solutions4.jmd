@@ -1,3 +1,10 @@
+__M3M6: Applied Complex Analysis__
+
+Dr. Sheehan Olver
+s.olver@imperial.ac.uk
+
+# Solution Sheet 4
+
 ## Problem 3
 
 ### Problem 3.1 
@@ -41,11 +48,12 @@ $$
 \int_{-\infty}^\infty  {\E^{-\I s x} \over 1 + \E^x} \dx  = - 2 \I \pi {\E^{\pi s} \over 1 -\E^{2 \pi s}} = \I \pi {\rm csch}\, \pi x
 $$
 which has poles at $0$ and $\I$:
-
+```julia
 phaseplot(-3..3, -10..10, z -> 1/(1+exp(z))) #integrand
-
+```
+```julia
 phaseplot(-3..3, -3..3, z -> im*π*csch(π*z)) # transform
-
+```
 ### Problem 3.3 
 
 Here $\E^{\gamma x } f(x) = \E^{(\gamma+2) x}$ has decay at $+\infty$ proved $\gamma < -2$, hence we have the strip $\Im s < -2$.
@@ -91,7 +99,7 @@ for $\Im s < 0$.  Define
 $$
 h(s) = - \widehat f_{\rm R}(s) = {\I \over s} + {\alpha \over s^2}
 $$
-
+```julia
 α = 0.3
 x = Fun(0..100)
 f = 1  + α*x
@@ -100,8 +108,8 @@ h = s -> (im/s + α/s^2)
 γ = -0.5  # we take the Fourier transform on R + im*γ
 s = -0.5 + im*γ
 
--sum(f*exp(-im*s*x)) - h(s)
-
+-sum(f*exp(-im*s*x)) , h(s)
+```
 
 Transforming the equation, we have
 $$
@@ -116,12 +124,10 @@ $$
 \kappa(z) =  \begin{cases} {z + 2\I  \over z + \I}  & \Im z > \gamma \\
                             {z - \I  \over z - 2\I} & \Im z < \gamma
                             \end{cases}
-                            $$
+$$
 which is valid for $-1 < \Im s < 0$.
-
-
-
-
+```julia
+using ApproxFun, SingularIntegralEquations, Plots, ComplexPhasePortrait, LinearAlgebra
 g = s -> (4+s^2)/(1+s^2)
 
 κ = z -> imag(z) > γ ? (z+im*2)/(z+im) :
@@ -135,7 +141,7 @@ s = 0.1 + γ*im
 κ₋ = κ(s - eps()*im)
 
 κ₊ - κ₋*g(s)
-
+```
 
 
 We thus get the RH problem
@@ -155,7 +161,7 @@ Y(z) = \begin{cases}
 \end{cases}
 $$
 
-
+```julia
 s = 0.1 + γ*im 
 Y = z -> imag(z) > γ ? im*(2+α)/(4*(z+2im)) :
                      - α/(2z^2) + im*(α-2)/(4z)
@@ -164,7 +170,8 @@ Y = z -> imag(z) > γ ? im*(2+α)/(4*(z+2im)) :
 Y₊ = Y(s + eps()*im)
 Y₋ = Y(s - eps()*im)
 
-Y₊ - Y₋  - h(s)/κ₊
+Y₊ - Y₋  , h(s)/κ₊
+```
 
 We therefore have 
 
@@ -174,30 +181,30 @@ $$
 (-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I} & \Im z < \gamma
 \end{cases}
 $$
-
+```julia
 Φ = z -> imag(z) > γ ? im*(2+α)/(4*(z+im)) :
                       (-α/(2z^2) + im*(α-2)/(4z))*(z-im)/(z-2im)
 Φ₊ = Φ(s+eps()im) 
 Φ₋ = Φ(s-eps()im) 
 
-Φ₊ - Φ₋*g(s) - h(s)
+Φ₊ - Φ₋*g(s) , h(s)
+```
 
 Finally, we recover the solution by inverting 
 $\Phi_-$, using Residue calculus in the upper half plane: for $x > 0$ we have
+$$
 \begin{align*}
 u(x) &= {1 \over 2 \pi} \int_{-\infty+ \I \gamma}^{\infty + \I \gamma} (-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I}  \E^{\I z x}  \dz \\
 &= \I (\Res_{z = 0} + \Res_{z = 2\I}) (-{\alpha \over 2 z^2}+{\I (\alpha-2) \over 4 z}  ) {z - \I  \over z - 2\I}  \E^{\I z x} = {1+x \alpha \over 4} - {\alpha+1 \over 4} \E^{-2 x}
 \end{align*}
-
+$$
 Did it work? yes:
-
+```julia
 t = Fun(0 .. 50)
-
 u = (1+t*α)/4 - (α-1)/4*exp(-2t)
-
 x = 0.1
-
 u(x) + 3/2*sum(exp(-abs(t-x))*u) , f(x)
+```
 
 ### Problem 4.2
 
@@ -223,9 +230,8 @@ $$
 \kappa_+(s) = \kappa_-(s) g(s)
 $$
 
-
+```julia
 α = 0.3
-
 
 g = s -> (2α)/(α^2+s^2)
 h = s -> (im/s + α/s^2)
@@ -233,14 +239,15 @@ h = s -> (im/s + α/s^2)
 κ = z -> imag(z) > γ ? 1/(z + im*α) :
                        (z-im*α)/(2α)
 
-
 phaseplot(-3..3, -3..3, κ)
-
+```
+```julia
 s = 0.1 + γ*im 
 κ₊ = κ(s + eps()*im)
 κ₋ = κ(s - eps()*im)
 
-κ₊ - κ₋*g(s)
+κ₊ , κ₋*g(s)
+```
 
 Then we have 
 $$h(s)/\kappa_+(s) =  \I {s^2 + \alpha^2 \over s^2} = \I + \I {\alpha^2 \over s^2}
@@ -253,8 +260,7 @@ Y(z) = \begin{cases}
 \end{cases}
 $$
 
-
-
+```julia
 s = 0.1 + γ*im 
 Y = z -> imag(z) > γ ? im :
                      -im*α^2/s^2
@@ -263,7 +269,8 @@ Y = z -> imag(z) > γ ? im :
 Y₊ = Y(s + eps()*im)
 Y₋ = Y(s - eps()*im)
 
-Y₊ - Y₋  - h(s)/κ₊
+Y₊ - Y₋  , h(s)/κ₊
+```
 
 Putting things together, we get
 $$
@@ -271,27 +278,28 @@ $$
                         -\I {\alpha^2 \over z^2} {z-\I \alpha \over 2 \alpha} & \Im z < \gamma
 \end{cases}
 $$
-
+```julia
 Φ = z -> imag(z) > γ ? im/(z + im*α)  :
                      -im*α^2/z^2* (z-im*α)/(2α)
 Φ₊ = Φ(s+eps()im) 
 Φ₋ = Φ(s-eps()im) 
 
-Φ₊ - Φ₋*g(s) - h(s)
+Φ₊ - Φ₋*g(s) , h(s)
+```
 
 We now invert the Fourier transform of $\Phi_-(s)$ using Jordan's lemma:
 $$
 u(x) = {1 \over 2 \pi} \int_{-\infty + \I \gamma}^{\infty + \I \gamma} \Phi_-(s) \E^{\I s x} \D s = {\alpha \over 2}\Res_{z = 0} {z- \I \alpha \over z^2} \E^{\I z x}  = {\alpha \over 2} (1+x \alpha)
 $$
-
+```julia
 t = Fun(0 .. 200)
 
 u = α*(1+t*α)/2
 
 x = 0.1
 
-sum(exp(-α*abs(t-x))*u)  - (1 + α*x)
-
+sum(exp(-α*abs(t-x))*u)  , (1 + α*x)
+```
 ## 4.3
 
 1. From the same logic as 2.2, we know we need to solve
@@ -337,7 +345,7 @@ and Jordan's lemma gives us
 $$
 u(x) = {x \over \gamma^2} - \E^{-x \gamma}(\gamma-1)/\gamma^2
 $$
-
+```julia
 t = Fun(0 .. 200)
 λ = 0.1
 γ = sqrt(1-2λ)
@@ -346,7 +354,8 @@ u = t/γ^2 - exp(-t*γ)*(γ-1)/γ^2
 
 x = 0.1
 
-u(x) - λ*sum(exp(-abs(t-x))*u) - x
+u(x) - λ*sum(exp(-abs(t-x))*u) , x
+```
 
 Oddly, this is definitely a solution, but not in the form the question asked for. To get the other solution, consider now the bad winding number case of $-1 < \delta < - \gamma$. Motivated by 2.2, what if we allow $\kappa$ to have different behaviour? Consider
 $$
@@ -389,10 +398,12 @@ What's the moral of the story?
 
 
 1. Integrating by parts we have
+$$
 \begin{align*}
 \widehat{u_\rR'}(s) &= \I s \widehat{u_\rR}(s) - u(0) = \I s \widehat{u_\rR}(s) \\
 \widehat{u_\rR''}(s) &= \I s \widehat{u_\rR'}(s) - u'(0)  = -s^2 \widehat{u_\rR}(s) - u'(0)
 \end{align*}
+$$
 2.  Our integral equation when cast on the whole real line is:
 $$
 u_\rR''(x) - {72 \over 5} \int_{-\infty}^\infty \E^{-5 |x-t|} u_\rR(t)\dt = 1_\rR(x) + p_\rL(x)
@@ -410,17 +421,19 @@ $$
 \widehat{1_\rR}(s) = \int_0^\infty \E^{-\I s x} \dx = {1 \over \I s}
 $$
 Thus our integral equation in frequency space is 
+$$
 \begin{align*}
 -\alpha - s^2 \widehat{u_\rR}(s) -  {72 \over 5} \widehat K(s) \widehat{u_\rR}(s) &=\widehat{p_\rL}(x) +  \widehat{1_\rR}(s)\\
 \Phi_+(s) - (s^2 +   {144 \over s^2+25}) \Phi_-(s) &= \alpha + {1 \over \I s}\\
 \Phi_+(s) -  {(s^2 + 9) (s^2+16) \over s^2+25} \Phi_-(s) &= \alpha + {1 \over \I s}
 \end{align*}
+$$
 where $s \in \R +\I \gamma$ for any $-5 < \gamma < 0$.
 3. We can factorize this to construct $g(s)$ as 
 $$
 g(s) = \kappa_+(s) \kappa_-(s)^{-1} = {(s +3 \I) (s+4 \I) \over s+5 \I} {(s -3 \I) (s-4 \I) \over s-5 \I}
 $$
-
+```julia
 κ = z -> imag(z) > γ ? 
         (z+3im)*(z+4im)/(z+5im) :
         (z-5im)/((z-3im)*(z-4im)) 
@@ -429,7 +442,8 @@ $$
 s = 0.1+γ*im
 g = s -> (s^2+9)*(s^2+16)/(s^2+25)
 
-κ(s+eps()im) - g(s)κ(s-eps()im)
+κ(s+eps()im) , g(s)κ(s-eps()im)
+```
 
 Writing $\Phi(z) = \kappa(z) Y(z)$ we get the subtractive RH problem
 $$
@@ -464,34 +478,33 @@ u(x) = \I (\Res_{z = 0} +\Res_{z = 3 \I } +\Res_{z = 4\I} )      \E^{\I z x }   
 $$
 
 Here's we check the solution:
-
+```julia
 t = Fun(0 .. 200)
 
 u = -25/144 - 5exp(-4t)/48 + 5exp(-3t)/18
-
 x = 1.1
 u''(x) - 72/5*sum(exp(-5abs(x-t))*u)
+```
 
 Here we check the jump of $Y$:
-
+```julia
 α = u'(0)
 
 h = s -> α + 1/(im*s)
-
 Y = z -> imag(z) > γ ? 
        (-(α+1/4)/(z+4im) + (2/3 + 2α)/(z+3im)) :
          5/(12z)
 
-Y(s+eps()im) - Y(s-eps()im) - h(s)/κ(s + eps()im)
+Y(s+eps()im) - Y(s-eps()im) , h(s)/κ(s + eps()im)
+```
 
 Here we check the jump of $\Phi$:
-
+```julia
 γ  = -1.0
-
 
 Φ = z -> imag(z) > γ ? 
         (z+3im)*(z+4im)/(z+5im) * (-(α+1/4)/(z+4im) + (2/3 + 2α)/(z+3im)) :
         (z-5im)/((z-3im)*(z-4im)) * 5/(12z)
 
-
-Φ(s + eps()*im) - g(s)*Φ(s - eps()*im) - h(s)
+Φ(s + eps()*im) - g(s)*Φ(s - eps()*im) , h(s)
+```

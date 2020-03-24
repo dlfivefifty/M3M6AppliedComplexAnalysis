@@ -30,6 +30,7 @@ weave("src/Lecture26.jmd", doctype="md2tex", informat="markdown", out_path=pwd()
 weave("src/Solutions1.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Solutions2.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Solutions3.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
+weave("src/Solutions4.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 
 
 end # module
