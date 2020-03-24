@@ -54,3 +54,4 @@ Examples of previous projects:
 23. [Orthogonal polynomials and singular integrals](notes/Lecture23.pdf)
 24. [Hermite polynomials](notes/Lecture24.pdf)
 25. [Riemann–Hilbert problems](notes/Lecture25.pdf)
+26. [Laurent and Toeplitz operators](notes/Lecture25.pdf)

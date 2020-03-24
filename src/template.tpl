@@ -43,6 +43,7 @@
 \def\E{ {\rm e} }
 \def\C{ {\mathbb C} }
 \def\R{ {\mathbb R} }
+\def\Z{ {\mathbb Z} }
 \def\CC{ {\cal C} }
 \def\HH{ {\cal H} }
 \def\LL{ {\cal L} }
