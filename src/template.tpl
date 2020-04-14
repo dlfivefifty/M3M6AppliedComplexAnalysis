@@ -43,12 +43,17 @@
 \def\E{ {\rm e} }
 \def\C{ {\mathbb C} }
 \def\R{ {\mathbb R} }
+\def\H{ {\mathbb H} }
 \def\Z{ {\mathbb Z} }
 \def\CC{ {\cal C} }
+\def\FF{ {\cal F} }
 \def\HH{ {\cal H} }
 \def\LL{ {\cal L} }
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
+
+\def\fR{ f_{\rm R} }
+\def\fL{ f_{\rm L} }
 
 \def\qqqquad{\qquad\qquad}
 \def\qqwhere{\qquad\hbox{where}\qquad}

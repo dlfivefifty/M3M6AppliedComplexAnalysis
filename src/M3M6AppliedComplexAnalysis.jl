@@ -26,6 +26,7 @@ weave("src/Lecture23.jmd", doctype="md2tex", informat="markdown", out_path=pwd()
 weave("src/Lecture24.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Lecture25.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Lecture26.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
+weave("src/Lecture27.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 
 weave("src/Solutions1.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")
 weave("src/Solutions2.jmd", doctype="md2tex", informat="markdown", out_path=pwd()*"/output/", template="src/template.tpl")

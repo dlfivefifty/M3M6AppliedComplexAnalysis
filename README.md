@@ -30,6 +30,8 @@ Examples of previous projects:
 
 ## Lecture notes
 
+
+
 1. [Review of complex analysis](notes/Lecture1.pdf)
 2. [Cauchy's integral formula and Taylor series](notes/Lecture2.pdf)
 3. [Laurent series and residue calculus](notes/Lecture3.pdf)
@@ -54,4 +56,5 @@ Examples of previous projects:
 23. [Orthogonal polynomials and singular integrals](notes/Lecture23.pdf)
 24. [Hermite polynomials](notes/Lecture24.pdf)
 25. [Riemann–Hilbert problems](notes/Lecture25.pdf)
-26. [Laurent and Toeplitz operators](notes/Lecture25.pdf)
+26. [Laurent and Toeplitz operators](notes/Lecture26.pdf)
+27. [Half-Fourier and Laplace transforms](notes/Lecture27.pdf)
