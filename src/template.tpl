@@ -52,6 +52,8 @@
 \def\vc#1{ {\mathbf #1} }
 \def\bbC{ {\mathbb C} }
 
+
+
 \def\fR{ f_{\rm R} }
 \def\fL{ f_{\rm L} }
 
@@ -88,6 +90,7 @@
 \def\dx{\D x}
 \def\dt{\D t}
 \def\dz{\D z}
+\def\ds{\D s}
 
 \def\norm#1{\left\| #1 \right\|}
 
@@ -100,6 +103,7 @@
 \def\sopmatrix#1{ \begin{pmatrix}#1\end{pmatrix} }
 
 \def\endash{–}
+\def\emdash{—}
 \def\mdblksquare{\blacksquare}
 \def\lgblksquare{\blacksquare}
 \def\scre{\E}

@@ -58,3 +58,4 @@ Examples of previous projects:
 25. [Riemann–Hilbert problems](notes/Lecture25.pdf)
 26. [Laurent and Toeplitz operators](notes/Lecture26.pdf)
 27. [Half-Fourier and Laplace transforms](notes/Lecture27.pdf)
+28. [The Wiener–Hopf method](notes/Lecture28.pdf)

@@ -5,7 +5,7 @@ Dr. Sheehan Olver
 s.olver@imperial.ac.uk
 
 
-# Lecture 27: The Wiener-Hopf method
+# Lecture 28: The Wiener-Hopf method
 
 
 
@@ -136,14 +136,245 @@ uh = π/a*Fun(s -> exp(-a*abs(s))*(γ^2 + s^2)/(λ*(γ^2 + s^2) + 2γ), Γ)
 u = Fun(x -> fourier(uh, x), Γ)/(2π)
 
 plot(-10.0:0.1:10.0, u)
-
-λ*u(0.0) +  sum(u*K) - f(0.0)
-
+```
+```julia
+λ*u(0.0) +  sum(u*K), f(0.0)
+```
+```julia
 x =2.0
-
 λ*u(x) +  sum(Fun(t -> K(x-t)*u(t), UnionDomain(-Inf .. x, x .. Inf))) , f(x)
 ```
 
 Working out the analytic formula for this example takes a lot more work and involves other special functions, 
 and is outside the scope of the course.
 
+
+# Integral equations on the half-line and Riemann–Hilbert problems
+
+
+Taking Fourier transforms, we get functions analytic above or below the real axis, 
+giving us a Riemann–Hilbert problem of finding $\Phi(z)$ analytic off $(-\infty,\infty)$ such that
+$$
+\Phi_+(s) - g(s)\Phi_-(s) = h(s) \qqand \Phi(\infty) = C
+$$
+where $\Phi_\pm(s) = \lim_{\epsilon \rightarrow 0} \Phi(s \pm \I \epsilon)$ 
+are the limits from above and below.  Here $g$ and $h$ are given, and $g(\pm \infty) = 1$.
+
+Recall the notation
+$$
+f_{\rm R}(x) = \begin{cases}f(t) & t \geq 0 \\ 0 & \hbox{otherwise} \end{cases}
+$$
+and
+$$
+f_{\rm L}(x) = \begin{cases}f(t) & t < 0 \\ 0 & \hbox{otherwise} \end{cases}
+$$
+
+Using this, we can rewrite the integral equation on the half line
+$$
+\lambda u(x) + \int_{0}^\infty K(x-t)u(t) \dt = f(x)\qqfor 0 < x < \infty.
+$$
+as an integral equation on the whole line:
+$$
+\lambda u_{\rm R}(x) + \int_{-\infty}^\infty K(x-t)u_{\rm R}(t) \dt = f_{\rm R}(x) + p_{\rm L}(x)\qqfor -\infty < x < \infty.
+$$
+where 
+$$
+p(x) = \int_{-\infty}^\infty K(x-t)u_{\rm R}(t) \dt
+$$
+Taking Fourier transforms, this becomes:
+$$
+(\lambda + \widehat K(s)) \widehat{u_{\rm R}}(s) = \widehat{f_{\rm R}}(s) + \widehat{p_{\rm L}}(s)
+$$
+As discussed last lecture, assuming $u$ is "nice" we are guaranteed that $\widehat{ u_{\rm R}}(s)$ 
+is analytic in the lower half-plane and $\widehat{ p_{\rm L}}(s)$ is analytic in the upper-half plane.  
+Thus introduce the sectionally analytic function:
+$$
+\Phi(z) = \begin{cases}  \widehat{p_{\rm L}}(z) & \Im z > 0 \\ 
+                            \widehat{u_{\rm R}}(z) & \Im z < 0 
+                            \end{cases}
+$$
+Then our integral transformed integral equation becomes:
+$$
+\underbrace{\Phi_+(s)}_{\widehat{p_{\rm L}}(s)} - \underbrace{g(s)}_{\lambda + \widehat K(s)} \underbrace{\Phi_-(s)}_{\widehat{u_{\rm R}}(s)} = \underbrace{h(s)}_{-\widehat{f_{\rm R}}(s) } \qqand \Phi(\infty) = 0
+$$
+
+Here there is one unknown $\Phi(z)$, and we claim that in certain conditions this has one—and only—one solution. Thus we wish to:
+
+1. Find $\Phi(z)$
+2. Recover $u(x)$ via the inverse Fourier transform ${\cal F}^{-1} \Phi_-$
+
+
+# The Wiener–Hopf method: an example
+
+We can now employ the Wiener–Hopf method to solve
+$$
+\lambda u(x) + \int_{0}^\infty K(x-t)u(t) \dt = f(x)\qqfor 0 < x < \infty.
+$$
+
+The Wiener–Hopf method consists of the following steps:
+
+1. Calculate Fourier transforms $\widehat K(s)$ and $\widehat{f_{\rm R}}(s)$ to reduce to RH problem 
+$\Phi_+(s) -g(s) \Phi_-(s) = h(s)$ with $\lim \Phi(z) = 0$
+2. Find homogenous solution $\kappa_+(s) = g(s) \kappa_-(s)$ with $\lim \kappa(z) = 1$
+3. Solve Cauchy transform problem $Y_+(s) - Y_-(s) = {h(s) \over \kappa_+(s)}$
+4. Find $u(x)$ by inverting Fourier transform $\widehat{u_{\rm R}}(s) = \Phi_-(s) = \kappa_-(s) Y_-(s)$
+
+
+We will demonstrate these four steps using the example $K(x) = \E^{-|x|}$ and $f(x) = \E^{-x}$,
+with $\lambda = 1$.
+
+## Step 1: Calculate Fourier transforms
+
+We have 
+$$
+\widehat{K}(s) = \int_{-\infty}^0 \E^{t}\E^{-\I s t} \dt + \int_0^\infty \E^{-t} \E^{-\I s t} \dt =
+ {1 \over 1-\I s} - {1 \over -1-\I s} = {2 \over 1+s^2}
+$$
+Because we have exponential decay at $\pm \infty$, $\widehat{K}$ is analytic in a strip.
+Furthermore, 
+$$
+\widehat{f_{\rm R}}(s) = \int_0^\infty \E^{-t} \E^{-\I t s} \dt = -{1 \over -1-\I s} = {\I \over \I-s}
+$$
+As predicted, $\widehat{\fR}(s)$ is analytic in the lower half-plane.
+
+We thus have the RH problem:
+$$
+\underbrace{\Phi_+(s)}_{\widehat{p_{\rm L}}(s)} - \underbrace{g(s)}_{1 + \widehat K(s)} 
+\underbrace{\Phi_-(s)}_{\widehat{u_{\rm R}}(s)} = \underbrace{h(s)}_{-\widehat{\fR}(s)} \qqand \lim\Phi(z) = 0
+$$
+where 
+$$
+p(x) = \int_{-\infty}^\infty K(x-t)u_{\rm R}(t) \dt
+$$
+is unknown, or in our case
+$$
+\Phi_+(s) - {3 + s^2 \over 1 + s^2} \Phi_-(s) = {\I \over s - \I} \qqand \lim\Phi(z) = 0
+$$
+
+Here we confirm our calculations are correct for the Fourier transforms:
+```julia
+t = Fun(0.0 .. 40)
+f = exp(-t)
+fourier(f, -2.0), im/(im-2.0)
+
+1-(fourier(-exp(-t), -2.0) + fourier(-exp(Fun(-40 .. 0)), -2.0)), (2.0^2 + 3)/(2.0^2+1)
+```
+
+## Step 2: Find homogeneous solution
+
+Last lecture we employed the "guess and check" kernel factorization method to find
+$$
+g(s) = {3 + s^2 \over 1 + s^2} = \underbrace{s + \I \sqrt{3} \over s + \I}_{\kappa_+(s)} 
+\underbrace{s - \I \sqrt{3} \over s-\I }_{\kappa_-(s)^{-1}}
+$$
+That is, we have the solution
+$$
+\kappa(z) = \begin{cases} {z + \I \sqrt{3} \over z + \I}  & \Im z > 0 \\
+                            {z - \I  \over z - \I \sqrt{3}} & \Im z < 0
+                            \end{cases}
+$$
+Always verify this solution satisfies the right conditions:
+
+1. The function $\kappa(z)$ is analytic off $\R$, since the pole of ${z + \I \sqrt{3} \over z + \I}$ is in the lower-half plane and the pole of ${z - \I  \over z - \I \sqrt{3}} $ is in the upper-half plane
+2. $\lim \kappa(z) = 1$ by L'Hopital's rule or similar.
+3. It has the right jump:
+$$
+\kappa_+(s) = {s + \I \sqrt{3} \over s + \I} = {3 + s^2 \over 1 + s^2}{s - \I  \over s - \I \sqrt{3}} = g(s)\kappa_-(s) 
+$$
+
+Here we confirm that we have the right jump:
+```julia
+κ = z -> imag(z) > 0 ? (z+im*sqrt(3))/(z+im) :
+                       (z-im)/(z-im*sqrt(3))
+
+κ(0.1+eps()im) , κ(0.1-eps()im)*(3+0.1^2)/(1+0.1^2)
+```
+
+
+## Step 3: Solve Cauchy transform problem
+
+Writing $\Phi(z) = \kappa(z) Y(z)$ we have
+$$
+\Phi_+(s) - g(s) \Phi_-(s) = \kappa_+(s) (Y_+(s) - Y_-(s))
+$$
+hence we need to solve
+$$
+Y_+(s) - Y_-(s) = {h(s) \over \kappa_+(s)} = {\I \over s- \I} {s + \I \over s+ \I \sqrt{3}}
+$$
+As in last lecture, we found:
+$$
+Y(z) = \begin{cases} 
+{-\I \over 1+\sqrt 3} {1-\sqrt 3 \over z+ \I \sqrt{3}} & \Im z > 0 \\
+{-2 \I \over z-\I}{1 \over 1+ \sqrt{3}} & \Im z < 0
+\end{cases}
+$$
+Let's double check that $Y$ has the right jump:
+```julia
+Y = z -> imag(z) > 0 ? -im*(1-sqrt(3))/(1+sqrt(3))/(z+im*sqrt(3)) :
+                       -2im/((z-im)*(1+sqrt(3)))
+
+s = 0.1
+
+Y(s+eps()im) - Y(s-eps()im), im/(s-im)*(s+im)/(s + im*sqrt(3))
+```
+Thus we get
+$$
+\begin{align*}
+\Phi(z)  &= \kappa(z) \CC_\R\br[{h \over \kappa_+}](z) = \begin{cases} 
+{-\I \over 1+\sqrt 3} {1-\sqrt 3 \over z+\I} & \Im z > 0 \\
+{-2 \I  \over 1+ \sqrt{3}} {1 \over z-\sqrt{3}\I} & \Im z < 0
+\end{cases}
+\end{align*}
+$$
+
+We can confirm it satisfies the right RHP:
+```julia
+φ =  z -> imag(z) > 0 ? -im*(1-sqrt(3))/(1+sqrt(3))/(z+im) :
+                       -2im/((z-sqrt(3)*im)*(1+sqrt(3)))
+
+g = s -> (s^2+3)/(s^2+1)
+
+s = 0.1
+φ(s+eps()im) - φ(s-eps()im)*g(s) , im/(s-im)
+```
+
+## Step 4: Invert the Fourier transform
+
+In particular, we have
+$$
+\widehat{u_{\rm R}}(s) = \Phi_-(s) = \kappa_-(s) Y_-(s) =  {-2 \I \over (1+\sqrt{3})(s-\I \sqrt 3)}
+$$
+This is analytic in the lower half plane, and for $x > 0$ we can use Jordan's lemma hence use 
+Residue calculus in the upper-half plane:
+$$
+\begin{align*}
+u(x) = {1 \over 2 \pi} \int_{-\infty}^\infty \widehat{u_{\rm R}}(s) \E^{\I s x} \ds  \ccr
+= {-\I \over \pi(1+\sqrt{3})} \int_{-\infty}^\infty {1 \over s-\I \sqrt 3} \E^{\I s x} \ds  \ccr
+= {2   \over (1+\sqrt{3})} \Res_{z=\I \sqrt 3} {1 \over z-\I \sqrt 3} \E^{\I z x}  = 
+{2 \E^{-\sqrt{3}x}    \over 1+\sqrt{3}} 
+\end{align*}
+$$
+
+
+## Step 5: Check I didn't make a mistake
+
+Did this work? Amazingly, yes:
+$$
+\begin{align*}
+u(x) + \int_0^\infty K(t -x) u(t) \dt &= {2   \over 1+\sqrt{3}} \left(  \E^{-\sqrt{3}x}  +   \int_0^x \E^{t-x} \E^{-\sqrt{3}t} \dt +  \int_x^\infty \E^{x-t} \E^{-\sqrt{3}t}\dt \right) \\
+&={2    \over 1+\sqrt{3}}\left( \E^{-\sqrt{3}x}   +  \E^{-x}    \int_0^x \E^{(1-\sqrt{3})t} \dt + \E^x  \int_x^\infty  \E^{-(1+\sqrt{3})t}\dt \right) \\
+&={2     \over 1+\sqrt{3}}\left( \E^{-\sqrt{3}x}  + {1  \over 1-\sqrt 3}   (\E^{-\sqrt{3}x} - \E^{-x}) + { \E^{-\sqrt 3 x } \over 1+\sqrt{3}} \right) \\
+&=\E^{-x} + {2  \E^{-\sqrt{3}x}   \over 1+\sqrt{3}}\left({-2 \over -2}   + {1+ \sqrt 3  \over -2} + {1 - \sqrt 3 \over -2} \right)  \\
+&= \E^{-x}
+\end{align*}
+$$
+
+We can verify it numerically:
+```julia
+t = Fun(0 .. 10)
+
+u = 2exp(-sqrt(3)*t)/(1+sqrt(3))
+x = 0.1
+
+u(x) + sum(exp(-abs(t-x))*u) , exp(-x)
+```
