@@ -92,6 +92,9 @@
 \def\dz{\D z}
 \def\ds{\D s}
 
+\def\rR{ {\rm R} }
+\def\rL{ {\rm L} }
+
 \def\norm#1{\left\| #1 \right\|}
 
 \def\pr(#1){\left({#1}\right)}

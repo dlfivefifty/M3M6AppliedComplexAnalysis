@@ -5,6 +5,258 @@ s.olver@imperial.ac.uk
 
 # Solution Sheet 4
 
+## Problem 1
+
+### Problem 1.1
+
+We know that $L[a(z)]^{-1} = L[a(z)^{-1}]$ hence it's really about the Laurent
+series of $a(z)^{-1}$.
+We see that the roots of $a(z)$ satisfy
+$$
+0 =z^2 a(z) = z^4 - 4z^2 + 1.
+$$
+Using the quadratic formula with $w = z^2$ we have
+$$
+w = 2 \pm \sqrt 3 \Rightarrow z = \pm \sqrt{2 \pm \sqrt 3}.
+$$
+Thus we have
+Since $2 - \sqrt 3 < 1$ and $2 + \sqrt 3 > 1$ we have the factorisation
+$$
+a(z) = \underbrace{z^2 - z_+}_{\phi_+(z)} \underbrace{1 - z_-/z^2}_{\phi_-(z)}
+$$
+for $z_{\pm} = 2 \pm \sqrt3$.
+We can invert $\phi_\pm$ using Geometric series, that is
+$$
+\begin{align*}
+\phi_+(z)^{-1} &= -{1 \over z_+} {1 \over 1 - z^2/z_+}  \ccr
+= -{1 \over z_+} - {z^2 \over z_+^2} - {z^4 \over z_+^3} - \cdots \ccr
+\phi_-(z)^{-1} = {1 \over 1- z_- /z^2} = 1 + {z_- \over z^2} + {z_-^2 \over z^4} + \cdots
+\end{align*}
+$$
+Thus we have
+$$
+a(z)^{-1} = \phi_+(z)^{-1} \phi_-(z)^{-1} =  \sum_{k=-\infty}^\infty b_{2k} z^{2k}
+$$
+where for $k \geq 0$
+$$
+b_{2k} =- \sum_{j=0}^\infty {z_-^j \over z_+^{j+k+1}} = - {z_+^{-k-1} \over 1 - z_-/z_+}
+$$
+and for $k < 0$
+$$
+b_{2k} =- \sum_{j=0}^\infty {z_-^{j-k} \over z_+^{j+1}} = - {z_-^{-k} \over z_+ - z_-}
+$$
+These give the diagonals of $L[a(z)^{-1}]$.
+
+_Verification_
+
+A _circulant matrix_ is an effective approximation to a Laurent matrix (for reasons
+beyond the scope of this course, though it intuitively follows since the DFT diagonalises all circulant matrices):
+```julia
+using ToeplitzMatrices, ApproxFun, Plots, LinearAlgebra, ComplexPhasePortrait, SingularIntegralEquations
+
+n = 6
+L = Circulant([-4; 1; zeros(n-3); 1])
+```
+Taking `n` large, the entries inverse of `L` approximates the true inverse $L[a(z)]^{-1}$:
+```julia
+n = 1000
+L = Circulant([-4; 1; zeros(n-3); 1])
+inv(L)
+```
+We verify this approximates the true inverse we deduced above by comparing the first few entries:
+```julia
+zp = 2+sqrt(3)
+zm = 2-sqrt(3)
+-zp.^(-(0:4).-1) / (1-zm/zp), inv(L)[1,1:5]
+```
+
+## Problem 1.2
+
+This part was solved as part of Problem 1.1.
+
+## Problem 1.3
+
+Note that
+$$
+T[a(z)] = \sopmatrix{
+-4 & 0 & 1 \\ 
+0 & -4 & 0 & 1 \\
+1 & 0 & -4 & 0 & 1 \\
+& 1& 0 & -4 & 0 & 1 \\
+&&\ddots &\ddots &\ddots &\ddots &\ddots 
+}
+$$
+
+The UL decomposition is $T[\phi_-] T[\phi_+]$, i.e., for $z_{\pm} = 2 \pm \sqrt3$,
+$$
+\underbrace{\sopmatrix{
+1 & 0 & -z_- \\
+& 1 & 0 & -z_- \\
+&&\ddots & \ddots & \ddots 
+}}_U
+\underbrace{\sopmatrix{-z_+ \\
+0 & -z_+ \\
+1 & 0 & -z_+ \\
+& 1 & 0 & -z_+ \\
+&&\ddots & \ddots & \ddots
+}}_L
+$$
+
+_Verification_
+
+```julia
+n = 10
+U = Toeplitz([1; zeros(n-1)], [1; 0; -zm; zeros(n-3)])
+L = Toeplitz([-zp; 0; 1; zeros(n-3)], [-zp; zeros(n-1)])
+U*L
+```
+
+
+## Problem 1.4
+
+
+We have (see Problem 1.1)
+$$
+T[a(z)]^{-1} = L^{-1} U^{-1} = 
+\sopmatrix{-z_+^{-1} \\
+0 & -z_+^{-1} \\
+-z_+^{-2} & 0 & -z_+^{-1} \\
+0 & -z_+^{-2} & 0 & -z_+^{-1} \\
+-z_+^{-3} & 0 & -z_+^{-2} & 0 & -z_+^{-1} \\
+&&\ddots & \ddots & \ddots
+}
+\sopmatrix{
+1 & 0 & z_- & 0 &z_-^2 & 0 & \cdots \\
+& 1 & 0 & z_- & 0 &z_-^2 & \cdots \\
+& & 1 & 0 & z_- & 0 & \cdots \\
+&&&\ddots & \ddots & \ddots 
+}
+$$
+
+_Verification_
+For large `n` the entries of the inverse of Toeplitz matrix approximate those
+of the infinite-dimensional Toeplitz operator:
+```julia
+n = 1000
+T = Toeplitz([-4; 0; 1; zeros(n-3)], [-4; 0; 1; zeros(n-3)])
+inv(Matrix(T))
+```
+This matches our construction:
+```julia
+li = zeros(n) # inv(L) coefficients
+li[1:2:end] = -zp.^(-(1:(n ÷ 2)))
+Li = Toeplitz(li, [li[1]; zeros(n-1)])
+```
+```julia 
+ui = zeros(n) # inv(U) coefficients
+ui[1:2:end] = zm.^(-(0:(n ÷ 2)-1))
+Ui = Toeplitz([ui[1]; zeros(n-1)], ui)
+```
+```julia
+Li*Ui
+```
+
+Note the inverse of a Toeplitz operator/matrix is not Toeplitz, unlike
+the case of a Laurent operator / Circulant matrix.
+
+
+### Problem 1.5
+
+This is somewhat a trick question as $a(z) = (z^2 + 3)/ (z^2 + 2)$ is analytic 
+inside the unit circle, so $T[a(z)]$ is lower triangular and  therefore
+$$
+T[a(z)]^{-1} = T[a(z)^{-1}] = T[(z^2 + 2)/(z^2+3)]
+$$
+
+
+## Problem 2
+
+### Problem 2.1
+
+It is 1 since we go around the origin once. The easiest way to see this is by direct inspection, we want to solve:
+$$
+\underbrace{\sopmatrix{0 \\  1  \\ & 1 \\ && 1 \\ &&&\ddots}}_{T[z]} \Vectt[u_0,u_1,\dots] = \Vectt[f_0,f_1,\dots]
+$$
+But the first row is always zero. If $f_0= 0 $ we therefore have the solution $u_n = f_{n+1}$.
+
+### Problem 2.2
+
+The winding number is $-1$.  We want to solve:
+$$
+\underbrace{\sopmatrix{0 &  1  \\ && 1 \\ &&& 1 \\ &&&&\ddots}}_{T[z^{-1}]} \Vectt[u_0,u_1,\dots] = \Vectt[f_0,f_1,\dots]
+$$
+Now we have the solution for any constant $c$ $u_0 = c, u_n = f_{n-1}$. In other words, $\vc e_0$ is in the kernel. 
+
+## Problem 2.3
+
+If $a(z)$ has winding number $\kappa$ then $z^{-k} a(z)$ has trivial winding number. 
+Therefore we have
+$$
+z^{-k} a(z) = \phi_+(z) \phi_-(z)
+$$
+As usual we can now take logarithms to deduce:
+$$
+\log(a(z) z^{-k}) = \log \phi_+(z) + \log \phi_-(z)
+$$
+which by Plemelj implies
+$$
+\begin{align*}
+\phi_+(z) &= \E^{\CC_+[\diamond^{-k} \log a](z)} \ccr
+\phi_+(z) = \E^{-\CC_-[\diamond^{-k} \log a](z)}
+\end{align*}
+$$
+
+## Problem 2.4
+
+Note that for $\kappa \geq 0$ that $P$ is lower triangular Toeplitz, therefore 
+we have using the algebraic properties of triangular Toeplitz
+$$
+T[\phi_-] T[z^\kappa] T[\phi_+] = T[\phi_-] T[z^\kappa \phi_+] = T[\phi_- z^\kappa \phi_+] = T[a(z)]
+$$
+When $\kappa \leq 0$ then $P$ is upper triangular Toeplitz and so
+$$
+T[\phi_-] T[z^\kappa] T[\phi_+] = T[\phi_- z^\kappa] T[\phi_+] = T[\phi_- z^\kappa \phi_+] = T[a(z)].
+$$
+
+
+## Problem 2.5
+
+The first question is: what is the winding number? The straightforward way to
+compute is via residue calculus. That is, if we calculate
+$$
+\begin{align*}
+{1 \over 2 \pi \I} \oint_a {1 \over z} \D z &= 
+{1 \over 2 \pi \I} \oint_C {a'(z) \over a(z)} \D z = 
+{-1 \over  \pi \I} \oint_C {z \over  z^2 + 1/2} \D z \ccr 
+= -2 \pr(\Res_{z = -{\I \over \sqrt 2}} + \Res_{z = {\I \over\sqrt 2}}) {z \over z^2 + 1/2} =  -2.
+\end{align*}
+$$
+This is also intuitive since $z^2$ clearly goes around the origin twice counterclockwise, so does $2z^2 + 1$ as the shift by 1 is not enough to change anything, therefore $(2z^2 + 1)^{-1}$ goes around twice clockwise.
+
+Note that
+$$
+z^2 a(z) = \underbrace{z^2 \over 2 z^2 + 1}_{\phi_-(z)}
+$$
+Is already analytic outside the unit circle so we have $L = I$ and thus the factorisation
+$$
+T[a(z)] = \underbrace{T[\phi_-]}_U \underbrace{T[z^{-2}]}_P
+$$
+From the Laurent expansion
+$$
+\phi_-(z)^{-1} = 2 + 1/z^2
+$$
+We can compute 
+$$
+U^{-1} \vc e_0 = T[\phi_-^{-1}] \vc e_0 =  {1 \over 2} \vc e_0
+$$
+The kernel of $P$ is $\vc e_0$ and $\vc e_1$. Thus putting everything
+together we get the rather boring answer
+$$
+\Vectt[c,d, 1/2, 0,0,0,\dots]
+$$
+where $c$ and $d$ are arbitrary constants.
+
+
 ## Problem 3
 
 ### Problem 3.1 
@@ -79,7 +331,9 @@ The Fourier transforms are given above.
 
 ### Problem 3.6
 
-$$\int_{-\infty}^\infty \delta(x) \E^{\I s x} \dx = 1$$
+$$
+\int_{-\infty}^\infty \delta(x) \E^{\I s x} \dx = 1
+$$
 
 It's actually an entire function, but non-decaying. This is hinting at the relationship between smoothness of a function and decay of its Fourier transform, and vice-versa: since $\delta(x)$ "decays" to all orders, we expect its Fourier transform to be entire, but since its n ot smooth at all, we expect no decay, so on a formal level we can predict the analyticity properties.
 
@@ -105,7 +359,7 @@ x = Fun(0..100)
 f = 1  + α*x
 h = s -> (im/s + α/s^2)
 
-γ = -0.5  # we take the Fourier transform on R + im*γ
+γ = -0.5 # we take the Fourier transform on R + im*γ
 s = -0.5 + im*γ
 
 -sum(f*exp(-im*s*x)) , h(s)
@@ -127,7 +381,6 @@ $$
 $$
 which is valid for $-1 < \Im s < 0$.
 ```julia
-using ApproxFun, SingularIntegralEquations, Plots, ComplexPhasePortrait, LinearAlgebra
 g = s -> (4+s^2)/(1+s^2)
 
 κ = z -> imag(z) > γ ? (z+im*2)/(z+im) :
@@ -137,10 +390,10 @@ g = s -> (4+s^2)/(1+s^2)
 phaseplot(-3..3, -3..3, κ)
 
 s = 0.1 + γ*im 
-κ₊ = κ(s + eps()*im)
-κ₋ = κ(s - eps()*im)
+κp = κ(s + eps()*im)
+κm = κ(s - eps()*im)
 
-κ₊ - κ₋*g(s)
+κp - κm*g(s)
 ```
 
 
@@ -167,10 +420,10 @@ Y = z -> imag(z) > γ ? im*(2+α)/(4*(z+2im)) :
                      - α/(2z^2) + im*(α-2)/(4z)
 
 
-Y₊ = Y(s + eps()*im)
-Y₋ = Y(s - eps()*im)
+Yp = Y(s + eps()*im)
+Ym = Y(s - eps()*im)
 
-Y₊ - Y₋  , h(s)/κ₊
+Yp - Ym  , h(s)/κp
 ```
 
 We therefore have 
@@ -184,10 +437,10 @@ $$
 ```julia
 Φ = z -> imag(z) > γ ? im*(2+α)/(4*(z+im)) :
                       (-α/(2z^2) + im*(α-2)/(4z))*(z-im)/(z-2im)
-Φ₊ = Φ(s+eps()im) 
-Φ₋ = Φ(s-eps()im) 
+Φp = Φ(s+eps()im) 
+Φm = Φ(s-eps()im) 
 
-Φ₊ - Φ₋*g(s) , h(s)
+Φp - Φm*g(s) , h(s)
 ```
 
 Finally, we recover the solution by inverting 
@@ -213,9 +466,11 @@ $$
 \Phi_+(s) - g(s) \Phi_-(s) = h(s)
 $$
 where 
-$$g(s) = \widehat K(s) = {2\alpha \over \alpha^2 +s^2}= {2 \alpha \over (s-\I \alpha)(s+\I \alpha)} $$
+$$
+g(s) = \widehat K(s) = {2\alpha \over \alpha^2 +s^2}= {2 \alpha \over (s-\I \alpha)(s+\I \alpha)}
+$$
 and
-$$ 
+$$
 h(s) = {\I \over s} + {\alpha \over s^2} = \I {s -\I \alpha \over s^2}
 $$
 
@@ -243,14 +498,15 @@ phaseplot(-3..3, -3..3, κ)
 ```
 ```julia
 s = 0.1 + γ*im 
-κ₊ = κ(s + eps()*im)
-κ₋ = κ(s - eps()*im)
+κp = κ(s + eps()*im)
+κm = κ(s - eps()*im)
 
-κ₊ , κ₋*g(s)
+κp , κm*g(s)
 ```
 
 Then we have 
-$$h(s)/\kappa_+(s) =  \I {s^2 + \alpha^2 \over s^2} = \I + \I {\alpha^2 \over s^2}
+$$
+h(s)/\kappa_+(s) =  \I {s^2 + \alpha^2 \over s^2} = \I + \I {\alpha^2 \over s^2}
 $$
 and then we can write
 $$
@@ -266,10 +522,10 @@ Y = z -> imag(z) > γ ? im :
                      -im*α^2/s^2
 
 
-Y₊ = Y(s + eps()*im)
-Y₋ = Y(s - eps()*im)
+Yp = Y(s + eps()*im)
+Ym = Y(s - eps()*im)
 
-Y₊ - Y₋  , h(s)/κ₊
+Yp - Ym  , h(s)/κp
 ```
 
 Putting things together, we get
@@ -281,10 +537,10 @@ $$
 ```julia
 Φ = z -> imag(z) > γ ? im/(z + im*α)  :
                      -im*α^2/z^2* (z-im*α)/(2α)
-Φ₊ = Φ(s+eps()im) 
-Φ₋ = Φ(s-eps()im) 
+Φp = Φ(s+eps()im) 
+Φm = Φ(s-eps()im) 
 
-Φ₊ - Φ₋*g(s) , h(s)
+Φp - Φm*g(s) , h(s)
 ```
 
 We now invert the Fourier transform of $\Phi_-(s)$ using Jordan's lemma:
@@ -382,11 +638,13 @@ $$
 \Phi_-(z) = Y_-(z) \kappa_-(z) = -(  A +    {1 \over z} +  {\I \over z^2} ){(z-\I)  \over (z-\I  \gamma) (z+\I  \gamma)} 
 $$
 Using Jordan's lemma, and now since $\delta < - \gamma$, we get
+$$
 \begin{align*}
 u(x) &= \I (\Res_{z = 0} + \Res_{z = \I \gamma} + \Res_{z = - \I \gamma})  \Phi_-(z) \E^{\I x z} \\
 &= {x \over \gamma^2} - \E^{-x \gamma}( {\gamma^2-1 \over 2 \gamma^3} + {\gamma-1 \over 2\gamma^3}   A) - \E^{x \gamma} ({1-\gamma^2 \over 2 \gamma^3} + {\gamma+1 \over 2\gamma^3}   A)\\
 &=  {x \over \gamma^2} + {\E^{x \gamma} - \E^{-x \gamma} \over 2} {\gamma-\gamma^{-1} \over 2 \gamma^2}  - {A \over \gamma^3} ( {\E^{x \gamma} - \E^{-x \gamma} \over 2} +  \gamma {\E^{x \gamma} + \E^{-x \gamma} \over 2} )
 \end{align*}
+$$
 Redefining $A$ and using the definition of $\sinh$ and $\cosh$ gives the form in the assignment.
 
 What's the moral of the story? 
