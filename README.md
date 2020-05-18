@@ -16,7 +16,7 @@ See also previous lecture notes for previous course [M3M6 Methods of Mathematica
 1. [Problem Sheet 2](sheets/Sheet2.pdf) [(Solutions)](sheets/Solutions2.pdf)
 3. [Problem Sheet 3](sheets/Sheet3.pdf) [(Solutions)](sheets/Solutions3.pdf)
 4. [Problem Sheet 4](sheets/Sheet4.pdf) [(Solutions)](sheets/Solutions4.pdf)
-5. [Mastery material](https://arxiv.org/pdf/1311.2320.pdf)
+5. [Mastery material](https://arxiv.org/pdf/1311.2320.pdf) [(Solutions)](https://nbviewer.jupyter.org/github/dlfivefifty/M3M6LectureNotes/blob/master/Mastery%20Solutions.ipynb)
 4. [Mastery Sheet](sheets/MasterySheet.pdf) 
 
 ## Project
